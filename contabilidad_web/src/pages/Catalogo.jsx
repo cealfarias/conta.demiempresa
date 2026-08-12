@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Folder, FileText, ChevronRight, Search, Plus, Edit2, Trash2, BarChart2 } from 'lucide-react';
-import SaldosMensualesModal from '../components/SaldosMensualesModal';
+import { useNavigate } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 function Catalogo() {
+  const navigate = useNavigate();
   const [cuentas, setCuentas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [nivelFiltro, setNivelFiltro] = useState('todos');
-
-  // Modal Saldos Mensuales state
-  const [modalSaldosOpen, setModalSaldosOpen] = useState(false);
-  const [cuentaSeleccionadaSaldos, setCuentaSeleccionadaSaldos] = useState(null);
 
   useEffect(() => {
     fetchCuentas();
@@ -156,8 +153,7 @@ function Catalogo() {
                         </button>
                         <button 
                           onClick={() => {
-                            setCuentaSeleccionadaSaldos(cuenta);
-                            setModalSaldosOpen(true);
+                            navigate(`/dashboard/catalogo/saldos/${cuenta.cuentas}`, { state: { cuenta } });
                           }}
                           className="p-1 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" 
                           title="Saldos Mensuales"
@@ -176,12 +172,6 @@ function Catalogo() {
           </table>
         </div>
       </div>
-
-      <SaldosMensualesModal 
-        isOpen={modalSaldosOpen}
-        onClose={() => setModalSaldosOpen(false)}
-        cuenta={cuentaSeleccionadaSaldos}
-      />
     </div>
   );
 }

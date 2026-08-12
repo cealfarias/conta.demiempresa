@@ -1,0 +1,297 @@
+Código;Nombre;Tipo
+1;ACTIVO;Grupo
+11;ACTIVO CORRIENTE;Subgrupo
+1101;EFECTIVO Y EQUIVALENTES;Cuenta Mayor
+110101;Caja;Subcuenta
+11010101;Caja General;Detalle
+11010102;Caja Chica;Detalle
+1101010201;Caja chica Casa Matriz;Auxiliar
+1101010202;Caja chica sucursal No. 1;Auxiliar
+1101010203;Caja chica sucursal No. 2;Auxiliar
+1101010204;Caja chica sucursal No. 3;Auxiliar
+110102;Bancos;Subcuenta
+11010201;Bancos Locales;Detalle
+11010202;Bancos del Exterior;Detalle
+11010203;Otras Instituciones Financieras;Detalle
+110103;Equivalentes de efectivo;Subcuenta
+11010301;Depósitos a plazo;Detalle
+11010302;Operaciones de reporto;Detalle
+11010303;Voucher de Tarjetas de crédito;Detalle
+1102;CUENTAS Y DOCUMENTOS POR COBRAR;Cuenta Mayor
+110201;Clientes;Subcuenta
+11020101;Clientes locales;Detalle
+11020102;Clientes del exterior;Detalle
+110202;Documentos por cobrar;Subcuenta
+11020201;Documentos por cobrar locales;Detalle
+11020202;Documentos por cobrar del exterior;Detalle
+110203;Cuentas por cobrar empleados;Subcuenta
+1103;ESTIMACION PARA CUENTAS INCOBRABLES (CR);Cuenta Mayor
+1104;PARTES RELACIONADAS POR COBRAR A CORTO PLAZO;Cuenta Mayor
+110401;Casa matriz;Subcuenta
+110402;Sucursales;Subcuenta
+11040201;Sucursal 1;Detalle
+110403;Accionistas;Subcuenta
+110404;Directores y personal ejecutivo;Subcuenta
+110405;Subsidiarias;Subcuenta
+110406;Asociadas;Subcuenta
+1105;ARRENDAMIENTO FINANCIERO INCOBRABLES POR PLAZO;Cuenta Mayor
+1106;ESTIMACION DE CUENTAS INCOBRABLES POR ARRENDAMIENTO FINANCIERO POR COBRAR A CORTO PLAZO (CR);Cuenta Mayor
+1107;INVENTARIOS;Cuenta Mayor
+110701;Mercadería para la venta;Subcuenta
+110702;Materias primas;Subcuenta
+110703;Producto en proceso;Subcuenta
+110704;Producto terminado;Subcuenta
+1108;PEDIDOS EN TRANSITO;Cuenta Mayor
+1109;RESERVA PARA OBSOLESCENCIA DE INVENTARIOS (CR);Cuenta Mayor
+1110;INVERSIONES TEMPORALES;Cuenta Mayor
+111001;Acciones;Subcuenta
+111002;Bonos;Subcuenta
+1111;PAGOS ANTICIPADOS;Cuenta Mayor
+111101;Seguros pagados por anticipado;Subcuenta
+111102;Papelería y útiles;Subcuenta
+1112;CREDITO FISCAL - IVA;Cuenta Mayor
+111201;Crédito Fiscal por Compras;Subcuenta
+11120101;Crédito fiscal por compras locales;Detalle
+11120102;Crédito fiscal por importaciones e internaciones;Detalle
+111202;Crédito Fiscal por Gastos;Subcuenta
+111203;Crédito Fiscal por Retención 1%;Subcuenta
+111204;Crédito Fiscal por Percepción 1%;Subcuenta
+111205;Crédito Fiscal por Anticipo a Cuenta de IVA 2%;Subcuenta
+1113;PAGO A CUENTA DE IMPUESTOS;Cuenta Mayor
+111301;ISR - Retenciones de Terceros;Subcuenta
+111302;ISR - Pago a Cuenta del Presente Ejecutivo;Subcuenta
+111303;ISR - Pago a Cuenta de Ejercicios Anteriores;Subcuenta
+111304;ISR - Diferido;Subcuenta
+111305;Impuestos municipales;Subcuenta
+12;ACTIVO NO CORRIENTE;Subgrupo
+1201;CUENTAS POR COBRAR A LARGO PLAZO;Cuenta Mayor
+1202;PARTES RELACIONADAS POR COBRAR A LARGO PLAZO;Cuenta Mayor
+120201;Casa matriz;Subcuenta
+120202;Sucursales;Subcuenta
+120203;Accionistas;Subcuenta
+120204;Directores y ejecutivos;Subcuenta
+120205;Subsidiarias;Subcuenta
+120206;Asociadas;Subcuenta
+1203;ARRENDAMIENTO FINANCIERO POR COBRAR A LARGO PLAZO;Cuenta Mayor
+1204;ESTIMACION DE CUENTAS INCOBRABLES POR ARRENDAMIENTO FINANCIERO POR COBRAR A LARGO PLAZO. (CR);Cuenta Mayor
+1205;INVERSIONES PERMANENTES;Cuenta Mayor
+120501;Acciones;Subcuenta
+120502;Bonos;Subcuenta
+1206;PROPIEDEAD, PLANTA Y EQUIPO;Cuenta Mayor
+120601;Bienes No Depreciables;Subcuenta
+12060101;Terrenos;Detalle
+12060102;Edificaciones;Detalle
+120602;Bienes depreciables;Subcuenta
+12060201;Mobiliario y Equipo de Oficina;Detalle
+12060202;Equipo de transporte;Detalle
+12060203;Maquinaria;Detalle
+12060204;Equipo de Cómputo;Detalle
+12060205;Herramientas;Detalle
+12060206;Otros Bienes Depreciables;Detalle
+1207;DEPRECIACION ACUMULADA (CR);Cuenta Mayor
+120701;Depreciación acumulada de mobiliario y equipo de oficina;Subcuenta
+120702;Depreciación acumulada de equipo de transporte;Subcuenta
+120703;Depreciación acumulada de maquinaria;Subcuenta
+120704;Depreciación acumulada de equipo de cómputo;Subcuenta
+120705;Depreciación acumulada de herramientas;Subcuenta
+120706;Depreciación acumulada de otros bienes;Subcuenta
+1208;PROPIEDAD DE INVERSIÓN;Cuenta Mayor
+1209;DEPRECIACIÓN ACUMULADA DE PROPIEDAD DE INVERSION (CR);Cuenta Mayor
+1210;REVALUACIÓN DE ACTIVOS;Cuenta Mayor
+121001;Terrenos;Subcuenta
+121002;Edificaciones;Subcuenta
+121003;Mobiliario y equipo de oficina;Subcuenta
+121004;Equipo de transporte;Subcuenta
+121005;Maquinaria;Subcuenta
+1211;DEPRECIACIÓN ACUMULADA DE ACTIVOS REVALUADOS (CR);Cuenta Mayor
+1212;CONSTRUCCIONES EN PROCESO;Cuenta Mayor
+1213;ACTIVOS BAJO ARRENDAMIENTO FINANCIERO;Cuenta Mayor
+1214;DEPRECIACIÓN ACUMULADA DE ACTIVO BAJO ARRENDAMIENTO FINANCIERO (CR);Cuenta Mayor
+1215;ACTIVOS INTANGIBLES;Cuenta Mayor
+121501;Programas de computadoras;Subcuenta
+121502;Patentes y marcas;Subcuenta
+121503;Licencias;Subcuenta
+1216;AMORTIZACIONES DE INTANGIBLES (CR);Cuenta Mayor
+121601;Programas de computadoras;Subcuenta
+121602;Marcas y patentes;Subcuenta
+121603;Licencias;Subcuenta
+1217;DEPOSITOS EN GARANTÍA;Cuenta Mayor
+121701;Depósitos;Subcuenta
+1218;ACTIVO POR IMPUESTOS DIFERIDO;Cuenta Mayor
+2;PASIVO;Grupo
+21;PASIVO CORRIENTE;Subgrupo
+2101;PROVEEDORES LOCALES;Cuenta Mayor
+2102;PROVEEDORES DEL EXTERIOR;Cuenta Mayor
+2103;CUENTAS POR PAGAR A CORTO PLAZO;Cuenta Mayor
+210301;Cuentas por pagar a corto plazo;Subcuenta
+210302;Acreedores varios a corto plazo;Subcuenta
+210303;Pago a cuenta de impuesto sobre la renta;Subcuenta
+2104;OBLIGACIONES BAJO ARRENDAMIENTO FINANCIERO A CORTO PLAZO;Cuenta Mayor
+2105;RETENCIONES LABORALES;Cuenta Mayor
+210501;ISSS Salud;Subcuenta
+210502;AFP Retención laboral;Subcuenta
+210503;ISR - Retenciones a Empleados;Subcuenta
+210504;ISR - Retenciones a Terceros;Subcuenta
+2106;BENEFICIOS A EMPLEADOS POR PAGAR A CORTO PLAZO;Cuenta Mayor
+210601;ISSS - Salud;Subcuenta
+210602;ISSS -Previsional;Subcuenta
+210603;AFP Cuota Patronal;Subcuenta
+210604;Sueldos y Salarios;Subcuenta
+210605;Vacaciones;Subcuenta
+210606;Aguinaldos;Subcuenta
+210607;Indemnizaciones;Subcuenta
+210608;Provisión para Prestaciones Laborales;Subcuenta
+2107;SOBREGIROS Y PRÉSTAMOS BANCARIOS A CORTO PLAZO;Cuenta Mayor
+210701;Sobregiros Bancarios;Subcuenta
+210702;Préstamos Bancarios;Subcuenta
+210703;Porción circulante de préstamos a largo plazo;Subcuenta
+2108;DIVIDENDOS POR PAGAR;Cuenta Mayor
+2109;PARTES RELACIONADAS POR PAGAR A CORTO PLAZO;Cuenta Mayor
+210901;Casa matriz;Subcuenta
+210902;Sucursales;Subcuenta
+210903;Accionistas;Subcuenta
+210904;Directores y Ejecutivos;Subcuenta
+210905;Subsidiarias;Subcuenta
+210906;Asociadas;Subcuenta
+2110;DEBITO FISCAL - IVA;Cuenta Mayor
+211001;Débito Fiscal IVA por Ventas a Consumidor Final;Subcuenta
+211002;Débito Fiscal por Ventas a Contribuyentes;Subcuenta
+211003;Retención 1% IVA;Subcuenta
+211004;Percepción 1% IVA;Subcuenta
+211005;Retención 13% IVA;Subcuenta
+2111;IMPUESTOS POR PAGAR;Cuenta Mayor
+211103;ISR - Pago a Cuenta;Subcuenta
+211104;ISR - Diferido;Subcuenta
+211105;Impuestos Municipales;Subcuenta
+211106;IVA por Pagar;Subcuenta
+2112;INGRESOS ANTICIPADOS;Cuenta Mayor
+22;PASIVO NO CORRIENTE;Subgrupo
+2201;PRESTAMOS A LARGO PLAZO;Cuenta Mayor
+220101;Préstamos Bancarios;Subcuenta
+2202;ACREEDORES COMERCIALES Y OTRAS CUENTAS POR PAGAR A LARGO PLAZO;Cuenta Mayor
+220201;Cuentas por pagar a largo plazo;Subcuenta
+220202;Acreedores varios a largo plazo;Subcuenta
+2203;OBLIGACIONES BAJO ARRENDAMIENTO FINANCIERO A LARGO PLAZO;Cuenta Mayor
+2204;PARTES RELACIONADAS POR PAGAR A LARGO PLAZO;Cuenta Mayor
+220401;Casa matriz;Subcuenta
+220402;Sucursales;Subcuenta
+220403;Accionistas;Subcuenta
+220404;Directores y ejecutivos;Subcuenta
+220405;Subsidiarias;Subcuenta
+220406;Asociadas;Subcuenta
+2205;BENEFICIOS A EMPLEADOS POR PAGAR A LARGO PLAZO;Cuenta Mayor
+220501;Indemnizaciones;Subcuenta
+2206;ANTICIPOS Y GARANTIAS RECIBIDAS;Cuenta Mayor
+220601;Anticipos sobre ventas;Subcuenta
+220602;Depósitos en garantía;Subcuenta
+2207;PASIVO POR IMPUESTO DIFERIDO;Cuenta Mayor
+3;PATRIMONIO;Grupo
+31;PATRIMONIO NETO;Subgrupo
+3101;CAPITAL SOCIAL;Cuenta Mayor
+310101;Capital Social Mínimo;Subcuenta
+310102;Capital Social Variable;Subcuenta
+3102;RESERVA LEGAL;Cuenta Mayor
+3103;RESERVA GENERAL;Cuenta Mayor
+3104;SUPERÁVIT POR EVALUACIÓN;Cuenta Mayor
+3105;RESULTADOS DE EJERCICIOS ANTERIORES;Cuenta Mayor
+3106;RESULTADOS DEL EJERCICIO;Cuenta Mayor
+310601;Utilidad del Ejercicio;Subcuenta
+310602;Pérdida del ejercicio (CR);Subcuenta
+4;CUENTAS DE RESULTADO DEUDORAS;Grupo
+41;COSTOS Y GASTOS DE OPERACIÓN;Subgrupo
+4101;COSTOS DE VENTAS;Cuenta Mayor
+4102;COMPRAS;Cuenta Mayor
+410201;COMPRAS DE MERCANCIAS;Subcuenta
+410202;GASTOS EN COMPRAS;Subcuenta
+4103;REBAJAS Y DEVOLUCIONES SOBRE COMPRAS (CR);Cuenta Mayor
+410301;Rebajas y Descuentos;Subcuenta
+410302;Devoluciones;Subcuenta
+4104;GASTOS DE ADMINISTRACIÓN;Cuenta Mayor
+410401;Sueldos y Salarios;Subcuenta
+410402;Comisiones;Subcuenta
+410403;Horas Extras;Subcuenta
+410404;Aguinaldos;Subcuenta
+410405;Vacaciones;Subcuenta
+410406;Indemnizaciones;Subcuenta
+410407;Bonificaciones y gratificaciones;Subcuenta
+410408;Honorarios Profesionales;Subcuenta
+410409;Dietas a Directores;Subcuenta
+410410;Atenciones al personal;Subcuenta
+410411;Atención a Junta Directiva Accionistas;Subcuenta
+410412;Viáticos y transporte;Subcuenta
+410413;ISSS Cuota Patronal;Subcuenta
+410414;AFP Cuota Patronal;Subcuenta
+410415;INSAFORP;Subcuenta
+410416;Utensilios y enseres;Subcuenta
+410417;Materiales Varios;Subcuenta
+410418;Impuestos municipales;Subcuenta
+410419;Papelería y Útiles;Subcuenta
+410420;Servicio de agua;Subcuenta
+410421;Energía eléctrica;Subcuenta
+410422;Comunicaciones;Subcuenta
+410423;Propaganda y anuncios;Subcuenta
+410424;Encomiendas, envíos y fletes;Subcuenta
+410425;Alquileres;Subcuenta
+410426;Mantenimiento de local arrendado;Subcuenta
+410427;Depreciación de edificaciones;Subcuenta
+410428;Depreciación de mobiliario y equipo de oficina;Subcuenta
+410429;Depreciación de equipo de transporte;Subcuenta
+410430;Depreciación de maquinaria;Subcuenta
+4105;GASTOS DE VENTA;Cuenta Mayor
+410501;Sueldos y salarios;Subcuenta
+410502;Comisiones;Subcuenta
+410503;Horas extras;Subcuenta
+410504;Aguinaldos;Subcuenta
+410505;Vacaciones;Subcuenta
+410506;Indemnizaciones;Subcuenta
+410507;Bonificaciones y gratificaciones;Subcuenta
+410508;Horarios profesionales;Subcuenta
+410509;Dietas a Directores;Subcuenta
+410510;Atenciones al personal;Subcuenta
+410511;Atención a Junta Directiva Accionistas;Subcuenta
+410512;Viáticos y transporte;Subcuenta
+410513;ISSS Cuota Patronal;Subcuenta
+410514;AFP Cuota Patronal;Subcuenta
+410515;INSAFORP;Subcuenta
+410516;Utensilios y enseres;Subcuenta
+410517;Materiales Varios;Subcuenta
+410518;Impuestos municipales;Subcuenta
+410519;Papelería y Útiles;Subcuenta
+410520;Servicio de agua;Subcuenta
+410521;Energía eléctrica;Subcuenta
+410522;Comunicaciones;Subcuenta
+410523;Propaganda y anuncios;Subcuenta
+410524;Encomiendas, envíos y fletes;Subcuenta
+410525;Alquileres;Subcuenta
+410526;Mantenimiento de local arrendado;Subcuenta
+410527;Depreciación de edificaciones;Subcuenta
+410528;Depreciación de mobiliario y equipo de oficina;Subcuenta
+410529;Depreciación de equipo de transporte;Subcuenta
+410530;Depreciación de maquinaria;Subcuenta
+410531;Gastos no deducibles;Subcuenta
+4106;GASTOS FINANCIEROS;Cuenta Mayor
+4107;OTROS GASTOS;Cuenta Mayor
+5;CUENTAS DE RESULTADO ACREEDORAS;Grupo
+51;INGRESOS DE OPERACIÓN;Subgrupo
+5101;VENTA DE MERCADERIA;Cuenta Mayor
+510101;Ventas a consumidores finales;Subcuenta
+510102;Ventas a contribuyentes;Subcuenta
+510103;Exportaciones;Subcuenta
+5102;INGRESOS POR SERVICIOS;Cuenta Mayor
+510201;Servicios Locales;Subcuenta
+510202;Servicios del Exterior;Subcuenta
+5103;REBAJAS Y DEVOLUCIONES SOBRE VENTAS (CR);Cuenta Mayor
+510301;Rebajas y Descuentos;Subcuenta
+510302;Devoluciones;Subcuenta
+52;INGRESOS NO DE OPERACIÓN;Subgrupo
+5201;OTROS INGRESOS;Cuenta Mayor
+520101;Intereses;Subcuenta
+520102;Varios;Subcuenta
+6;CUENTAS LIQUIDADORAS;Grupo
+61;CUENTAS LIQUIDADORAS DE RESULTADO;Subgrupo
+6101;PÉRDIDAS Y GANANCIAS;Cuenta Mayor
+7;CUENTAS DE ORDEN;Grupo
+71;CUENTAS DE ORDEN DEUDORAS;Subgrupo
+7101;CUENTAS DE ORDEN;Cuenta Mayor
+72;CUENTAS DE ORDEN ACREEDORAS;Subgrupo
+7201;CUENTAS DE ORDEN;Cuenta Mayor

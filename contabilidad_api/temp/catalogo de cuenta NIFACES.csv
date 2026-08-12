@@ -1,0 +1,685 @@
+codigo;nombre
+1;ACTIVO
+11;ACTIVOS CORRIENTES
+1101;EFECTIVOS Y EQUIVALENTE
+110101;CAJA GENERAL
+11010101;Moneda en curso legal
+11010102;Moneda extranjera
+11010103;Cheque en cobro
+11010104;Documentos por liquidar
+110102;CAJA CHICA
+11010201;Moneda en curso legal
+110103;DEPÓSITOS EN BANCOS
+11010301;Cuenta corriente
+1101030101;Banco Agrícola
+1101030102;Banco Hipotecario
+1101030103;Banco de Fomento Agropecuario
+1101030104;BANCOVI
+1101030105;Banco DAVIVIENDA
+11010302;Cuenta de Ahorros
+1101030201;Banco Agrícola
+1101030202;Banco Hipotecario
+1101030203;Banco de Fomento Agropecuario
+1101030204;BANCOVI
+1101030205;Banco DAVIVIENDA
+11010303;Fondos fijos
+1101030301;Fondos de cambios
+1101030302;Fondo para cuenta de ahorros
+1102;ACTIVOS REALIZABLES
+110201;DEPÓSITOS A PLAZOS
+11020101;Banco Agrícola
+11020102;Banco Hipotecario
+11020103;Banco de Fomento Agropecuario
+11020104;Banco DAVIVIENDA
+11020105;BANCOVI
+110202;DEPÓSITOS EN GARANTÍA
+11020201;Cuenta corriente
+11020202;Cuenta de Ahorros
+11020203;Cuenta a plazo
+110203;INVERSIONES TEMPORALES
+11020301;Bonos
+11020302;Cédulas
+11020303;Acciones
+110204;CUENTA POR COBRAR COMERCIALES
+11020401;Clientes locales
+11020402;Clientes del exterior
+11020403;Proveedores
+110205;CUENTAS POR COBRAR COMERCIALES PARTES RELACIONADAS
+11020501;Asociaciones Cooperativa
+11020502;Federaciones
+11020503;Confederaciones
+110206;DOCUMENTOS POR COBRAR COMERCIALES
+11020601;Clientes locales
+11020602;Clientes del exterior
+11020603;Proveedores
+110207;DOCUMENTOS POR COBRAR COMERCIALES PARTES RELACIONADAS
+11020701;Asociaciones cooperativas
+11020702;Federaciones
+11020703;Confederaciones
+110208;CUENTAS POR COBRAR ARRENDAMIENTOS FINANCIEROS
+11020801;Varios
+110209;CUENTAS POR COBRAR NO COMERCIALES
+11020901;Préstamos y anticipos a empleados
+11020902;Anticipos a proveedores
+11020903;Intereses por cobrar
+1102090301;Intereses por cobrar a asociados
+1102090302;Intereses por cobrar a empleados
+11020904;Anticipo a honorarios
+11020905;Pagos por cuenta ajena
+11020906;Deudas por cobrar a ex asociados
+110210;PRÉSTAMOS A ASOCIADOS
+11021001;Préstamos personales
+11021002;Préstamos de Vivienda
+11021003;Préstamos de Ganadería
+11021004;Prestamos con Aportaciones
+11021005;Prestamos de Agricultura y Avió
+110211;CUENTAS POR COBRAR A ASOCIADOS
+11021101;Préstamos personales
+11021102;Préstamos de Vivienda
+11021103;Préstamos de Ganadería
+11021104;Préstamos con Aportaciones
+11021105;Préstamos de Agricultura y Avío
+110212;CRÉDITOS A ASOCIADOS
+11021201;Mercadería
+1102120101;Teja
+1102120102;Bloque
+1102120103;Losa de ferro cemento
+110213;ESTIMACIÓN PARA CUENTA INCOBRABLE
+11021301;Cuentas comerciales
+11021302;Cuentas por cobrar comerciales partes relacionadas
+11021303;Cuentas por cobrar arrendamiento financiero
+11021304;Documentos por cobrar comerciales
+11021305;Documentos por cobrar comerciales partes relacionadas
+11021306;Cuenta por cobrar no comerciales
+110214;INVENTARIO
+11021401;Productos terminados
+11021402;Productos en proceso
+11021403;Materia prima
+11021404;Material Directo
+11021405;Materiales indirectos
+11021406;Repuestos y accesorios
+110215;PROVISIÓN POR DETERIORO DE EXISTENCIAS
+11021501;Mercaderías
+11021502;Repuestos y accesorios para equipos
+11021503;Otros
+110216;GASTOS PAGADOS POR ANTICIPADO
+11021601;Seguros y fianzas
+11021602;Alquileres
+11021603;Intereses
+11021604;Publicidad y propaganda
+11021605;Papelería y útiles
+11021606;Pago a cuenta de ISR
+11021607;Impuesto de renta retenido
+11021608;Otros
+110217;IVA CRÉDITO FISCAL
+11021701;Compras locales
+11021702;Importaciones
+11021703;Internaciones
+110218;IVA PERCIBIDO
+11021801;IVA Percibido
+110219;APORTACIONES SUSCRITAS Y NO PAGADAS
+11021901;Aportaciones suscritas y no pagadas
+12;ACTIVOS NO CORRIENTES
+1201;PROPIEDAD PLANTA Y EQUIPO
+120101;BIENES INMUEBLES
+12010101;Terrenos
+12010102;Edicios
+12010103;Instalaciones
+12010104;Construcción en proceso
+1201010401;Edicios
+1201010402;Instalaciones
+120102;BIENES MUEBLES
+12010201;Maquinaria y equipo
+12010202;Equipo de transportes
+12010203;Mobiliario y equipo de ocina
+12010204;Herramientas
+120103;REVALUACIÓN DE BIENES MUEBLES E INMUEBLES
+12010301;Terrenos
+12010302;Edicios
+12010303;Instalaciones
+12010304;Maquinaria y equipo
+12010305;Equipo de transporte propio
+12010306;Mobiliario y equipo de ocina
+120104;DEPRECIACIÓN ACUMULADA
+12010401;Edicio
+12010402;Instalaciones
+12010403;Maquinaria y equipo
+12010404;Equipo de transporte
+12010405;Mobiliario y equipo de ocina
+12010406;Herramientas y enseres
+12010407;Otros bienes muebles
+120105;BIENES EN ARRENDAMIENTO FINANCIEROS
+12010501;Arrendamientos nancieros de bienes inmuebles
+1201050101;Terreno en arrendamiento nanciero
+1201050102;Edicación en arrendamiento nanciero
+12010502;Arrendamientos nancieros de bienes muebles
+1201050201;Maquinaria y equipo en arrendamiento nanciero
+1201050202;Equipo de transporte en arrendamiento nanciero
+120106;MEJORAS A PROPIEDADES ARRENDADAS
+12010601;Bienes inmuebles en arrendamiento nanciero
+12010602;Terreno en arrendamiento nanciero
+12010603;Edicación en arrendamiento nanciero
+12010604;Bienes muebles en arrendamiento nanciero
+12010605;Maquinaria y equipo en arrendamiento nanciero
+12010606;Equipo de transporte en arrendamiento nanciero
+120107;DEPRECIACIÓN ACUMULADA DE BIENES EN ARRENDAMIENTO FINANCIERO
+12010701;Bienes inmuebles en arrendamientos nancieros
+12010702;Edicación en arrendamiento nanciero
+12010703;Bienes muebles en arrendamiento nanciero
+12010704;Maquinaria y equipo en arrendamiento nanciero
+12010705;Equipo de transporte en arrendamiento nanciero
+120108;DEPRECIACIÓN ACUMULADA DE MEJORAS
+12010801;Bienes inmuebles en arrendamiento nanciero
+12010802;Edicación en arrendamiento nanciero
+12010803;Bienes muebles en arrendamiento nanciero
+12010804;Maquinaria y equipo en arrendamiento nanciero
+12010805;Equipo de transporte en arrendamiento nanciero
+1202;INVERSIÓN PERMANENTE Y PROPIEDADES DE INVERSIÓN
+120201;INVERSIONES PERMANENTES
+12020101;Certicado de aportación
+1202010101;Cooperativa
+1202010102;Federaciones
+1202010103;Confederaciones
+12020102;Títulos valores
+1202010201;Bonos
+1202010202;Cédulas
+120202;PROPIEDADES DE INVERSIÓN
+12020201;Bienes inmuebles
+12020202;Otros
+1203;ACTIVOS INTANGIBLES
+120301;ACTIVOS INTANGIBLES ADQUIRIDOS
+12030101;PLUSVALÍA ADQUIRIDA
+12030102;PATENTES ADQUIRIDAS
+12030103;MARCAS ADQUIRIDAS
+12030104;FRANQUICIAS ADQUIRIDAS
+12030105;SOFTWARE DE APLICACIÓN CONTABLE
+12030106;Otros
+1204;R AMORTIZACIÓN ACUMULADA DE ACTIVOS INTANGIBLES
+120401;AMORTIZACIÓN ACUMULADA
+12040101;PLUSVALÍA ADQUIRIDA
+12040102;PATENTES ADQUIRIDA
+12040103;MARCAS ADQUIRIDAS
+12040104;FRANQUICIAS ADQUIRIDAS
+12040105;SOFTWARE DE APLICACIÓN CONTABLE
+12040106;Otros
+1205;OTROS ACTIVOS
+120501;CUENTAS POR COBRAR COMERCIALES A LARGO PLAZO
+12050101;Clientes locales
+12050102;Clientes del exterior
+12050103;Proveedores
+12050104;Otros
+120502;CUENTAS POR COBRAR COMERCIALES PARTES RELACIONADAS A LARGO PLAZO
+12050201;Asociaciones cooperativas
+12050202;Federaciones
+12050203;Confederaciones
+12050204;Otros
+120503;DOCUMENTOS POR COBRAR COMERCIALES A LARGO PLAZO
+12050301;Clientes locales
+12050302;Clientes del exterior
+12050303;Proveedores
+12050304;Otros
+120504;DOCUMENTOS POR COBRAR COMERCIALES PARTES RELACIONADAS
+12050401;Asociaciones Cooperativa
+12050402;Federaciones
+12050403;Confederaciones
+12050404;Otros
+120505;CUENTAS POR COBRAR ARRENDAMIENTO FINANCIEROS
+12050501;Arrendamientos nancieros bienes inmuebles
+12050502;Arrendamientos nancieros bienes muebles
+120506;IMPUESTO SOBRE LA RENTA DIFERIDO
+12050601;Cuentas por cobrar
+12050602;Depreciaciones
+12050603;Otros
+120507;INTERESES POR ARRENDAMIENTOS FINANCIEROS
+12050701;Arrendamientos nancieros de bienes inmuebles
+12050702;Arrendamientos nancieros de bienes muebles
+120508;PÉRDIDAS
+12050801;Pérdidas del Presente ejercicio
+12050802;Pérdida del ejercicio anterior
+2;PASIVOS
+21;PASIVOS CORRIENTES
+2101;PASIVOS COMERCIALES
+210101;PROVEEDORES
+21010101;Proveedores locales
+21010102;Proveedores del exterior
+210102;DOCUMENTOS POR PAGAR COMERCIALES
+21010201;Pagares
+21010202;Letras de cambio
+21010203;Cartas de crédito
+21010204;Facturas cambiarías
+21010205;Otros
+210103;DOCUMENTOS POR COBRAR DESCONTADOS
+21010301;Pagares
+21010302;Letra de cambio
+21010303;Facturas cambiarías
+21010304;Otros
+210104;CUENTA POR PAGAR COMERCIALES PARTES RELACIONADAS
+21010401;Asociaciones Cooperativa
+21010402;Federaciones
+21010403;Confederaciones
+21010404;Otros
+2102;PASIVOS NO COMERCIALES
+210201;SOBRE GIROS BANCARIOS
+21020101;Banco Agrícola
+21020102;Banco de Fomento Agropecuario
+21020103;Banco Hipotecario de El Salvador
+21020104;BANCOVI
+21020105;DAVIVIENDA
+210202;PRÉSTAMOS POR PAGAR HIPOTECARIOS
+21020201;Bancos
+21020202;Cooperativa
+21020203;Otras instituciones nancieras
+210203;PRÉSTAMOS POR PAGAR PRENDARIOS
+21020301;Bancos
+2102030101;Banco Agrícola
+2102030102;Banco de Fomento Agropecuario
+2102030103;Banco Hipotecario
+2102030104;BANCOVI
+2102030105;DAVIVIENDA
+21020302;Cooperativa
+21020303;Otras instituciones nancieras
+210204;PRÉSTAMOS POR PAGAR A CORTO PLAZO
+21020401;Bancos locales
+21020402;Bancos del Exterior
+21020403;Asociaciones cooperativas
+21020404;Federaciones cooperativas
+21020405;Confederaciones cooperativas
+21020406;A asociados
+210205;AHORROS POR PAGAR A CORTO PLAZO
+21020501;Ahorros corrientes
+21020502;Ahorros a la vista
+210206;INTERESES POR PAGAR A CORTO PLAZO
+21020601;Intereses por pagar préstamo a bancos
+21020602;Intereses por pagar préstamos a asociados
+21020603;Otros
+210207;SERVICIOS POR PAGAR
+21020701;Agua potable
+21020702;Energía eléctrica
+21020703;Teléfono
+21020704;Auditoria externa
+21020705;Auditoria fiscal
+21020706;Consultorías
+21020707;Asesorías
+21020708;Servicios municipales
+21020709;Otros servicios
+210208;RETENCIONES POR PAGAR
+21020801;ISSS
+21020802;AFP
+21020803;Impuestos sobre la renta
+21020804;Cuotas alimenticias
+21020805;IVA Retenido
+21020806;Cuota de préstamo
+21020807;Seguro de deudas de préstamos
+21020808;Otros
+210209;APORTES PATRONALES
+21020901;ISSS
+21020902;AFP
+21020903;INSAFORP
+21020904;Seguro de vida
+21020905;Otros
+210210;BENEFICIOS A EMPLEADOS POR PAGAR
+21021001;Sueldos
+21021002;Salarios y jornales
+21021003;Vacaciones
+21021004;Aguinaldos
+21021005;Bonicaciones
+21021006;Comisiones
+21021007;Otros
+210211;EXCEDENTES POR DISTRIBUIR
+21021101;Asociados
+210212;LIQUIDACIÓN DE ASOCIADOS
+21021201;Aportaciones
+21021202;Otros
+210213;IVA DÉBITO FISCAL
+21021301;Por ventas a consumidor final
+21021302;Por ventas a contribuyentes
+21021303;Por servicios a consumidores nales
+21021304;Por servicios a contribuyentes
+210214;TRIBUTOS POR PAGAR
+21021401;IVA Por pagar
+21021402;Pago a cuenta de Impuesto Sobre la Renta
+21021403;Impuestos municipales
+21021404;Tasas municipales
+21021405;Impuesto sobre la renta
+21021406;Impuesto sobre la renta corriente
+210215;OBLIGACIONES POR ARRENDAMIENTOS FINANCIEROS
+21021501;Bienes inmuebles
+21021502;Bienes muebles
+210216;INGRESOS ANTICIPADOS
+21021601;Servicios de asesoría
+21021602;Intereses
+21021603;Otros
+210217;CUENTAS POR PAGAR
+21021701;Matricula de empresa por pagar
+21021702;Depósitos recibidos en garantía
+21021703;Intereses de cuentas de ahorro corriente
+21021704;Otros
+210218;CUENTAS POR PAGAR COMERCIALES A CORTO PLAZO
+21021801;Proveedores locales
+21021802;Proveedores del Exterior
+21021803;Asociaciones cooperativas
+21021804;Federaciones cooperativas
+21021805;Confederaciones cooperativas
+21021806;A asociados
+22;PASIVO NO CORRIENTE
+2201;PASIVOS COMERCIALES
+220101;DOCUMENTOS POR PAGAR COMERCIALES A LARGO PLAZO
+22010101;Pagares
+22010102;Letras de cambios
+22010103;Cartas de crédito de importaciones
+22010104;Otros
+220102;CUENTAS POR PAGAR COMERCIALES PARTES RELACIONADAS A LARGO PLAZO
+22010201;Asociaciones Cooperativa
+22010202;Federaciones
+22010203;Confederaciones
+22010204;Otros
+220103;DOCUMENTOS POR PAGAR COMERCIALES PARTES RELACIONADAS A LARGO PLAZO
+22010301;Asociaciones Cooperativa
+22010302;Federaciones
+22010303;Confederaciones
+22010304;Certicados de préstamos
+22010305;Otros
+2202;PASIVOS NO COMERCIALES
+220201;PRÉSTAMOS POR PAGAR HIPOTECARIOS A LARGO PLAZO
+22020101;Bancos
+22020102;Cooperativa
+22020103;Otras instituciones nancieras
+220202;PRÉSTAMOS POR PAGAR PRENDARIOS A LARGO PLAZO
+22020201;Bancos
+22020202;Cooperativa
+22020203;Otras instituciones nancieras
+220203;PRÉSTAMOS POR PAGAR A LARGO PLAZO
+22020301;Bancos locales
+22020302;Bancos del Exterior
+22020303;Asociaciones cooperativas
+22020304;Federaciones cooperativas
+22020305;Confederaciones cooperativas
+22020306;A asociados
+220204;AHORROS POR PAGAR A ASOCIADOS A LARGO PLAZO
+22020401;Ahorros a plazo jo a largo plazo
+220205;INTERESES POR PAGAR A LARGO PLAZO
+22020501;Intereses hipotecarios
+22020502;Intereses prendarios
+22020503;Intereses a empleados
+22020504;Otros
+220206;OBLIGACIONES POR ARRENDAMIENTO FINANCIEROS A LARGO PLAZO
+22020601;Contratos por arrendamiento nancieros a largo plazo
+22020602;Bienes inmuebles
+22020603;Bienes muebles
+22020604;Depreciaciones
+22020605;Otros
+220207;PROVISIONES
+22020701;Ajuste por no cobro de cheque y remesa
+22020702;Provisión de dividendos de acciones
+22020703;Provisión por retención de perdida ejercicios anteriores
+22020704;Dividendos ejercicio anteriores
+22020705;Otros
+220208;INTERESES DEVENGADOS Y NO PERCIBIDOS
+22020801;Intereses en mora de asociados
+22020802;Intereses en mora con bancos
+22020803;Otros
+3;PATRIMONIO
+31;CAPITAL CONTABLE
+3101;CAPITAL SOCIAL COOPERATIVO Y RESERVAS
+310101;APORTACIONES
+31010101;Aportaciones Pagadas
+31010102;Aportaciones no pagadas
+310102;RESERVAS Y FONDOS ESPECIALES
+31010201;Reserva Legal
+31010202;Reserva para Educación
+31010203;Reservas para Obligaciones Laborales
+3102;EXCEDENTES, SUPERAVIT Y PÉRDIDAS
+310201;EXCEDENTES DEL PRESENTE EJERCICIO
+310202;EXCEDENTES DE EJERCICIOS ANTERIORES
+310203;SUPERÁVIT POR REVALUACIÓN NO REALIZADO
+31020301;Bienes inmuebles
+31020302;Bienes muebles
+31020303;Otros
+310204;SUPERÁVIT POR REVALUACIONES REALIZADAS
+31020401;Bienes inmuebles
+31020402;Bienes muebles
+31020403;Otros
+310205;PÉRDIDAS DEL EJERCICIO
+310206;PERDIDA DE EJERCICIOS ANTERIORES
+3103;SUPERAVIT POR DONACIONES Y SUBSIDIOS
+310301;DONACIONES
+310302;SUBSIDIOS
+310303;Otros
+4;CUENTAS DE RESULTADO DEUDORAS
+41;COSTOS DE PRODUCCION
+4101;PRODUCCION EN PROCESO
+410101;PRODUCCIÓN EN PROCESO- ORDEN TEJA
+41010101;Materia prima
+41010102;Material Directo
+41010103;Mano de obra directa
+41010104;Costos indirectos de fabricación
+410102;PRODUCCIÓN EN PROCESO- ORDEN BLOQUE
+41010201;Materia Prima
+41010202;Material Directo
+41010203;Mano de obra directa
+41010204;Costos indirectos de fabricación
+410103;PRODUCCIÓN EN PROCESO- LOSAS
+41010301;Materia prima
+41010302;Material Directo
+41010303;Mano de obra directa
+41010304;Costos indirectos de fabricación
+4102;COSTOS ACUMULADOS Y APLICADOS
+410201;COSTOS INDIRECTOS DE FABRICACIÓN CONTROL
+41020101;Sueldos
+41020102;Salarios
+41020103;Honorarios
+41020104;Supervisión
+41020105;Horas extras
+41020106;Vacaciones
+41020107;Aguinados
+41020108;Indemnizaciones
+41020109;Bonicaciones
+41020110;Cotizaciones ISSS
+41020111;Cotizaciones AFP
+41020112;Cotizaciones INSAFORP
+41020113;Viáticos
+41020114;Vigilancia
+41020115;Combustibles y Lubricantes
+41020116;Material Indirecto – Orden Teja
+41020117;Material Indirecto - Orden Bloque
+41020118;Material Indirecto – Orden Losa
+41020119;Agua potable
+41020120;Energía eléctrica
+41020121;Comunicación
+41020122;Depreciación de edicios
+41020123;Depreciación de maquinaria industrial
+41020124;Depreciación herramientas
+41020125;Papelería y útiles
+41020126;Capacitación al personal
+41020127;Seguros
+41020128;Mantenimiento y reparación de edicios
+41020129;Mantenimiento y reparación de Máquina Industrial
+41020130;Mantenimiento y reparación herramientas
+41020131;Fletes y acarreos
+41020132;Arrendamiento operativo
+41020133;Uniformes
+41020134;Aseo y limpieza
+41020135;Amortizaciones
+41020136;Diversos
+410202;COSTOS INDIRECTOS DE FABRICACIÓN APLICADOS
+41020201;Costos indirectos de fabricación aplicados
+410203;COSTOS INDIRECTOS DE FABRICACIÓN SUB-APLICADOS
+41020301;Costos indirectos de fabricación sub-aplicados
+410204;COSTOS INDIRECTOS DE FABRICACIÓN SOBREAPLICADOS
+41020401;Costos indirectos fabricación sobre aplicados
+4103;COSTO DE VENTA
+410301;COSTO DE VENTA
+41030101;Costo de ventas al Exterior
+41030102;Costo de ventas locales
+41030103;Otros costos
+42;GASTOS
+4201;GASTOS DE OPERACIÓN
+420101;GASTOS DE ADMINISTRACIÓN
+42010101;Sueldos
+42010102;Horas extras
+42010103;Comisiones
+42010104;Bonicaciones
+42010105;Vacaciones
+42010106;Aguinados
+42010107;Indemnizaciones
+42010108;Cotizaciones al ISSS
+42010109;Cotizaciones AFP
+42010110;Cotizaciones INSAFORP
+42010111;Viáticos y dietas
+42010112;Atención al personal
+42010113;Atenciones a clientes
+42010114;Compra de uniformes
+42010115;Gastos de representación
+42010116;Alquileres
+42010117;Artículos de limpieza
+42010118;Combustibles y lubricantes
+42010119;Energía eléctrica
+42010120;Comunicaciones
+42010121;Agua potable
+42010122;Cuentas incobrables
+42010123;Suscripciones y cuotas
+42010124;Donaciones y contribuciones
+42010125;Honorarios profesionales
+42010126;Gastos de viaje
+42010127;Mantenimiento de local
+42010128;Mantenimiento de equipo de transporte
+42010129;Mantenimiento de mobiliario y equipo
+42010130;Depreciación de edicios
+42010131;Depreciación de mobiliario y equipo
+42010132;Depreciación de instalaciones
+42010133;Depreciación de equipo de transporte
+42010134;Amortizaciones de Software
+42010135;Papelería y útiles
+42010136;Material de empaque
+42010137;Matriculas
+42010138;Gastos de transporte
+42010139;Publicidad y propaganda
+42010140;Promociones
+42010141;Impuesto municipales
+42010142;Vigilancia
+42010143;Publicaciones
+42010144;Seguro
+42010145;Multas y recargos
+42010146;Reparaciones y mantenimiento de bienes
+42010147;Depreciación de bienes en arrendamiento nanciero
+42010148;Otros
+420102;GASTOS DE VENTA
+42010201;Sueldos
+42010202;Horas extras
+42010203;Comisiones
+42010204;Empaques y envoltorios
+42010205;Vacaciones
+42010206;Aguinaldo
+42010207;Indemnizaciones
+42010208;Cotizaciones al ISSS
+42010209;Cotizaciones AFP
+42010210;Cotizaciones INSAFORP
+42010211;Viáticos y dietas
+42010212;Atención al personal
+42010213;Atención a clientes
+42010214;Compra de uniformes
+42010215;Gastos de representación
+42010216;Alquileres
+42010217;Artículos de limpieza
+42010218;Combustibles y lubricantes
+42010219;Energía eléctrica
+42010220;Comunicaciones
+42010221;Agua Potable
+42010222;Donaciones y contribuciones
+42010223;Honorarios profesionales
+42010224;Gastos de viaje
+42010225;Mantenimiento de local
+42010226;Mantenimiento de equipo de transporte
+42010227;Mantenimiento de mobiliario y equipo
+42010228;Depreciación de edicios
+42010229;Depreciación de mobiliario y equipo
+42010230;Depreciación de instalaciones
+42010231;Depreciación de equipo de transporte
+42010232;Amortizaciones
+42010233;Papelería y útiles
+42010234;Material de empaque
+42010235;Matrículas
+42010236;Gastos de transportación
+42010237;Publicidad y propaganda
+42010238;Promociones
+42010239;Impuestos municipales
+42010240;Vigilancia
+42010241;Publicaciones
+42010242;Seguros
+42010243;Multas y recargos
+42010244;Reparaciones y mantenimiento de bienes en arrendamientos nancieros
+42010245;Depreciación de bienes en arrendamiento nanciero
+42010246;Mercadería deteriorada
+42010247;Fotocopias
+42010248;Ajustes de planillas impuestos
+42010249;Otros
+4202;GASTOS NO OPERATIVOS
+420201;GASTOS FINANCIEROS
+42020101;Intereses por préstamos
+42020102;Comisiones bancarias
+42020103;Intereses por arrendamiento nancieros
+42020104;Intereses bancarios
+42020105;Intereses Banco de Fomento acciones
+42020106;Diferencial cambiario
+42020107;Otros gastos
+42020108;Intereses de ahorros a largo plazo
+42020109;Otros
+420202;GASTOS POR IMPUESTOS A LOS EXCEDENTES
+42020201;Gastos por impuestos sobre la renta corriente
+42020202;Gastos por impuestos sobre la renta diferida
+420203;PÉRDIDA POR DETERIORO DE ACTIVOS
+42020301;Deterioro de bienes inmuebles
+42020302;Deterioro de bienes muebles
+42020303;Deterioro de bienes intangibles
+420204;GASTOS EN RECUPERACIÓN DE MORA
+42020401;Honorarios notariales
+42020402;Comisiones a recuperadores
+42020403;Otros
+420205;OTROS GASTOS
+42020501;Intereses de privatización
+42020502;Ajustes por dolarización
+42020503;Ajustes varios
+43;PÉRDIDAS
+4301;PÉRDIDAS POR DETERIORO DE ACTIVOS
+430101;PÉRDIDAS POR DETERIORO DE ACTIVOS
+4302;PÉRDIDAS EN VENTA DE ACTIVOS DE EXPLOTACIÓN
+430201;PÉRDIDAS EN VENTA DE ACTIVOS DE EXPLOTACIÓN
+4303;PÉRDIDAS POR CASOS FORTUITOS EN ACTIVOS
+430301;PÉRDIDAS POR CASOS FORTUITOS EN ACTIVOS
+5;CUENTAS DE RESULTADOS ACREEDORAS
+51;INGRESOS DE OPERACIONES
+5101;INGRESOS POR VENTAS
+510101;VENTAS DE MERCADERÍAS LOCALES
+51010101;Ventas al crédito
+51010102;Ventas al contado
+510102;VENTAS DE MERCADERÍAS AL EXTERIOR
+5102;INGRESOS FINANCIEROS
+510201;PRODUCTOS FINANCIEROS
+52020101;Intereses sobre préstamos
+52020102;Comisiones sobre manejo de préstamos
+52020103;Tramites sobre préstamos
+52020104;Otros
+520202;INTERESES DEVENGADOS
+52020201;Depósitos en cuentas de ahorros corrientes
+52020202;Depósitos en cuentas de ahorros a plazo
+520203;REVERSIÓN DE PÉRDIDAS POR DETERIORO DE ACTIVOS
+52;INGRESOS NO OPERATIVOS
+5201;INGRESOS NO OPERATIVOS
+520101;EXCEDENTES EN VENTA DE ACTIVOS EXTRAORDINARIOS
+520102;EXCEDENTES EN VENTA DE PROPIEDAD, PLANTA Y EQUIPO
+520103;OTROS INGRESOS
+520104;EXCEDENTES EN VENTA DE ACTIVOS DE EXPLOTACIÓN
+6;CUENTAS DE CIERRE DEL EJERCICIO
+61;CUENTAS LIQUIDADORAS DE RESULTADOS
+6101;CUENTAS LIQUIDADORAS DE RESULTADOS
+610101;PÉRDIDAS Y EXCEDENTES
+7;CUENTAS CONTINGENTE DE ORDEN DEUDOR
+71;CUENTAS DE ORDEN DEUDORAS
+7101;CUENTAS DE ORDEN DEUDORAS
+710101;CUENTAS DE ORDEN DEUDORAS
+710102;MOBILIARIO Y EQUIPO CON VALOR RESIDUAL
+710103;OTROS
+8;CUENTAS CONTINGENTES DE ORDEN ACREEDORAS
+81;CUENTAS DE ORDEN ACREEDORAS
+8101;CUENTAS DE ORDEN ACREEDORAS
+810101;CUENTAS DE ORDEN ACREEDORAS

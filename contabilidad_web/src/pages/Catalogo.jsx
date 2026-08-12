@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Folder, FileText, ChevronRight, Search, Plus, Edit2, Trash2, BarChart2 } from 'lucide-react';
+import SaldosMensualesModal from '../components/SaldosMensualesModal';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -9,6 +10,10 @@ function Catalogo() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [nivelFiltro, setNivelFiltro] = useState('todos');
+
+  // Modal Saldos Mensuales state
+  const [modalSaldosOpen, setModalSaldosOpen] = useState(false);
+  const [cuentaSeleccionadaSaldos, setCuentaSeleccionadaSaldos] = useState(null);
 
   useEffect(() => {
     fetchCuentas();
@@ -149,7 +154,14 @@ function Catalogo() {
                         <button className="p-1 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded transition-colors" title="Editar cuenta">
                           <Edit2 className="w-3.5 h-3.5" />
                         </button>
-                        <button className="p-1 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Saldos Mensuales">
+                        <button 
+                          onClick={() => {
+                            setCuentaSeleccionadaSaldos(cuenta);
+                            setModalSaldosOpen(true);
+                          }}
+                          className="p-1 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" 
+                          title="Saldos Mensuales"
+                        >
                           <BarChart2 className="w-3.5 h-3.5" />
                         </button>
                         <button className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors" title="Eliminar cuenta">
@@ -164,6 +176,12 @@ function Catalogo() {
           </table>
         </div>
       </div>
+
+      <SaldosMensualesModal 
+        isOpen={modalSaldosOpen}
+        onClose={() => setModalSaldosOpen(false)}
+        cuenta={cuentaSeleccionadaSaldos}
+      />
     </div>
   );
 }

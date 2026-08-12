@@ -36,7 +36,17 @@ function Login() {
         setTimeout(() => navigate('/dashboard'), 600);
       }
     } catch (err) {
-      setError('Credenciales inválidas. Por favor intente nuevamente.');
+      console.error("Login Error:", err);
+      if (err.response) {
+        // Backend devolvió un código de error (ej. 401, 500)
+        setError(`Error del servidor (${err.response.status}): ${err.response.data?.detail || 'Credenciales inválidas.'}`);
+      } else if (err.request) {
+        // No hubo respuesta del backend (CORS, Red, Servidor Caído)
+        setError('Error de Red: No se pudo conectar con el servidor. Revisa si el backend está encendido y si la URL (VITE_API_URL) es correcta.');
+      } else {
+        // Error interno de React/Axios
+        setError(`Error interno: ${err.message}`);
+      }
     } finally {
       setLoading(false);
     }

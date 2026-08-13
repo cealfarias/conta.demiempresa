@@ -161,9 +161,13 @@ function Seguridad() {
               <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
                 <div className="w-full md:w-1/2">
                   <h3 className="text-base font-bold text-slate-800 mb-2">Paso 1: Escanea el Cdigo QR</h3>
-                  <p className="text-slate-500 text-xs mb-4">
-                    Abre tu aplicacin autenticadora y escanea la siguiente imagen para enlazar tu cuenta.
+                  <p className="text-slate-500 text-xs mb-3">
+                    Abre tu aplicacin autenticadora en tu celular y escanea la siguiente imagen para enlazar tu cuenta.
                   </p>
+                  <div className="bg-blue-50 border border-blue-100 p-3 rounded-lg mb-4">
+                    <p className="text-[11px] text-blue-800 font-medium mb-1">Cules son las aplicaciones autenticadoras?</p>
+                    <p className="text-[11px] text-blue-700">Puedes descargar gratis cualquiera de estas en tu tienda de apps (App Store o Play Store): <strong>Google Authenticator</strong>, <strong>Microsoft Authenticator</strong>, o <strong>Authy</strong>.</p>
+                  </div>
                   <div className="bg-white p-3 inline-block border-2 border-slate-100 rounded-lg shadow-sm mb-3">
                     <QRCodeSVG value={qrUri} size={160} level="H" />
                   </div>

@@ -17,8 +17,8 @@ export default function ImportarCatalogo() {
   
   // SVG Lines state
   const containerRef = useRef(null);
+  const boxElementsRef = useRef({});
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [boxes, setBoxes] = useState({}); // { 'sys-codigo': {x, y}, 'csv-colName': {x, y} }
   
   // Results state
   const [loading, setLoading] = useState(false);
@@ -50,18 +50,17 @@ export default function ImportarCatalogo() {
   };
 
   // Tracking element positions for SVG lines
-  const updateBoxPosition = (id, element) => {
-    if (element && containerRef.current) {
+  const getBoxCenter = (id) => {
+    const el = boxElementsRef.current[id];
+    if (el && containerRef.current) {
       const containerRect = containerRef.current.getBoundingClientRect();
-      const rect = element.getBoundingClientRect();
-      setBoxes(prev => ({
-        ...prev,
-        [id]: {
-          x: rect.left - containerRect.left + rect.width / 2,
-          y: rect.top - containerRect.top + rect.height / 2
-        }
-      }));
+      const rect = el.getBoundingClientRect();
+      return {
+        x: rect.left - containerRect.left + rect.width / 2,
+        y: rect.top - containerRect.top + rect.height / 2
+      };
     }
+    return null;
   };
 
   const handleMouseMove = (e) => {
@@ -230,8 +229,8 @@ export default function ImportarCatalogo() {
               
               {/* Draw established mappings */}
               {Object.entries(mapping).map(([sysId, csvCol]) => {
-                const start = boxes[`sys-${sysId}`];
-                const end = boxes[`csv-${csvCol}`];
+                const start = getBoxCenter(`sys-${sysId}`);
+                const end = getBoxCenter(`csv-${csvCol}`);
                 if (!start || !end) return null;
                 return (
                   <line 
@@ -244,10 +243,10 @@ export default function ImportarCatalogo() {
               })}
 
               {/* Draw active line */}
-              {activeSource && boxes[`sys-${activeSource}`] && (
+              {activeSource && getBoxCenter(`sys-${activeSource}`) && (
                 <line 
-                  x1={boxes[`sys-${activeSource}`].x} 
-                  y1={boxes[`sys-${activeSource}`].y} 
+                  x1={getBoxCenter(`sys-${activeSource}`).x} 
+                  y1={getBoxCenter(`sys-${activeSource}`).y} 
                   x2={mousePos.x} 
                   y2={mousePos.y}
                   stroke="#3b82f6" strokeWidth="4" strokeDasharray="6,6"
@@ -269,7 +268,7 @@ export default function ImportarCatalogo() {
                 return (
                   <div 
                     key={sysId}
-                    ref={el => updateBoxPosition(`sys-${sysId}`, el)}
+                    ref={el => boxElementsRef.current[`sys-${sysId}`] = el}
                     onClick={(e) => { e.stopPropagation(); handleSystemBoxClick(sysId); }}
                     className={`field-box px-6 py-4 rounded-xl font-bold cursor-pointer transition-all select-none ${boxStyles}`}
                   >
@@ -294,7 +293,7 @@ export default function ImportarCatalogo() {
                 return (
                   <div 
                     key={col}
-                    ref={el => updateBoxPosition(`csv-${col}`, el)}
+                    ref={el => boxElementsRef.current[`csv-${col}`] = el}
                     onClick={(e) => { e.stopPropagation(); handleCsvBoxClick(col); }}
                     className={`field-box px-4 py-3 rounded-lg cursor-pointer transition-all select-none ${boxStyles}`}
                   >

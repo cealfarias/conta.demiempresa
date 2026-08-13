@@ -22,10 +22,10 @@ def upgrade():
                 return
             except sqlalchemy.exc.OperationalError:
                 # Si falla, las columnas no existen (en sqlite y postgres tiran error)
-                pass
+                conn.rollback()
             except sqlalchemy.exc.ProgrammingError:
                 # Postgres tira ProgrammingError
-                pass
+                conn.rollback()
 
             # Dependiendo del motor, la sintaxis puede variar, pero ALTER TABLE ADD COLUMN es estndar
             print("Agregando columnas two_factor_secret e is_2fa_enabled a la tabla usuarios...")

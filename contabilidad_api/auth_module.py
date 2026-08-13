@@ -66,7 +66,13 @@ def crear_admin_por_defecto():
         db.commit()
     db.close()
 
-# Ejecutar validación del usuario inicial al arrancar el módulo
+# Ejecutar migracion de bd de 2FA y validacin del usuario inicial al arrancar el mdulo
+try:
+    from scripts.upgrade_db_2fa import upgrade
+    upgrade()
+except Exception as e:
+    print(f"Advertencia: No se pudo ejecutar la actualizacin de 2FA automtica: {e}")
+
 crear_admin_por_defecto()
 
 # ================= UTILIDADES JWT =================

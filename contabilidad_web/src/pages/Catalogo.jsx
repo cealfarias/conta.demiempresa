@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Folder, FileText, ChevronRight, Search, Plus, Edit2, Trash2, BarChart2 } from 'lucide-react';
+import { Folder, FileText, ChevronRight, Search, Plus, Edit2, Trash2, BarChart2, FileUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -50,10 +50,19 @@ function Catalogo() {
           <h2 className="text-xl font-bold text-slate-800">Catálogo de Cuentas</h2>
           <p className="text-slate-500 text-xs mt-0.5">Estructura financiera NIIF</p>
         </div>
-        <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 text-sm rounded-lg font-medium transition-colors flex items-center space-x-2 shadow-sm shadow-emerald-500/20">
-          <Plus className="w-4 h-4" />
-          <span>Nueva Cuenta</span>
-        </button>
+        <div className="flex gap-2">
+          <button 
+            onClick={() => navigate('/dashboard/catalogo/importar')}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 text-sm rounded-lg font-medium transition-colors flex items-center space-x-2 shadow-sm shadow-indigo-500/20"
+          >
+            <FileUp className="w-4 h-4" />
+            <span>Importar CSV</span>
+          </button>
+          <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 text-sm rounded-lg font-medium transition-colors flex items-center space-x-2 shadow-sm shadow-emerald-500/20">
+            <Plus className="w-4 h-4" />
+            <span>Nueva Cuenta</span>
+          </button>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col flex-1 overflow-hidden">

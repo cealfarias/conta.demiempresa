@@ -9,6 +9,7 @@ import Seguridad from './pages/Seguridad';
 import Partidas from './pages/Partidas';
 import PartidaEditor from './pages/PartidaEditor';
 import PartidaImpresion from './pages/PartidaImpresion';
+import ImportarCatalogo from './pages/ImportarCatalogo';
 import { FileText } from 'lucide-react';
 
 // Simple Protected Route wrapper
@@ -67,6 +68,7 @@ function App() {
           <Route index element={<DashboardHome />} />
           <Route path="seguridad" element={<Seguridad />} />
           <Route path="catalogo" element={<Catalogo />} />
+          <Route path="catalogo/importar" element={<ImportarCatalogo />} />
           <Route path="catalogo/saldos/:codigo" element={<SaldosMensuales />} />
           <Route path="catalogo/movimientos/:codigo/:mes" element={<MovimientosMes />} />
           <Route path="partidas" element={<Partidas />} />

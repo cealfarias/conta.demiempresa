@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import bcrypt
 import jwt
+import pyotp
 from pydantic import BaseModel
 
 # ================= IMPORTACIONES ARQUITECTURA UNIFICADA =================
@@ -77,9 +78,18 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 
 # ================= ENDPOINTS =================
 class TokenResponse(BaseModel):
-    access_token: str
-    token_type: str
-    rol: str
+    access_token: Optional[str] = None
+    token_type: Optional[str] = None
+    rol: Optional[str] = None
+    requires_2fa: Optional[bool] = False
+    temp_token: Optional[str] = None
+
+class Verify2FARequest(BaseModel):
+    temp_token: str
+    code: str
+
+class Enable2FARequest(BaseModel):
+    code: str
 
 class TokenData(BaseModel):
     username: Optional[str] = None
@@ -143,6 +153,17 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     # Validación booleana nativa de SQLAlchemy
     if not user.is_active:
         raise HTTPException(status_code=400, detail="El usuario está inactivo")
+
+    # Si 2FA está habilitado, retornamos un token temporal
+    if getattr(user, 'is_2fa_enabled', False):
+        temp_token = create_access_token(
+            data={"sub": user.username, "type": "temp_2fa"},
+            expires_delta=timedelta(minutes=5)
+        )
+        return {
+            "requires_2fa": True,
+            "temp_token": temp_token
+        }
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(

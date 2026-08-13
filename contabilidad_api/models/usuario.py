@@ -12,6 +12,10 @@ class Usuario(Base):
     rol = Column(String, nullable=False) # Ej: admin, contador
     is_active = Column(Boolean, default=True)
 
+    # Campos 2FA (Opcional)
+    two_factor_secret = Column(String, nullable=True)
+    is_2fa_enabled = Column(Boolean, default=False)
+
     # Campos de auditoría exigidos por el sistema
     usuario_creacion = Column(String, nullable=False)
     # Corrección de DeprecationWarning para Python 3.12+

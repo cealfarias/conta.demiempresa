@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Outlet, Link, useLocation } from 'react-router-dom';
-import { LogOut, LayoutDashboard, FileText, Settings, Users, BookOpen, Menu } from 'lucide-react';
+import { LogOut, LayoutDashboard, FileText, Settings, ShieldCheck, Users, BookOpen, Menu } from 'lucide-react';
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -50,10 +50,10 @@ function Dashboard() {
             <Users className="w-5 h-5 shrink-0" />
             {isSidebarOpen && <span className="font-medium whitespace-nowrap">Reportes</span>}
           </a>
-          <a href="#" className={`flex items-center space-x-3 px-3 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl transition-colors ${!isSidebarOpen && 'justify-center'}`} title="Configuración">
-            <Settings className="w-5 h-5 shrink-0" />
-            {isSidebarOpen && <span className="font-medium whitespace-nowrap">Configuración</span>}
-          </a>
+          <Link to="/dashboard/seguridad" className={`flex items-center space-x-3 px-3 py-3 rounded-xl transition-colors ${location.pathname === '/dashboard/seguridad' ? 'bg-emerald-600/20 text-emerald-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'} ${!isSidebarOpen && 'justify-center'}`} title="Seguridad (2FA)">
+            <ShieldCheck className="w-5 h-5 shrink-0" />
+            {isSidebarOpen && <span className="font-medium whitespace-nowrap">Seguridad (2FA)</span>}
+          </Link>
         </nav>
 
         <div className="p-3 border-t border-slate-800">

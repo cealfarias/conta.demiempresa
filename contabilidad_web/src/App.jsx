@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import Catalogo from './pages/Catalogo';
 import SaldosMensuales from './pages/SaldosMensuales';
 import MovimientosMes from './pages/MovimientosMes';
+import Seguridad from './pages/Seguridad';
 import Partidas from './pages/Partidas';
 import PartidaEditor from './pages/PartidaEditor';
 import PartidaImpresion from './pages/PartidaImpresion';
@@ -64,6 +65,7 @@ function App() {
           } 
         >
           <Route index element={<DashboardHome />} />
+          <Route path="seguridad" element={<Seguridad />} />
           <Route path="catalogo" element={<Catalogo />} />
           <Route path="catalogo/saldos/:codigo" element={<SaldosMensuales />} />
           <Route path="catalogo/movimientos/:codigo/:mes" element={<MovimientosMes />} />

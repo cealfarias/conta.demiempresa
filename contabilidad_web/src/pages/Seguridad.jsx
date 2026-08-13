@@ -105,21 +105,21 @@ function Seguridad() {
   }
 
   return (
-    <div className="p-4 md:p-8 w-full max-w-4xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-800">Centro de Seguridad</h1>
-        <p className="text-slate-500 mt-1">Protege tu cuenta contable y la informacin financiera de tu empresa.</p>
+    <div className="p-4 md:p-6 w-full max-w-3xl mx-auto">
+      <div className="mb-6">
+        <h1 className="text-xl font-bold text-slate-800">Centro de Seguridad</h1>
+        <p className="text-sm text-slate-500 mt-1">Protege tu cuenta contable y la informacin financiera de tu empresa.</p>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="p-6 md:p-8 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50">
-          <div className="flex items-start space-x-4">
-            <div className={`p-3 rounded-full ${is2FAEnabled ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'}`}>
-              {is2FAEnabled ? <ShieldCheck className="w-8 h-8" /> : <ShieldAlert className="w-8 h-8" />}
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div className="p-5 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50">
+          <div className="flex items-start space-x-3">
+            <div className={`p-2 rounded-full ${is2FAEnabled ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'}`}>
+              {is2FAEnabled ? <ShieldCheck className="w-6 h-6" /> : <ShieldAlert className="w-6 h-6" />}
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-800">Autenticacin de Dos Factores (2FA)</h2>
-              <p className="text-sm text-slate-500 max-w-md mt-1">
+              <h2 className="text-base font-bold text-slate-800">Autenticacin de Dos Factores (2FA)</h2>
+              <p className="text-xs text-slate-500 max-w-md mt-1">
                 Aade una capa extra de seguridad. Cuando est activado, necesitars ingresar un cdigo desde tu telfono cada vez que inicies sesin.
               </p>
             </div>
@@ -131,25 +131,25 @@ function Seguridad() {
           </div>
         </div>
 
-        <div className="p-6 md:p-8">
+        <div className="p-5 md:p-6">
           {setupError && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl text-sm flex items-center">
-              <AlertTriangle className="w-5 h-5 mr-2 shrink-0" />
+            <div className="mb-4 p-3 bg-red-50 border border-red-100 text-red-600 rounded-lg text-sm flex items-center">
+              <AlertTriangle className="w-4 h-4 mr-2 shrink-0" />
               {setupError}
             </div>
           )}
 
           {!is2FAEnabled && !setupMode && (
-            <div className="flex flex-col items-center justify-center text-center py-8">
-              <Smartphone className="w-16 h-16 text-slate-300 mb-4" />
-              <h3 className="text-lg font-semibold text-slate-700 mb-2">Protege tu Ecosistema</h3>
-              <p className="text-slate-500 mb-6 max-w-sm">
+            <div className="flex flex-col items-center justify-center text-center py-6">
+              <Smartphone className="w-12 h-12 text-slate-300 mb-3" />
+              <h3 className="text-base font-semibold text-slate-700 mb-1">Protege tu Ecosistema</h3>
+              <p className="text-sm text-slate-500 mb-5 max-w-sm">
                 Te recomendamos usar Google Authenticator, Authy o Microsoft Authenticator para generar tus cdigos seguros.
               </p>
               <button
                 onClick={handleGenerate2FA}
                 disabled={actionLoading}
-                className="bg-slate-800 hover:bg-slate-900 text-white px-6 py-2.5 rounded-lg font-medium transition-colors shadow-sm flex items-center"
+                className="bg-slate-800 hover:bg-slate-900 text-white px-5 py-2 rounded-md text-sm font-medium transition-colors shadow-sm flex items-center"
               >
                 {actionLoading ? 'Generando...' : 'Configurar 2FA ahora'}
               </button>
@@ -158,28 +158,28 @@ function Seguridad() {
 
           {!is2FAEnabled && setupMode && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
+              <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
                 <div className="w-full md:w-1/2">
-                  <h3 className="text-lg font-bold text-slate-800 mb-4">Paso 1: Escanea el Cdigo QR</h3>
-                  <p className="text-slate-600 text-sm mb-6">
-                    Abre tu aplicacin autenticadora (ej. Google Authenticator) y escanea la siguiente imagen para enlazar tu cuenta.
+                  <h3 className="text-base font-bold text-slate-800 mb-2">Paso 1: Escanea el Cdigo QR</h3>
+                  <p className="text-slate-500 text-xs mb-4">
+                    Abre tu aplicacin autenticadora y escanea la siguiente imagen para enlazar tu cuenta.
                   </p>
-                  <div className="bg-white p-4 inline-block border-2 border-slate-100 rounded-xl shadow-sm mb-4">
-                    <QRCodeSVG value={qrUri} size={200} level="H" />
+                  <div className="bg-white p-3 inline-block border-2 border-slate-100 rounded-lg shadow-sm mb-3">
+                    <QRCodeSVG value={qrUri} size={160} level="H" />
                   </div>
-                  <p className="text-xs text-slate-500 bg-slate-50 p-3 rounded-lg border border-slate-200 font-mono text-center">
-                    Cdigo manual: <br/><strong className="text-slate-700 tracking-wider text-sm mt-1 block">{secret}</strong>
+                  <p className="text-[11px] text-slate-500 bg-slate-50 p-2 rounded-md border border-slate-200 font-mono text-center">
+                    Cdigo manual: <br/><strong className="text-slate-700 tracking-wider text-xs mt-1 block">{secret}</strong>
                   </p>
                 </div>
                 
                 <div className="w-full md:w-1/2">
-                  <h3 className="text-lg font-bold text-slate-800 mb-4">Paso 2: Verifica el Cdigo</h3>
-                  <p className="text-slate-600 text-sm mb-6">
-                    Ingresa el cdigo de 6 dgitos que aparece en tu aplicacin para confirmar que todo est configurado correctamente.
+                  <h3 className="text-base font-bold text-slate-800 mb-2">Paso 2: Verifica el Cdigo</h3>
+                  <p className="text-slate-500 text-xs mb-4">
+                    Ingresa el cdigo de 6 dgitos que aparece en tu aplicacin.
                   </p>
                   
-                  <form onSubmit={handleEnable2FA} className="bg-slate-50 p-6 rounded-xl border border-slate-200">
-                    <label className="block text-sm font-medium text-slate-700 mb-3">
+                  <form onSubmit={handleEnable2FA} className="bg-slate-50 p-5 rounded-lg border border-slate-200">
+                    <label className="block text-xs font-medium text-slate-700 mb-2">
                       Cdigo de Autenticacin
                     </label>
                     <input
@@ -188,13 +188,13 @@ function Seguridad() {
                       maxLength={6}
                       value={totpCode}
                       onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, ''))}
-                      className="block w-full py-3 px-4 text-center text-2xl tracking-[0.5em] border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white font-mono text-slate-800 outline-none mb-4 shadow-sm"
+                      className="block w-full py-2 px-3 text-center text-xl tracking-[0.5em] border border-slate-300 rounded-md focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white font-mono text-slate-800 outline-none mb-4 shadow-sm"
                       placeholder="000000"
                     />
                     <button
                       type="submit"
                       disabled={actionLoading || totpCode.length !== 6}
-                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm shadow-emerald-500/20"
+                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-md text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm shadow-emerald-500/20"
                     >
                       {actionLoading ? 'Verificando...' : 'Activar 2FA'}
                     </button>
@@ -213,27 +213,27 @@ function Seguridad() {
 
           {is2FAEnabled && (
             <div className="animate-in fade-in duration-300">
-              <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-6 flex items-start space-x-4 mb-8">
-                <CheckCircle className="w-6 h-6 text-emerald-600 shrink-0 mt-0.5" />
+              <div className="bg-emerald-50 border border-emerald-100 rounded-lg p-5 flex items-start space-x-3 mb-6">
+                <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
-                  <h3 className="font-bold text-emerald-800">Tu cuenta est protegida</h3>
-                  <p className="text-sm text-emerald-700 mt-1">
+                  <h3 className="font-bold text-emerald-800 text-sm">Tu cuenta est protegida</h3>
+                  <p className="text-xs text-emerald-700 mt-1">
                     El sistema requerir un cdigo temporal de 6 dgitos cada vez que intentes iniciar sesin.
                   </p>
                 </div>
               </div>
 
-              <div className="border-t border-slate-200 pt-8 mt-8">
-                <h3 className="text-lg font-bold text-slate-800 mb-2">Desactivar 2FA</h3>
-                <p className="text-slate-500 text-sm mb-6">
+              <div className="border-t border-slate-200 pt-6 mt-6">
+                <h3 className="text-base font-bold text-slate-800 mb-1">Desactivar 2FA</h3>
+                <p className="text-slate-500 text-xs mb-4">
                   Para desactivar la proteccin de dos factores, debes ingresar un cdigo de autenticacin vlido actual.
                 </p>
                 
-                <form onSubmit={handleDisable2FA} className="max-w-md">
-                  <div className="flex gap-4">
+                <form onSubmit={handleDisable2FA} className="max-w-sm">
+                  <div className="flex gap-3">
                     <div className="relative flex-1">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <KeyRound className="h-5 w-5 text-slate-400" />
+                        <KeyRound className="w-4 h-4 text-slate-400" />
                       </div>
                       <input
                         type="text"
@@ -241,14 +241,14 @@ function Seguridad() {
                         maxLength={6}
                         value={totpCode}
                         onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, ''))}
-                        className="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-rose-500 bg-white font-mono tracking-widest text-slate-800 outline-none"
+                        className="block w-full pl-9 pr-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-rose-500 focus:border-rose-500 bg-white font-mono tracking-widest text-slate-800 outline-none text-sm"
                         placeholder="000000"
                       />
                     </div>
                     <button
                       type="submit"
                       disabled={actionLoading || totpCode.length !== 6}
-                      className="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2.5 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+                      className="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
                     >
                       {actionLoading ? 'Desactivando...' : 'Desactivar'}
                     </button>

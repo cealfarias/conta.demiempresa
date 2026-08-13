@@ -191,4 +191,89 @@ def validar_token(token: str = Depends(oauth2_scheme)):
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expirado")
     except jwt.PyJWTError:
-        raise HTTPException(status_code=401, detail="Token inválido")
+        raise HTTPException(status_code=401, detail="Token invlido")
+
+@app.post("/api/login/verify-2fa", response_model=TokenResponse)
+def verify_2fa(req: Verify2FARequest, db: Session = Depends(get_db)):
+    try:
+        payload = jwt.decode(req.temp_token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        token_type: str = payload.get("type")
+        if token_type != "temp_2fa" or not username:
+            raise HTTPException(status_code=401, detail="Token temporal invlido")
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=401, detail="Token temporal expirado o invlido")
+
+    user = db.query(Usuario).filter(Usuario.username == username).first()
+    if not user or not getattr(user, 'is_2fa_enabled', False) or not getattr(user, 'two_factor_secret', None):
+        raise HTTPException(status_code=400, detail="2FA no est configurado para este usuario")
+
+    totp = pyotp.TOTP(user.two_factor_secret)
+    if not totp.verify(req.code):
+        raise HTTPException(status_code=401, detail="Cdigo 2FA incorrecto")
+
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.username, "rol": user.rol},
+        expires_delta=access_token_expires
+    )
+    
+    return {
+        "access_token": access_token, 
+        "token_type": "bearer",
+        "rol": user.rol
+    }
+
+# ================= RUTAS DE ADMINISTRACIN 2FA =================
+@app.get("/api/2fa/status")
+async def get_2fa_status(current_user: TokenData = Depends(obtener_usuario_actual), db: Session = Depends(get_db)):
+    user = db.query(Usuario).filter(Usuario.username == current_user.username).first()
+    return {"is_2fa_enabled": getattr(user, 'is_2fa_enabled', False)}
+
+@app.post("/api/2fa/generate")
+async def generate_2fa(current_user: TokenData = Depends(obtener_usuario_actual), db: Session = Depends(get_db)):
+    user = db.query(Usuario).filter(Usuario.username == current_user.username).first()
+    if getattr(user, 'is_2fa_enabled', False):
+        raise HTTPException(status_code=400, detail="2FA ya est habilitado")
+
+    secret = pyotp.random_base32()
+    user.two_factor_secret = secret
+    db.commit()
+
+    totp = pyotp.TOTP(secret)
+    # El provisioning URI se usa para generar el cdigo QR en el frontend
+    uri = totp.provisioning_uri(name=user.username, issuer_name="Ecosistema Contable")
+    
+    return {"secret": secret, "uri": uri}
+
+@app.post("/api/2fa/enable")
+async def enable_2fa(req: Enable2FARequest, current_user: TokenData = Depends(obtener_usuario_actual), db: Session = Depends(get_db)):
+    user = db.query(Usuario).filter(Usuario.username == current_user.username).first()
+    if getattr(user, 'is_2fa_enabled', False):
+        raise HTTPException(status_code=400, detail="2FA ya est habilitado")
+    
+    if not getattr(user, 'two_factor_secret', None):
+        raise HTTPException(status_code=400, detail="Debes generar el secreto 2FA primero")
+
+    totp = pyotp.TOTP(user.two_factor_secret)
+    if not totp.verify(req.code):
+        raise HTTPException(status_code=401, detail="Cdigo incorrecto")
+
+    user.is_2fa_enabled = True
+    db.commit()
+    return {"message": "2FA habilitado correctamente"}
+
+@app.post("/api/2fa/disable")
+async def disable_2fa(req: Enable2FARequest, current_user: TokenData = Depends(obtener_usuario_actual), db: Session = Depends(get_db)):
+    user = db.query(Usuario).filter(Usuario.username == current_user.username).first()
+    if not getattr(user, 'is_2fa_enabled', False):
+        raise HTTPException(status_code=400, detail="2FA no est habilitado")
+
+    totp = pyotp.TOTP(user.two_factor_secret)
+    if not totp.verify(req.code):
+        raise HTTPException(status_code=401, detail="Cdigo incorrecto")
+
+    user.is_2fa_enabled = False
+    user.two_factor_secret = None
+    db.commit()
+    return {"message": "2FA deshabilitado correctamente"}

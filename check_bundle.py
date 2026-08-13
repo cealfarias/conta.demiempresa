@@ -1,21 +1,20 @@
-import urllib.request
 import re
 
-req = urllib.request.Request('https://contabilidad.demiempresa.online/assets/index-DO6gNXc3.js', headers={'User-Agent': 'Mozilla/5.0'})
-content = urllib.request.urlopen(req).read().decode('utf-8')
-
-# Search for the API_URL assignment
-m1 = re.search(r'const [a-zA-Z0-9_]+="([^"]+)"\|\|"http://localhost:8000"', content)
-if m1:
-    print(f"API_URL literal found: {m1.group(1)}")
+with open('bundle.js', 'r', encoding='utf-8') as f:
+    content = f.read()
+    
+# Buscar la constante VITE_API_URL o la asignacin en Login
+match = re.search(r'VITE_API_URL:"([^"]+)"', content)
+if match:
+    print(f"VITE_API_URL in bundle is: {match.group(1)}")
 else:
-    # Maybe Vite replaced import.meta.env.VITE_API_URL completely
-    m2 = re.search(r'axios\.post\("([^"]+)/api/login"', content)
-    if m2:
-        print(f"Axios post URL literal found: {m2.group(1)}")
-    else:
-        # Check if the string conta.demiempresa exists (with a dot)
-        if "conta.demiempresa" in content:
-            print("ERROR: 'conta.demiempresa' (with dot) still exists in bundle!")
-        if "conta-demiempresa" in content:
-            print("SUCCESS: 'conta-demiempresa' (with hyphen) exists in bundle!")
+    print("VITE_API_URL no encontrado. Buscando fallback a localhost...")
+    match = re.search(r'http://localhost:8000/api/login', content)
+    if match:
+        print("Fallback a localhost encontrado! Significa que VITE_API_URL no se inyect en el build de Vercel.")
+
+    # Just search for "/api/login"
+    login_matches = re.finditer(r'.{0,50}/api/login.{0,50}', content)
+    for i, m in enumerate(login_matches):
+        if i > 5: break
+        print("Contexto de /api/login:", m.group(0))

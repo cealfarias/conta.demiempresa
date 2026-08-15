@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Folder, FileText, ChevronRight, Search, Plus, Edit2, Trash2, BarChart2, FileUp } from 'lucide-react';
+import { Folder, FileText, ChevronRight, Search, Plus, Edit2, Trash2, BarChart2, FileUp, Download, Book, Lock, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -11,6 +11,7 @@ function Catalogo() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [nivelFiltro, setNivelFiltro] = useState('todos');
+  const [showPaywall, setShowPaywall] = useState(false);
 
   useEffect(() => {
     fetchCuentas();
@@ -50,16 +51,32 @@ function Catalogo() {
           <h2 className="text-xl font-bold text-slate-800">Catálogo de Cuentas</h2>
           <p className="text-slate-500 text-xs mt-0.5">Estructura financiera NIIF</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2 justify-end">
+          <button 
+            onClick={() => setShowPaywall(true)}
+            className="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 md:px-4 md:py-2 text-[11px] md:text-sm rounded-lg font-medium transition-colors flex items-center space-x-1.5 md:space-x-2 shadow-sm shadow-amber-500/20"
+          >
+            <Download className="w-3.5 h-3.5 md:w-4 md:h-4" />
+            <span>Exportar</span>
+          </button>
+          
+          <button 
+            onClick={() => navigate('/dashboard/catalogo/importar-manual')}
+            className="bg-sky-600 hover:bg-sky-700 text-white px-3 py-1.5 md:px-4 md:py-2 text-[11px] md:text-sm rounded-lg font-medium transition-colors flex items-center space-x-1.5 md:space-x-2 shadow-sm shadow-sky-500/20"
+          >
+            <Book className="w-3.5 h-3.5 md:w-4 md:h-4" />
+            <span>Manual</span>
+          </button>
+
           <button 
             onClick={() => navigate('/dashboard/catalogo/importar')}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 text-sm rounded-lg font-medium transition-colors flex items-center space-x-2 shadow-sm shadow-indigo-500/20"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 md:px-4 md:py-2 text-[11px] md:text-sm rounded-lg font-medium transition-colors flex items-center space-x-1.5 md:space-x-2 shadow-sm shadow-indigo-500/20"
           >
-            <FileUp className="w-4 h-4" />
+            <FileUp className="w-3.5 h-3.5 md:w-4 md:h-4" />
             <span>Importar CSV</span>
           </button>
-          <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 text-sm rounded-lg font-medium transition-colors flex items-center space-x-2 shadow-sm shadow-emerald-500/20">
-            <Plus className="w-4 h-4" />
+          <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 md:px-4 md:py-2 text-[11px] md:text-sm rounded-lg font-medium transition-colors flex items-center space-x-1.5 md:space-x-2 shadow-sm shadow-emerald-500/20">
+            <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
             <span>Nueva Cuenta</span>
           </button>
         </div>
@@ -181,6 +198,43 @@ function Catalogo() {
           </table>
         </div>
       </div>
+
+      {/* Paywall Modal */}
+      {showPaywall && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="bg-gradient-to-r from-amber-500 to-orange-500 p-6 text-center">
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3 backdrop-blur-md border border-white/30">
+                <Star className="w-8 h-8 text-white fill-white" />
+              </div>
+              <h3 className="text-xl font-bold text-white">Funcionalidad Premium</h3>
+            </div>
+            
+            <div className="p-6 text-center">
+              <p className="text-slate-600 mb-6">
+                La exportación masiva a Excel y CSV está disponible en nuestros <strong>Planes Pro</strong>. 
+                Actualiza tu cuenta para llevar tu gestión contable y auditorías al siguiente nivel.
+              </p>
+              
+              <div className="space-y-3">
+                <button 
+                  onClick={() => setShowPaywall(false)}
+                  className="w-full bg-slate-800 hover:bg-slate-900 text-white py-2.5 rounded-lg font-medium transition-colors shadow-sm flex items-center justify-center gap-2"
+                >
+                  <Lock className="w-4 h-4" />
+                  Actualizar a Pro
+                </button>
+                <button 
+                  onClick={() => setShowPaywall(false)}
+                  className="w-full bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 py-2.5 rounded-lg font-medium transition-colors"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

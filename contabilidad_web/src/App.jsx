@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
+import Registro from './pages/Registro';
+import Terminos from './pages/Terminos';
 import Dashboard from './pages/Dashboard';
 import Catalogo from './pages/Catalogo';
 import SaldosMensuales from './pages/SaldosMensuales';
@@ -57,6 +59,8 @@ function App() {
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/registro" element={<Registro />} />
+        <Route path="/terminos" element={<Terminos />} />
         
         <Route 
           path="/dashboard" 

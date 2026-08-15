@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Lock, Mail, ArrowRight, ShieldCheck, Activity, Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -199,6 +199,13 @@ function Login() {
                   </>
                 )}
               </button>
+                
+                <p className="text-center text-sm text-slate-500 mt-6 pt-4">
+                  ¿No tienes una cuenta?{' '}
+                  <Link to="/registro" className="font-semibold text-emerald-600 hover:text-emerald-500 transition-colors">
+                    Crea una cuenta aquí
+                  </Link>
+                </p>
             </form>
           ) : (
             <form onSubmit={handle2FAVerify} className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">

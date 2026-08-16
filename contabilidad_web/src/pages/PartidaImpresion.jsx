@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Printer, ArrowLeft } from 'lucide-react';
+import { Printer, ArrowLeft, Edit } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -83,13 +83,25 @@ function PartidaImpresion() {
             Regresar
           </button>
           
-          <button 
-            onClick={handlePrint}
-            className="flex items-center bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg transition-colors font-bold shadow-sm"
-          >
-            <Printer className="w-5 h-5 mr-2" />
-            Imprimir Comprobante
-          </button>
+          <div className="flex space-x-3">
+            {(partida.estado === 'Borrador' || 
+             (partida.estado === 'Mayorizada' && (localStorage.getItem('rol') === 'Contador' || localStorage.getItem('rol') === 'Administrador'))) && (
+              <button 
+                onClick={() => navigate(`/dashboard/partidas/editar/${id}`)}
+                className="flex items-center bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-lg transition-colors font-semibold shadow-sm"
+              >
+                <Edit className="w-4 h-4 mr-2" />
+                Editar Partida
+              </button>
+            )}
+            <button 
+              onClick={handlePrint}
+              className="flex items-center bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg transition-colors font-bold shadow-sm"
+            >
+              <Printer className="w-5 h-5 mr-2" />
+              Imprimir Comprobante
+            </button>
+          </div>
         </div>
 
         {/* CONTENEDOR DE IMPRESIÓN */}

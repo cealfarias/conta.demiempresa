@@ -15,10 +15,17 @@ function FlujoEfectivo() {
   const [mesActual, setMesActual] = useState(new Date().getMonth() + 1);
   const anio = 2026; // TODO: sacar del entorno global
   
-  // Nombres de firmas configurables
-  const [firmaContador, setFirmaContador] = useState("Lic. Ana L. Gómez");
-  const [firmaRepresentante, setFirmaRepresentante] = useState("Ing. Carlos R. Martínez");
-  const [firmaAuditor, setFirmaAuditor] = useState("Lic. Roberto P. Sibrián");
+  // Nombres de firmas configurables con localStorage
+  const [firmaContador, setFirmaContador] = useState(localStorage.getItem('firmaContador') || "");
+  const [firmaRepresentante, setFirmaRepresentante] = useState(localStorage.getItem('firmaRepresentante') || "");
+  const [firmaAuditor, setFirmaAuditor] = useState(localStorage.getItem('firmaAuditor') || "");
+
+  // Guardar automáticamente al cambiar
+  useEffect(() => {
+    localStorage.setItem('firmaContador', firmaContador);
+    localStorage.setItem('firmaRepresentante', firmaRepresentante);
+    localStorage.setItem('firmaAuditor', firmaAuditor);
+  }, [firmaContador, firmaRepresentante, firmaAuditor]);
 
   const meses = [
     { id: 1, nombre: 'Enero' }, { id: 2, nombre: 'Febrero' }, { id: 3, nombre: 'Marzo' },
@@ -182,14 +189,18 @@ function FlujoEfectivo() {
               )}
 
               {/* Firmas configurables */}
-              <div className="grid grid-cols-3 gap-8 mt-24 px-4 print:mt-40">
+              <div className="grid grid-cols-3 gap-8 mt-24 px-4 print:mt-40 relative group">
+                <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-blue-100 text-blue-800 px-4 py-2 rounded-lg text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity animate-bounce print:hidden pointer-events-none">
+                  Digita el nombre de los responsables, se guardarán automáticamente
+                </div>
                 <div className="text-center">
                   <div className="border-t border-black w-full mb-2"></div>
                   <input 
                     type="text" 
+                    placeholder="Digita el nombre..."
                     value={firmaRepresentante} 
                     onChange={e => setFirmaRepresentante(e.target.value)}
-                    className="w-full text-center font-bold text-sm bg-transparent outline-none border-none hover:bg-slate-50 focus:bg-slate-50 print:bg-transparent"
+                    className="w-full text-center font-bold text-sm bg-transparent outline-none border-none hover:bg-slate-50 focus:bg-slate-50 print:bg-transparent placeholder:text-slate-300 placeholder:font-normal"
                   />
                   <p className="text-xs text-slate-600">Representante Legal</p>
                 </div>
@@ -197,9 +208,10 @@ function FlujoEfectivo() {
                   <div className="border-t border-black w-full mb-2"></div>
                   <input 
                     type="text" 
+                    placeholder="Digita el nombre..."
                     value={firmaContador} 
                     onChange={e => setFirmaContador(e.target.value)}
-                    className="w-full text-center font-bold text-sm bg-transparent outline-none border-none hover:bg-slate-50 focus:bg-slate-50 print:bg-transparent"
+                    className="w-full text-center font-bold text-sm bg-transparent outline-none border-none hover:bg-slate-50 focus:bg-slate-50 print:bg-transparent placeholder:text-slate-300 placeholder:font-normal"
                   />
                   <p className="text-xs text-slate-600">Contador</p>
                 </div>
@@ -207,9 +219,10 @@ function FlujoEfectivo() {
                   <div className="border-t border-black w-full mb-2"></div>
                   <input 
                     type="text" 
+                    placeholder="Digita el nombre..."
                     value={firmaAuditor} 
                     onChange={e => setFirmaAuditor(e.target.value)}
-                    className="w-full text-center font-bold text-sm bg-transparent outline-none border-none hover:bg-slate-50 focus:bg-slate-50 print:bg-transparent"
+                    className="w-full text-center font-bold text-sm bg-transparent outline-none border-none hover:bg-slate-50 focus:bg-slate-50 print:bg-transparent placeholder:text-slate-300 placeholder:font-normal"
                   />
                   <p className="text-xs text-slate-600">Auditor Externo</p>
                 </div>

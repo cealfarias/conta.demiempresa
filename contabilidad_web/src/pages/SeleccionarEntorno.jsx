@@ -104,8 +104,8 @@ export default function SeleccionarEntorno() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-cover bg-center" style={{ backgroundImage: "linear-gradient(rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.8)), url('/bg-entorno.jpg')" }}>
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden relative">
-        <div className="bg-gradient-to-r from-emerald-600 to-teal-700 p-8 text-center text-white">
+      <div className="w-full max-w-md bg-white/85 backdrop-blur-md rounded-2xl shadow-2xl border border-white/30 overflow-hidden relative">
+        <div className="bg-gradient-to-r from-emerald-600/95 to-teal-700/95 p-8 text-center text-white">
           <div className="w-16 h-16 bg-white text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
             <Building className="w-8 h-8" />
           </div>

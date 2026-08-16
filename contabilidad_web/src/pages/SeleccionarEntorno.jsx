@@ -55,7 +55,7 @@ export default function SeleccionarEntorno() {
     
     try {
       // Verificamos el control de periodos
-      const res = await axios.get(`${API_URL}/api/v1/periodos/control/${empresaId}/${anio}`, {
+      const res = await axios.get(`${API_URL}/api/v1/periodos/control/${encodeURIComponent(empresaId)}/${encodeURIComponent(anio)}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       

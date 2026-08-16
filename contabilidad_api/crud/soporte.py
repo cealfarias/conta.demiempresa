@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-import models
-import schemas
+import models.soporte
+import schemas.soporte
 from datetime import datetime
 
 def crear_ticket_soporte(db: Session, ticket_data: schemas.soporte.TicketSoporteCreate, empresa_id: int, usuario_id: int):

@@ -114,8 +114,28 @@ def guardar_partida_completa_transaccional(partida_in: PartidaCompletaCrear, db:
             detail="La transacción debe poseer montos financieros mayores a cero."
         )
 
-    # 3. Validar que cada línea no altere ambas columnas simultáneamente
+    # 3. Validar que cada línea no altere ambas columnas simultáneamente y verificar cuentas
+    codigos_detalle = [linea.cuenta_codigo for linea in partida_in.detalles]
+    cuentas_bd = db.query(CuentaContable).filter(
+        CuentaContable.empresa_id == partida_in.empresa_id,
+        CuentaContable.anio == partida_in.anio,
+        CuentaContable.cuentas.in_(codigos_detalle)
+    ).all()
+    mapa_cuentas = {c.cuentas: c for c in cuentas_bd}
+
     for index, linea in enumerate(partida_in.detalles):
+        cuenta = mapa_cuentas.get(linea.cuenta_codigo)
+        if not cuenta:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Inconsistencia en línea {index + 1}: La cuenta {linea.cuenta_codigo} no existe en el catálogo activo."
+            )
+        if cuenta.resumen:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Inconsistencia en línea {index + 1}: La cuenta {linea.cuenta_codigo} es una cuenta de Resumen (padre). Las partidas solo pueden usar cuentas de Detalle."
+            )
+        
         if linea.debe > 0 and linea.haber > 0:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -240,7 +260,7 @@ def actualizar_partida_completa_transaccional(
     # 1. Verificar seguridad del periodo contable
     verificar_periodo_abierto(partida_in.empresa_id, partida_in.anio, partida_in.mes, db)
 
-    # 2. Validar cuadre contable estricto (Debe == Haber)
+    # 2. Validar cuadre contable estricto y verificar cuentas
     total_debe = sum(linea.debe for linea in partida_in.detalles)
     total_haber = sum(linea.haber for linea in partida_in.detalles)
 
@@ -249,6 +269,27 @@ def actualizar_partida_completa_transaccional(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Error de cuadre: Suma del Debe (${total_debe}) no coincide con Suma del Haber (${total_haber})."
         )
+        
+    codigos_detalle = [linea.cuenta_codigo for linea in partida_in.detalles]
+    cuentas_bd = db.query(CuentaContable).filter(
+        CuentaContable.empresa_id == partida_in.empresa_id,
+        CuentaContable.anio == partida_in.anio,
+        CuentaContable.cuentas.in_(codigos_detalle)
+    ).all()
+    mapa_cuentas = {c.cuentas: c for c in cuentas_bd}
+
+    for index, linea in enumerate(partida_in.detalles):
+        cuenta = mapa_cuentas.get(linea.cuenta_codigo)
+        if not cuenta:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Inconsistencia en línea {index + 1}: La cuenta {linea.cuenta_codigo} no existe."
+            )
+        if cuenta.resumen:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Inconsistencia en línea {index + 1}: La cuenta {linea.cuenta_codigo} es de Resumen (padre). Solo use cuentas de Detalle."
+            )
 
     # 3. Localizar la cabecera existente en la BD
     partida = db.query(PartidaCabecera).filter(PartidaCabecera.id == partida_id).first()

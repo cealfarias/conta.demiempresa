@@ -13,6 +13,7 @@ import PartidaEditor from './pages/PartidaEditor';
 import PartidaImpresion from './pages/PartidaImpresion';
 import ImportarCatalogo from './pages/ImportarCatalogo';
 import ImportarManual from './pages/ImportarManual';
+import SeleccionarEntorno from './pages/SeleccionarEntorno';
 import { FileText } from 'lucide-react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
@@ -65,6 +66,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Registro />} />
           <Route path="/terminos" element={<Terminos />} />
+          
+          <Route path="/seleccionar-entorno" element={<ProtectedRoute><SeleccionarEntorno /></ProtectedRoute>} />
           
           <Route 
             path="/dashboard" 

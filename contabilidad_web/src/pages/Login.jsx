@@ -39,7 +39,7 @@ export default function Login() {
       } else if (response.data.access_token) {
         localStorage.setItem('token', response.data.access_token);
         localStorage.setItem('rol', response.data.rol);
-        setTimeout(() => navigate('/dashboard'), 600);
+        setTimeout(() => navigate('/seleccionar-entorno'), 600);
       }
     } catch (err) {
       console.error("Login Error:", err);
@@ -69,7 +69,7 @@ export default function Login() {
       if (response.data.access_token) {
         localStorage.setItem('token', response.data.access_token);
         localStorage.setItem('rol', response.data.rol);
-        setTimeout(() => navigate('/dashboard'), 600);
+        setTimeout(() => navigate('/seleccionar-entorno'), 600);
       }
     } catch (err) {
       setError(err.response?.data?.detail || 'Código 2FA incorrecto o expirado.');

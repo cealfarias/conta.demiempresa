@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Outlet, Link, useLocation } from 'react-router-dom';
 import { LogOut, LayoutDashboard, FileText, Settings, ShieldCheck, Users, BookOpen, Menu } from 'lucide-react';
 
@@ -6,6 +6,15 @@ function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  const empresaNombre = localStorage.getItem('empresa_nombre') || localStorage.getItem('empresa_activa') || 'Sin Empresa';
+  const anioActivo = localStorage.getItem('anio_activo') || '----';
+
+  useEffect(() => {
+    if (!localStorage.getItem('empresa_activa') || !localStorage.getItem('anio_activo')) {
+      navigate('/seleccionar-entorno', { replace: true });
+    }
+  }, [navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -74,13 +83,21 @@ function Dashboard() {
           <div className="flex items-center mb-4 md:mb-0 space-x-4">
             <h2 className="text-xl font-bold text-slate-800">Panel Contable</h2>
             <div className="h-6 w-px bg-slate-300 hidden md:block"></div>
-            <div className="flex items-center space-x-3 text-sm">
+            <div className="flex items-center space-x-3 text-sm flex-wrap gap-y-2">
               <div className="flex items-center px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg border border-emerald-100 font-medium">
-                <span className="text-emerald-500 mr-2">🏢</span> Empresa: CANTARES
+                <span className="text-emerald-500 mr-2">🏢</span> Empresa: {empresaNombre}
               </div>
               <div className="flex items-center px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg border border-blue-100 font-medium">
-                <span className="text-blue-500 mr-2">📅</span> Ejercicio: 2026
+                <span className="text-blue-500 mr-2">📅</span> Ejercicio: {anioActivo}
               </div>
+              <Link 
+                to="/seleccionar-entorno" 
+                className="flex items-center px-3 py-1.5 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900 rounded-lg border border-slate-200 font-medium transition-colors"
+                title="Cambiar Empresa / Año"
+              >
+                <Settings className="w-4 h-4 mr-2 text-slate-500" />
+                Cambiar Entorno
+              </Link>
             </div>
           </div>
           

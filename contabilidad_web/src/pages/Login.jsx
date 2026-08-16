@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { GoogleLogin } from '@react-oauth/google';
 import './Login.css';
@@ -8,10 +8,14 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [username, setUsername] = useState('admin');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  
+  const queryParams = new URLSearchParams(location.search);
+  const isExpired = queryParams.get('expired') === 'true';
   
   // 2FA State
   const [requires2FA, setRequires2FA] = useState(false);
@@ -118,6 +122,17 @@ export default function Login() {
 
   return (
     <div className="login-container" style={{ backgroundImage: "linear-gradient(rgba(15, 23, 42, 0.4), rgba(15, 23, 42, 0.7)), url('https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80')" }}>
+      
+      {/* Burbujita de sesión expirada */}
+      {isExpired && (
+        <div className="fixed top-8 left-1/2 transform -translate-x-1/2 z-50 animate-[bounce_1s_infinite]">
+          <div className="bg-amber-100 text-amber-800 border-2 border-amber-400 px-6 py-3 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.3)] flex items-center space-x-3 font-bold text-sm">
+            <span className="text-xl">⚠️</span>
+            <span>¡Tu sesión ha expirado por seguridad! Por favor, inicia sesión nuevamente.</span>
+          </div>
+        </div>
+      )}
+
       <div className="login-wrapper">
         {/* Lado izquierdo */}
         <div className="login-left">

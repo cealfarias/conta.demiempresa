@@ -46,7 +46,7 @@ export default function Login() {
       if (err.response) {
         setError(`Error (${err.response.status}): ${err.response.data?.detail || 'Credenciales inválidas.'}`);
       } else if (err.request) {
-        setError('Error de Red: No se pudo conectar con el servidor.');
+        setError('Error de Red: El servidor se está iniciando. Por favor, espera unos segundos e intenta nuevamente.');
       } else {
         setError(`Error interno: ${err.message}`);
       }

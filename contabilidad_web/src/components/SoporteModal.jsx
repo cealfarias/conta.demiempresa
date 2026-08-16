@@ -4,7 +4,8 @@ import {
   AlertCircle, ShieldCheck, User, Building, CornerDownRight, RefreshCw,
   Crown, CreditCard, Filter, PhoneCall, ExternalLink, Sparkles, Inbox, Check
 } from 'lucide-react';
-import { api } from '../services/api';
+import axios from 'axios';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 import { jwtDecode } from 'jwt-decode';
 
 export default function SoporteModal({ isOpen, onClose }) {
@@ -53,7 +54,7 @@ export default function SoporteModal({ isOpen, onClose }) {
   const cargarTickets = async () => {
     try {
       setLoading(true);
-      const data = await api.getTicketsSoporte();
+      const data = (await axios.get(`${API_URL}/api/v1/soporte/tickets`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } })).data;
       setTickets(data || []);
       if (data && data.length > 0 && !selectedTicket) {
         setSelectedTicket(data[0]);
@@ -74,7 +75,7 @@ export default function SoporteModal({ isOpen, onClose }) {
 
     try {
       setLoading(true);
-      const creado = await api.crearTicketSoporte(nuevoForm);
+      const creado = (await axios.post(`${API_URL}/api/v1/soporte/tickets`, nuevoForm, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } })).data;
       setNuevoForm({ asunto: '', categoria: 'Soporte Técnico', prioridad: 'Media', mensaje_inicial: '' });
       await cargarTickets();
       setSelectedTicket(creado);
@@ -92,7 +93,7 @@ export default function SoporteModal({ isOpen, onClose }) {
 
     try {
       setSendingMsg(true);
-      await api.enviarMensajeTicket(selectedTicket.id, nuevoMensaje);
+      (await axios.post(`${API_URL}/api/v1/soporte/tickets/${selectedTicket.id}/mensajes`, { contenido: nuevoMensaje }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } })).data;
       setNuevoMensaje('');
       await cargarTickets();
     } catch (err) {
@@ -105,7 +106,7 @@ export default function SoporteModal({ isOpen, onClose }) {
   const handleCambiarEstado = async (nuevoEstado) => {
     if (!selectedTicket) return;
     try {
-      await api.cambiarEstadoTicket(selectedTicket.id, nuevoEstado);
+      (await axios.put(`${API_URL}/api/v1/soporte/tickets/${selectedTicket.id}/estado?nuevo_estado=${nuevoEstado}`, null, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } })).data;
       await cargarTickets();
     } catch (err) {
       alert("Error al actualizar estado: " + err.message);
@@ -116,11 +117,8 @@ export default function SoporteModal({ isOpen, onClose }) {
     if (!selectedTicket) return;
     try {
       setLoading(true);
-      await api.enviarMensajeTicket(
-        selectedTicket.id, 
-        "✅ ¡COMPROBANTE VERIFICADO Y LICENCIA PRO ENTERPRISE ACTIVADA!\n\nEstimado cliente, hemos verificado exitosamente tu transferencia por Transfer365 Davivienda (69893101 - Cesar Arias). Tu cuenta cuenta ahora con la Licencia Pro Enterprise sin anuncios. ¡Gracias por tu preferencia!"
-      );
-      await api.cambiarEstadoTicket(selectedTicket.id, 'RESUELTO');
+      await axios.post(`${API_URL}/api/v1/soporte/tickets/${selectedTicket.id}/mensajes`, { contenido: "✅ ¡COMPROBANTE VERIFICADO Y LICENCIA PRO ENTERPRISE ACTIVADA!\n\nEstimado cliente, hemos verificado exitosamente tu transferencia por Transfer365 Davivienda (69893101 - Cesar Arias). Tu cuenta cuenta ahora con la Licencia Pro Enterprise sin anuncios. ¡Gracias por tu preferencia!" }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+      (await axios.put(`${API_URL}/api/v1/soporte/tickets/${selectedTicket.id}/estado?nuevo_estado=${'RESUELTO'}`, null, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } })).data;
       
       localStorage.setItem('licencia_tipo', 'premium');
       window.dispatchEvent(new Event('licencia_change'));

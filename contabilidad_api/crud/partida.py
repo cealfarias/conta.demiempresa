@@ -9,7 +9,7 @@ import math
 from models.partida import PartidaCabecera, PartidaDetalle
 from models.periodo import ControlPeriodo
 from models.cuenta import CuentaContable
-from schemas.partida import PartidaCompletaCrear, PaginaPartidasRespuesta, CierreContableRequest
+from schemas.partida import PartidaCompletaCrear, PaginaPartidasRespuesta, CierreContableRequest, EstadoPartidaUpdate
 from config.database import get_db
 from crud import cierre as c_cierre
 from auth_module import obtener_usuario_actual, TokenData
@@ -335,6 +335,49 @@ def actualizar_partida_completa_transaccional(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Fallo crítico al actualizar la transacción contable: {str(e)}"
         )
+
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error inesperado al anular la partida: {str(e)}"
+        )
+
+@router.put("/estado/{partida_id}", status_code=status.HTTP_200_OK)
+def cambiar_estado_partida(
+    partida_id: int, 
+    estado_update: EstadoPartidaUpdate,
+    db: Session = Depends(get_db),
+    usuario_actual: TokenData = Depends(obtener_usuario_actual)
+):
+    """
+    Cambia el estado de una partida (ej. de Mayorizada a Borrador).
+    Solo permitido para Contador o Administrador.
+    """
+    if usuario_actual.rol not in ["Contador", "Administrador"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No tiene los permisos necesarios para revertir o cambiar el estado de una partida."
+        )
+        
+    partida = db.query(PartidaCabecera).filter(PartidaCabecera.id == partida_id).first()
+    if not partida:
+        raise HTTPException(status_code=404, detail="Partida no encontrada")
+        
+    # Verificar periodo abierto
+    verificar_periodo_abierto(partida.empresa_id, partida.anio, partida.mes, db)
+    
+    if estado_update.estado not in ["Borrador", "Mayorizada", "Anulada"]:
+        raise HTTPException(status_code=400, detail="Estado inválido")
+        
+    partida.estado = estado_update.estado
+    db.commit()
+    
+    return {
+        "status": "success", 
+        "mensaje": f"El estado de la partida ha sido cambiado exitosamente a {partida.estado}.",
+        "estado": partida.estado
+    }
     
 @router.post("/ejecutar-cierre")
 def api_ejecutar_cierre(

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Save, X, Plus, Trash2, Calculator, AlertCircle, ArrowLeft } from 'lucide-react';
+import { Save, X, Plus, Trash2, Calculator, AlertCircle, ArrowLeft, ShieldCheck } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -15,12 +15,14 @@ function PartidaEditor() {
   
   const [fecha, setFecha] = useState(new Date().toISOString().split('T')[0]);
   const [concepto, setConcepto] = useState('');
+  const [estado, setEstado] = useState('Borrador');
   const [detalles, setDetalles] = useState([
     { id: 1, cuenta_codigo: '', cuenta_nombre: '', debe: '', haber: '', concepto_detalle: '' },
     { id: 2, cuenta_codigo: '', cuenta_nombre: '', debe: '', haber: '', concepto_detalle: '' }
   ]);
   
   const [guardando, setGuardando] = useState(false);
+  const rol = localStorage.getItem('rol');
 
   useEffect(() => {
     fetchCatalogo().then(() => {
@@ -35,8 +37,10 @@ function PartidaEditor() {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = response.data;
+      const data = response.data;
+      setEstado(data.estado || 'Borrador');
       if (data.estado !== 'Borrador') {
-        showToast(`No puede editar esta partida porque su estado es '${data.estado}'`);
+        showToast(`La partida está '${data.estado}' y es de solo lectura.`);
         setGuardando(true); // Bloquea los botones visualmente
       }
       setFecha(data.fecha.split('T')[0]);
@@ -143,6 +147,21 @@ function PartidaEditor() {
   const diferencia = Math.abs(totalDebe - totalHaber);
   const isCuadrada = totalDebe === totalHaber && totalDebe > 0;
 
+  const handleChangeEstado = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.put(`${API_URL}/api/v1/partidas/estado/${id}`, 
+        { estado: 'Borrador' },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setEstado('Borrador');
+      setGuardando(false);
+      showToast(response.data.mensaje || "Estado cambiado a Borrador. Ya puede editar.");
+    } catch (err) {
+      showToast(err.response?.data?.detail || "Error al cambiar el estado.");
+    }
+  };
+
   const handleGuardar = async () => {
     if (!fecha) return showToast("La fecha es obligatoria.");
     if (!concepto.trim()) return showToast("El concepto general es obligatorio.");
@@ -235,6 +254,34 @@ function PartidaEditor() {
         </div>
       )}
 
+      {/* Burbuja de estado Mayorizada */}
+      {id && estado === 'Mayorizada' && (rol === 'Contador' || rol === 'Administrador') && (
+        <div className="mb-6 relative bg-white border border-amber-200 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+          <div className="absolute top-0 left-0 w-1.5 h-full bg-amber-500"></div>
+          <div className="p-5 sm:p-6">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 bg-amber-100 rounded-full p-2.5 mt-1">
+                <ShieldCheck className="h-6 w-6 text-amber-600" />
+              </div>
+              <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-base font-bold text-slate-800 tracking-tight">Partida Mayorizada</h3>
+                  <p className="mt-1 text-sm text-slate-600 leading-relaxed">
+                    Esta partida se encuentra protegida. ¿Quieres editar la partida? Cambia el estado con un solo clic.
+                  </p>
+                </div>
+                <button 
+                  onClick={handleChangeEstado}
+                  className="inline-flex items-center justify-center px-4 py-2 border border-amber-300 shadow-sm text-xs font-bold rounded-lg text-amber-800 bg-amber-50 hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 transition-colors shrink-0"
+                >
+                  Cambiar a Borrador
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col flex-1 overflow-hidden">
         {/* Cabecera de la Partida */}
         <div className="p-6 border-b border-slate-100 bg-slate-50/30 shrink-0 grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -245,20 +292,25 @@ function PartidaEditor() {
             <input 
               type="date" 
               value={fecha}
+              disabled={estado !== 'Borrador'}
               onChange={(e) => setFecha(e.target.value)}
-              className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+              className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none disabled:bg-slate-50 disabled:text-slate-500"
             />
           </div>
           <div className="md:col-span-2">
-            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-              Concepto General
+            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 flex items-center justify-between">
+              <span>Concepto General</span>
+              <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${estado === 'Borrador' ? 'bg-slate-100 text-slate-600' : 'bg-emerald-100 text-emerald-700'}`}>
+                {estado}
+              </span>
             </label>
             <input 
               type="text" 
               value={concepto}
+              disabled={estado !== 'Borrador'}
               onChange={(e) => setConcepto(e.target.value)}
               placeholder="Ej. Provisión de planilla mensual..."
-              className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+              className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none disabled:bg-slate-50 disabled:text-slate-500"
             />
           </div>
         </div>
@@ -287,10 +339,11 @@ function PartidaEditor() {
                       type="text"
                       list="cuentas-list"
                       value={d.cuenta_codigo}
+                      disabled={estado !== 'Borrador'}
                       onChange={(e) => handleChangeDetalle(d.id, 'cuenta_codigo', e.target.value)}
                       onBlur={(e) => handleBlurCuenta(d.id, e.target.value)}
                       placeholder="Seleccione cuenta..."
-                      className="w-full px-3 py-1.5 bg-transparent border border-transparent group-hover:border-slate-200 focus:border-indigo-500 focus:bg-white rounded text-sm font-mono outline-none transition-colors"
+                      className="w-full px-3 py-1.5 bg-transparent border border-transparent group-hover:border-slate-200 focus:border-indigo-500 focus:bg-white rounded text-sm font-mono outline-none transition-colors disabled:opacity-70"
                     />
                     {d.cuenta_nombre && (
                       <div className="text-[10px] font-semibold text-emerald-700 mt-0.5 px-3 uppercase truncate">
@@ -302,41 +355,46 @@ function PartidaEditor() {
                     <input 
                       type="text"
                       value={d.debe}
+                      disabled={estado !== 'Borrador'}
                       onChange={(e) => handleChangeDetalle(d.id, 'debe', e.target.value.replace(/[^0-9.,]/g, ''))}
                       onBlur={(e) => handleChangeDetalle(d.id, 'debe', formatAmount(e.target.value))}
                       onFocus={(e) => handleChangeDetalle(d.id, 'debe', e.target.value.replace(/,/g, ''))}
                       placeholder="0.00"
-                      className="w-full px-3 py-1.5 text-right bg-transparent border border-transparent group-hover:border-slate-200 focus:border-indigo-500 focus:bg-white rounded text-sm font-medium text-slate-700 font-mono outline-none transition-colors"
+                      className="w-full px-3 py-1.5 text-right bg-transparent border border-transparent group-hover:border-slate-200 focus:border-indigo-500 focus:bg-white rounded text-sm font-medium text-slate-700 font-mono outline-none transition-colors disabled:opacity-70"
                     />
                   </td>
                   <td className="py-2 px-4 align-top">
                     <input 
                       type="text"
                       value={d.haber}
+                      disabled={estado !== 'Borrador'}
                       onChange={(e) => handleChangeDetalle(d.id, 'haber', e.target.value.replace(/[^0-9.,]/g, ''))}
                       onBlur={(e) => handleChangeDetalle(d.id, 'haber', formatAmount(e.target.value))}
                       onFocus={(e) => handleChangeDetalle(d.id, 'haber', e.target.value.replace(/,/g, ''))}
                       placeholder="0.00"
-                      className="w-full px-3 py-1.5 text-right bg-transparent border border-transparent group-hover:border-slate-200 focus:border-indigo-500 focus:bg-white rounded text-sm font-medium text-slate-700 font-mono outline-none transition-colors"
+                      className="w-full px-3 py-1.5 text-right bg-transparent border border-transparent group-hover:border-slate-200 focus:border-indigo-500 focus:bg-white rounded text-sm font-medium text-slate-700 font-mono outline-none transition-colors disabled:opacity-70"
                     />
                   </td>
                   <td className="py-2 px-4 align-top">
                     <input 
                       type="text"
                       value={d.concepto_detalle}
+                      disabled={estado !== 'Borrador'}
                       onChange={(e) => handleChangeDetalle(d.id, 'concepto_detalle', e.target.value)}
                       placeholder="Anotación..."
-                      className="w-full px-3 py-1.5 bg-transparent border border-transparent group-hover:border-slate-200 focus:border-indigo-500 focus:bg-white rounded text-sm text-slate-600 outline-none transition-colors"
+                      className="w-full px-3 py-1.5 bg-transparent border border-transparent group-hover:border-slate-200 focus:border-indigo-500 focus:bg-white rounded text-sm text-slate-600 outline-none transition-colors disabled:opacity-70"
                     />
                   </td>
                   <td className="py-2 px-4 text-center align-top">
-                    <button 
-                      onClick={() => handleRemoveRow(d.id)}
-                      className="p-1.5 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded opacity-0 group-hover:opacity-100 transition-all"
-                      title="Quitar línea"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    {estado === 'Borrador' && (
+                      <button 
+                        onClick={() => handleRemoveRow(d.id)}
+                        className="p-1.5 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded opacity-0 group-hover:opacity-100 transition-all"
+                        title="Quitar línea"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -352,13 +410,15 @@ function PartidaEditor() {
           </datalist>
 
           <div className="p-4 border-t border-slate-100 border-dashed">
-            <button 
-              onClick={handleAddRow}
-              className="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center space-x-1"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Añadir nueva línea</span>
-            </button>
+            {estado === 'Borrador' && (
+              <button 
+                onClick={handleAddRow}
+                className="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center space-x-1"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Añadir nueva línea</span>
+              </button>
+            )}
           </div>
         </div>
 

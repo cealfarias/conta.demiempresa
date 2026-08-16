@@ -39,4 +39,5 @@ class PaginaPartidasRespuesta(BaseModel):
 class CierreContableRequest(BaseModel):
     empresa_id: str
     anio: int
-    cuenta_liquidadora_codigo: str
+    cuenta_liquidadora_codigo: strclass EstadoPartidaUpdate(BaseModel):
+    estado: str

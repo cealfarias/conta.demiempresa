@@ -110,8 +110,22 @@ function FlujoEfectivo() {
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 mb-6 print:hidden">
-          {error}
+        <div className={`p-4 rounded-xl border mb-6 print:hidden flex flex-col items-center justify-center text-center ${error.toLowerCase().includes('ssl') || error.toLowerCase().includes('psycopg2') || error.toLowerCase().includes('database') || error.toLowerCase().includes('network') || error.toLowerCase().includes('500') ? 'bg-orange-50 text-orange-700 border-orange-200 animate-bounce' : 'bg-red-50 text-red-600 border-red-100'}`}>
+          <p className="font-semibold mb-1">
+            {(error.toLowerCase().includes('ssl') || error.toLowerCase().includes('psycopg2') || error.toLowerCase().includes('database') || error.toLowerCase().includes('network') || error.toLowerCase().includes('500')) 
+              ? "Oops! Hubo una micro-interrupción de red con el servidor." 
+              : "Error al cargar los datos."}
+          </p>
+          <p className="text-sm">
+            {(error.toLowerCase().includes('ssl') || error.toLowerCase().includes('psycopg2') || error.toLowerCase().includes('database') || error.toLowerCase().includes('network') || error.toLowerCase().includes('500')) 
+              ? "Por favor, recarga la página (F5 o Ctrl+R) para volver a conectarte." 
+              : error}
+          </p>
+          {(error.toLowerCase().includes('ssl') || error.toLowerCase().includes('psycopg2') || error.toLowerCase().includes('database') || error.toLowerCase().includes('network') || error.toLowerCase().includes('500')) && (
+            <button onClick={() => window.location.reload()} className="mt-3 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+              Recargar Página
+            </button>
+          )}
         </div>
       )}
 

@@ -197,27 +197,50 @@ function EstadoResultados() {
             <>
               {/* Alerta de anomalías contables */}
               {data.anomalias && data.anomalias.length > 0 && (
-                <div className="mb-6 bg-rose-50 border-l-4 border-rose-500 p-4 rounded-r shadow-sm print:hidden">
-                  <div className="flex">
-                    <div className="flex-shrink-0">
-                      <svg className="h-5 w-5 text-rose-500" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                    <div className="ml-3">
-                      <h3 className="text-sm font-bold text-rose-800">ATENCIÓN AUDITORÍA: Movimientos no permitidos detectados</h3>
-                      <div className="mt-2 text-sm text-rose-700">
-                        <p>El sistema ha detectado y forzado el cuadre de partidas importadas que afectan directamente a cuentas de RESUMEN (Padre). Las normas NIIF prohíben afectar estas cuentas de manera directa.</p>
-                        <ul className="list-disc pl-5 mt-2 space-y-1">
+                <div className="mb-8 relative bg-white border border-rose-200 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden print:hidden">
+                  <div className="absolute top-0 left-0 w-1.5 h-full bg-rose-500"></div>
+                  <div className="p-5 sm:p-6">
+                    <div className="flex items-start gap-4">
+                      <div className="flex-shrink-0 bg-rose-100 rounded-full p-2.5 mt-1">
+                        <svg className="h-6 w-6 text-rose-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-base font-bold text-slate-800 tracking-tight">Auto Auditoría</h3>
+                        <p className="mt-1.5 text-sm text-slate-600 leading-relaxed">
+                          La inteligencia contable del sistema ha detectado y forzado el cuadre de partidas importadas que afectan directamente a <span className="font-semibold text-rose-600">cuentas de RESUMEN (Padre)</span>. Las normas NIIF prohíben afectar estas cuentas de manera directa.
+                        </p>
+                        
+                        <div className="mt-4 grid gap-3">
                           {data.anomalias.map((anomalia, idx) => (
-                            <li key={idx}>
-                              <span className="font-semibold">{anomalia.codigo} {anomalia.nombre}</span>: 
-                              {anomalia.debe > 0 && ` Debe: $${anomalia.debe.toFixed(2)}`}
-                              {anomalia.haber > 0 && ` Haber: $${anomalia.haber.toFixed(2)}`}
-                            </li>
+                            <div key={idx} className="bg-slate-50 border border-slate-100 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors hover:bg-slate-100/50">
+                              <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-100 text-rose-800">
+                                    Partida #{anomalia.numero_partida}
+                                  </span>
+                                  <span className="text-xs font-medium text-slate-500">
+                                    {anomalia.fecha.split('-').reverse().join('/')}
+                                  </span>
+                                </div>
+                                <p className="text-sm font-medium text-slate-900">
+                                  {anomalia.codigo} - {anomalia.nombre}
+                                </p>
+                                <p className="text-xs text-slate-500 mt-0.5">
+                                  {anomalia.debe > 0 && <span className="font-semibold text-slate-700">Debe: <span className="text-slate-900">${anomalia.debe.toFixed(2)}</span></span>}
+                                  {anomalia.haber > 0 && <span className="font-semibold text-slate-700 ml-2">Haber: <span className="text-slate-900">${anomalia.haber.toFixed(2)}</span></span>}
+                                </p>
+                              </div>
+                              <a 
+                                href={`/dashboard/partidas/editar/${anomalia.partida_id}`}
+                                className="inline-flex items-center justify-center px-4 py-2 border border-slate-300 shadow-sm text-xs font-semibold rounded-lg text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 transition-colors shrink-0"
+                              >
+                                Editar Partida
+                              </a>
+                            </div>
                           ))}
-                        </ul>
-                        <p className="mt-2 font-semibold">Favor solicitar la corrección mediante partidas de ajuste hacia cuentas de detalle reales.</p>
+                        </div>
                       </div>
                     </div>
                   </div>

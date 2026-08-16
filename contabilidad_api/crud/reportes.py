@@ -20,6 +20,52 @@ def _obtener_nivel_cuenta(cta):
     if l in (5, 6): return 4  # Sub Cuentas
     return 5
 
+def _obtener_anomalias_detalladas(db: Session, empresa_id: str, anio: int, mes: int, modo: str, prefijos: tuple):
+    """
+    Busca todas las partidas que afectaron directamente a cuentas de resumen para los prefijos dados.
+    Retorna una lista con el detalle de la anomalía, incluyendo datos de la cabecera.
+    """
+    anomalias = []
+    query = db.query(
+        PartidaDetalle.cuenta_codigo,
+        CuentaContable.nombre.label("cuenta_nombre"),
+        PartidaDetalle.debe,
+        PartidaDetalle.haber,
+        PartidaCabecera.id.label("partida_id"),
+        PartidaCabecera.numero_partida,
+        PartidaCabecera.fecha
+    ).join(
+        PartidaCabecera, PartidaCabecera.id == PartidaDetalle.partida_id
+    ).join(
+        CuentaContable, (CuentaContable.cuentas == PartidaDetalle.cuenta_codigo) & 
+                        (CuentaContable.empresa_id == PartidaDetalle.empresa_id) & 
+                        (CuentaContable.anio == PartidaDetalle.anio)
+    ).filter(
+        PartidaDetalle.empresa_id == empresa_id,
+        PartidaDetalle.anio == anio,
+        PartidaCabecera.estado != "Borrador",
+        CuentaContable.resumen == True
+    )
+    
+    if modo == "mensual":
+        query = query.filter(PartidaCabecera.mes == mes)
+    else:
+        query = query.filter(PartidaCabecera.mes <= mes)
+        
+    for r in query.all():
+        if any(r.cuenta_codigo.startswith(p) for p in prefijos):
+            anomalias.append({
+                "codigo": r.cuenta_codigo,
+                "nombre": r.cuenta_nombre,
+                "debe": float(r.debe),
+                "haber": float(r.haber),
+                "partida_id": r.partida_id,
+                "numero_partida": r.numero_partida,
+                "fecha": r.fecha.isoformat() if hasattr(r.fecha, 'isoformat') else str(r.fecha)
+            })
+            
+    return anomalias
+
 # MODIFICACIÓN NIIF: Se agregó el parámetro "modo" para controlar mensual vs acumulado
 def obtener_estado_resultados(db: Session, empresa_id: str, anio: int, mes: int, nivel: int = 3, modo: str = "acumulado"):
     config = db.query(ConfiguracionContable).filter(
@@ -132,6 +178,9 @@ def obtener_estado_resultados(db: Session, empresa_id: str, anio: int, mes: int,
 
     ingresos.sort(key=lambda x: x["codigo"])
     gastos.sort(key=lambda x: x["codigo"])
+
+    if anomalias:
+        anomalias = _obtener_anomalias_detalladas(db, empresa_id, anio, mes, modo, (prefijo_ingresos, prefijo_gastos))
 
     return {
         "empresa_id": empresa_id,
@@ -271,6 +320,9 @@ def obtener_balance_general(db: Session, empresa_id: str, anio: int, mes: int, n
     activos.sort(key=lambda x: x["codigo"])
     pasivos.sort(key=lambda x: x["codigo"])
     patrimonio.sort(key=lambda x: x["codigo"])
+    
+    if anomalias_balance:
+        anomalias_balance = _obtener_anomalias_detalladas(db, empresa_id, anio, mes, "acumulado", ('1', '2', '3'))
     
     anomalias_totales = anomalias_balance + estado_resultados.get("anomalias", [])
 

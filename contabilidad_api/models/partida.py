@@ -11,7 +11,7 @@ class PartidaCabecera(Base):
     empresa_id = Column(String, ForeignKey("empresas.id", ondelete="RESTRICT"), nullable=False)
     anio = Column(Integer, nullable=False)
     mes = Column(Integer, nullable=False)
-    numero_partida = Column(Integer, nullable=False)
+    numero_partida = Column(Integer, index=True, nullable=False)
     fecha = Column(Date, index=True, nullable=False)
     concepto = Column(Text, nullable=False)
     # Estados permitidos: Borrador, Impresa, Auditada, Mayorizada

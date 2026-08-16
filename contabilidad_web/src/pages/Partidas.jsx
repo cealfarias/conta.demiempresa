@@ -149,7 +149,7 @@ function Partidas() {
           <table className="w-full text-left border-collapse text-sm">
             <thead className="sticky top-0 z-10 bg-white">
               <tr className="border-b border-slate-200 text-slate-500 text-[11px] uppercase tracking-wider font-bold">
-                <th className="py-3 px-5 whitespace-nowrap w-24">No.</th>
+                <th className="py-3 px-5 whitespace-nowrap w-24">Partida</th>
                 <th className="py-3 px-5 whitespace-nowrap w-32">Fecha</th>
                 <th className="py-3 px-5">Concepto</th>
                 <th className="py-3 px-5 text-center w-32">Estado</th>

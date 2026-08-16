@@ -71,27 +71,31 @@ def obtener_estado_resultados(db: Session, empresa_id: str, anio: int, mes: int,
     total_ingresos = 0.0
     total_gastos = 0.0
 
-    # 1. Calcular saldos base SOLO en cuentas de detalle
+    # 1. Calcular saldos base y movimientos
     for cta in cuentas:
+        codigo = cta.cuentas
         resumen = getattr(cta, 'resumen', False)
-        if not resumen:
-            codigo = cta.cuentas
-            debe_acumulado = dict_movimientos.get(codigo, {}).get("debe", 0.0)
-            haber_acumulado = dict_movimientos.get(codigo, {}).get("haber", 0.0)
+        
+        debe_acumulado = dict_movimientos.get(codigo, {}).get("debe", 0.0)
+        haber_acumulado = dict_movimientos.get(codigo, {}).get("haber", 0.0)
+        
+        # Ignorar resumen si no tiene movimientos anómalos directos
+        if resumen and debe_acumulado == 0.0 and haber_acumulado == 0.0:
+            continue
             
-            saldo = 0.0
-            if codigo.startswith(prefijo_ingresos): 
-                saldo = haber_acumulado - debe_acumulado
-                total_ingresos += saldo
-            elif codigo.startswith(prefijo_gastos): 
-                saldo = debe_acumulado - haber_acumulado
-                total_gastos += saldo
+        saldo = 0.0
+        if codigo.startswith(prefijo_ingresos): 
+            saldo = haber_acumulado - debe_acumulado
+            total_ingresos += saldo
+        elif codigo.startswith(prefijo_gastos): 
+            saldo = debe_acumulado - haber_acumulado
+            total_gastos += saldo
 
-            # 2. Algoritmo Roll-Up: Empujar el saldo de la hoja a todos sus padres
-            if saldo != 0.0:
-                for parent_code in saldos_acumulados.keys():
-                    if codigo.startswith(parent_code):
-                        saldos_acumulados[parent_code] += saldo
+        # 2. Algoritmo Roll-Up: Empujar el saldo de la hoja a todos sus padres
+        if saldo != 0.0:
+            for parent_code in saldos_acumulados.keys():
+                if codigo.startswith(parent_code):
+                    saldos_acumulados[parent_code] += saldo
 
     ingresos = []
     gastos = []
@@ -178,29 +182,34 @@ def obtener_balance_general(db: Session, empresa_id: str, anio: int, mes: int, n
 
     # 1. Calcular saldos base y sumar a totales maestros
     for cta in cuentas:
+        codigo = cta.cuentas
         resumen = getattr(cta, 'resumen', False)
-        if not resumen:
-            codigo = cta.cuentas
-            saldo_inicial = float(cta.saldo_inicial)
-            debe = dict_movimientos.get(codigo, {}).get("debe", 0.0)
-            haber = dict_movimientos.get(codigo, {}).get("haber", 0.0)
+        
+        # Ignorar saldo inicial de resumen para evitar duplicar, pero procesar movimientos directos anómalos
+        saldo_inicial = float(cta.saldo_inicial) if not resumen else 0.0
+        debe = dict_movimientos.get(codigo, {}).get("debe", 0.0)
+        haber = dict_movimientos.get(codigo, {}).get("haber", 0.0)
 
-            saldo = 0.0
-            if codigo.startswith('1'):
-                saldo = saldo_inicial + debe - haber
-                total_activo += saldo
-            elif codigo.startswith('2'):
-                saldo = saldo_inicial + haber - debe
-                total_pasivo += saldo
-            elif codigo.startswith('3'):
-                saldo = saldo_inicial + haber - debe
-                total_patrimonio += saldo
+        # Si es resumen sin movimientos anómalos directos, omitir para que se calcule por roll-up
+        if resumen and debe == 0.0 and haber == 0.0 and saldo_inicial == 0.0:
+            continue
 
-            # 2. Algoritmo Roll-Up NIIF
-            if saldo != 0.0:
-                for parent_code in saldos_acumulados.keys():
-                    if codigo.startswith(parent_code):
-                        saldos_acumulados[parent_code] += saldo
+        saldo = 0.0
+        if codigo.startswith('1'):
+            saldo = saldo_inicial + debe - haber
+            total_activo += saldo
+        elif codigo.startswith('2'):
+            saldo = saldo_inicial + haber - debe
+            total_pasivo += saldo
+        elif codigo.startswith('3'):
+            saldo = saldo_inicial + haber - debe
+            total_patrimonio += saldo
+
+        # 2. Algoritmo Roll-Up NIIF
+        if saldo != 0.0:
+            for parent_code in saldos_acumulados.keys():
+                if codigo.startswith(parent_code):
+                    saldos_acumulados[parent_code] += saldo
 
     # 3. Integración de Utilidad Neta en el Patrimonio
     estado_resultados = obtener_estado_resultados(db, empresa_id, anio, mes, nivel=1, modo="acumulado")

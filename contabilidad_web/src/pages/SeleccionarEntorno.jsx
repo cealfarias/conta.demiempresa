@@ -79,11 +79,14 @@ export default function SeleccionarEntorno() {
       navigate('/dashboard');
       
     } catch (err) {
+      console.error(err);
       if (err.response?.status === 404) {
         // Ejercicio no inicializado
         setError(`El ejercicio fiscal ${anio} no se encuentra inicializado. Por favor contacte al Administrador.`);
+      } else if (err.response) {
+        setError(`Error del servidor (${err.response.status}): ${err.response.data?.detail || JSON.stringify(err.response.data)}`);
       } else {
-        setError(err.response?.data?.detail || 'Error al validar el entorno contable.');
+        setError(`Error local/red: ${err.message || 'No se pudo conectar con el servidor'}`);
       }
     } finally {
       setSubmitLoading(false);

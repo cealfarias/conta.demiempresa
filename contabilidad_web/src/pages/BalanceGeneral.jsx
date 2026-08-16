@@ -71,8 +71,10 @@ function BalanceGeneral() {
 
     return (
       <tr key={cuenta.codigo} className={`${isTotal ? 'font-bold' : ''}`}>
-        <td className="py-1 px-2 border-b border-slate-100 text-xs text-slate-500 w-16">{cuenta.codigo}</td>
-        <td className={`py-1 px-2 border-b border-slate-100 text-xs ${isTotal ? 'text-slate-800 uppercase' : 'text-slate-600 pl-4'}`}>
+        <td 
+          className={`py-1 px-2 border-b border-slate-100 text-xs ${isTotal ? 'text-slate-800 uppercase' : 'text-slate-600'}`} 
+          style={{ paddingLeft: `${(cuenta.nivel - 2) * 1.5 + 0.5}rem` }}
+        >
           {cuenta.nombre}
         </td>
         <td className={`py-1 px-2 border-b border-slate-100 text-xs text-right ${isTotal ? 'text-slate-800' : 'text-slate-600'}`}>
@@ -176,15 +178,17 @@ function BalanceGeneral() {
                 <div className="absolute left-1/2 top-0 bottom-0 w-px bg-slate-800 -translate-x-1/2 hidden print:block"></div>
 
                 {/* Columna Izquierda: ACTIVOS */}
-                <div>
-                  <h4 className="font-bold text-center border-b-2 border-black pb-1 mb-2">ACTIVO</h4>
+                <div className="flex flex-col h-full">
+                  <h4 className="font-bold text-center border-b-2 border-black pb-1 mb-2 shrink-0">ACTIVO</h4>
                   <table className="w-full">
                     <tbody>
-                      {data.activos.map(formatearFila)}
+                      {data.activos.filter(cta => cta.nivel > 1).map(formatearFila)}
                     </tbody>
+                  </table>
+                  <table className="w-full mt-auto">
                     <tfoot>
                       <tr>
-                        <td colSpan="2" className="py-2 px-2 font-bold text-sm uppercase">TOTAL ACTIVO</td>
+                        <td className="py-2 px-2 font-bold text-sm uppercase">TOTAL ACTIVO</td>
                         <td className="py-2 px-2 text-right font-bold border-t border-b-4 border-double border-black">
                           {formatoMoneda(data.totales.activo)}
                         </td>
@@ -194,17 +198,17 @@ function BalanceGeneral() {
                 </div>
 
                 {/* Columna Derecha: PASIVOS Y PATRIMONIO */}
-                <div>
-                  <h4 className="font-bold text-center border-b-2 border-black pb-1 mb-2">PASIVO Y PATRIMONIO</h4>
+                <div className="flex flex-col h-full">
+                  <h4 className="font-bold text-center border-b-2 border-black pb-1 mb-2 shrink-0">PASIVO Y PATRIMONIO</h4>
                   
                   {/* Pasivos */}
-                  <table className="w-full mb-6">
+                  <table className="w-full mb-6 shrink-0">
                     <tbody>
-                      {data.pasivos.map(formatearFila)}
+                      {data.pasivos.filter(cta => cta.nivel > 1).map(formatearFila)}
                     </tbody>
                     <tfoot>
                       <tr>
-                        <td colSpan="2" className="py-2 px-2 font-bold text-sm uppercase">TOTAL PASIVO</td>
+                        <td className="py-2 px-2 font-bold text-sm uppercase">TOTAL PASIVO</td>
                         <td className="py-2 px-2 text-right font-bold border-t border-black">
                           {formatoMoneda(data.totales.pasivo * -1)}
                         </td>
@@ -213,14 +217,14 @@ function BalanceGeneral() {
                   </table>
 
                   {/* Patrimonio */}
-                  <table className="w-full mb-6">
+                  <table className="w-full mb-6 shrink-0">
                     <tbody>
-                      {data.patrimonio.filter(p => p.codigo !== "3-RESULTADO").map(formatearFila)}
+                      {data.patrimonio.filter(p => p.codigo !== "3-RESULTADO" && p.nivel > 1).map(formatearFila)}
                       {data.patrimonio.filter(p => p.codigo === "3-RESULTADO").map(formatearFila)}
                     </tbody>
                     <tfoot>
                       <tr>
-                        <td colSpan="2" className="py-2 px-2 font-bold text-sm uppercase">TOTAL PATRIMONIO</td>
+                        <td className="py-2 px-2 font-bold text-sm uppercase">TOTAL PATRIMONIO</td>
                         <td className="py-2 px-2 text-right font-bold border-t border-black">
                           {formatoMoneda(data.totales.patrimonio * -1)}
                         </td>
@@ -232,7 +236,7 @@ function BalanceGeneral() {
                   <table className="w-full mt-auto">
                     <tfoot>
                       <tr>
-                        <td colSpan="2" className="py-2 px-2 font-bold text-sm uppercase">TOTAL PASIVO Y PATRIMONIO</td>
+                        <td className="py-2 px-2 font-bold text-sm uppercase">TOTAL PASIVO Y PATRIMONIO</td>
                         <td className="py-2 px-2 text-right font-bold border-t border-b-4 border-double border-black">
                           {formatoMoneda(data.totales.pasivo_mas_patrimonio * -1)}
                         </td>

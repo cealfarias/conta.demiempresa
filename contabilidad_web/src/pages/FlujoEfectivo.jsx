@@ -1,0 +1,234 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { DollarSign, Printer, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
+function FlujoEfectivo() {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+  
+  // Controles
+  const [mesActual, setMesActual] = useState(new Date().getMonth() + 1);
+  const anio = 2026; // TODO: sacar del entorno global
+  
+  // Nombres de firmas configurables
+  const [firmaContador, setFirmaContador] = useState("Lic. Ana L. Gómez");
+  const [firmaRepresentante, setFirmaRepresentante] = useState("Ing. Carlos R. Martínez");
+  const [firmaAuditor, setFirmaAuditor] = useState("Lic. Roberto P. Sibrián");
+
+  const meses = [
+    { id: 1, nombre: 'Enero' }, { id: 2, nombre: 'Febrero' }, { id: 3, nombre: 'Marzo' },
+    { id: 4, nombre: 'Abril' }, { id: 5, nombre: 'Mayo' }, { id: 6, nombre: 'Junio' },
+    { id: 7, nombre: 'Julio' }, { id: 8, nombre: 'Agosto' }, { id: 9, nombre: 'Septiembre' },
+    { id: 10, nombre: 'Octubre' }, { id: 11, nombre: 'Noviembre' }, { id: 12, nombre: 'Diciembre' }
+  ];
+
+  const fetchFlujoEfectivo = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const empresa_id = localStorage.getItem('empresa_activa');
+      if (!empresa_id) throw new Error("No hay empresa activa seleccionada");
+
+      const response = await axios.get(
+        `${API_URL}/api/v1/reportes/flujo-efectivo?empresa_id=${empresa_id}&anio=${anio}&mes=${mesActual}`,
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+      );
+      setData(response.data);
+    } catch (err) {
+      setError(err.response?.data?.detail || err.message || "Error al cargar el Flujo de Efectivo");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFlujoEfectivo();
+  }, [mesActual]);
+
+  const formatoMoneda = (monto) => {
+    if (monto === 0) return "-";
+    return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Math.abs(monto));
+  };
+
+  const Fila = ({ titulo, monto, indent = false, isTotal = false }) => (
+    <tr>
+      <td className={`py-1.5 px-4 border-b border-slate-100 text-sm ${indent ? 'pl-8 text-slate-600' : 'text-slate-800 font-medium'} ${isTotal ? 'font-bold uppercase' : ''}`}>
+        {titulo}
+      </td>
+      <td className={`py-1.5 px-4 border-b border-slate-100 text-sm text-right ${isTotal ? 'font-bold' : 'text-slate-700'}`}>
+        {monto < 0 ? `(${formatoMoneda(monto)})` : formatoMoneda(monto)}
+      </td>
+    </tr>
+  );
+
+  return (
+    <div className="p-8 max-w-4xl mx-auto flex flex-col h-full overflow-hidden">
+      
+      {/* HEADER DE CONTROLES - Oculto al imprimir */}
+      <div className="flex items-center justify-between mb-6 print:hidden shrink-0">
+        <div className="flex items-center space-x-4">
+          <button onClick={() => navigate('/dashboard/reportes')} className="p-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-600 transition-colors">
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+              <DollarSign className="w-6 h-6 text-indigo-500" />
+              Flujo de Efectivo
+            </h1>
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-3 bg-white p-2 rounded-xl shadow-sm border border-slate-200">
+          <select 
+            className="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500/20"
+            value={mesActual}
+            onChange={(e) => setMesActual(parseInt(e.target.value))}
+          >
+            {meses.map(m => <option key={m.id} value={m.id}>{m.nombre}</option>)}
+          </select>
+
+          <button 
+            onClick={() => window.print()}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+          >
+            <Printer className="w-4 h-4" />
+            Imprimir
+          </button>
+        </div>
+      </div>
+
+      {error && (
+        <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 mb-6 print:hidden">
+          {error}
+        </div>
+      )}
+
+      {/* ÁREA DEL REPORTE IMPRIMIBLE */}
+      <div className="flex-1 overflow-auto print:overflow-visible pb-12">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-10 min-h-full print:shadow-none print:border-none print:p-0 print:m-0" id="reporte-imprimible">
+          
+          {loading && !data ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            </div>
+          ) : data && data.detalle ? (
+            <>
+              {/* Encabezado del Reporte */}
+              <div className="text-center mb-8">
+                <h2 className="text-xl font-bold text-slate-800 uppercase">CANTARES S.A DE C.V.</h2>
+                {/* TODO: Sacar el nombre de la empresa activa del contexto */}
+                <h3 className="text-lg font-bold text-slate-700">ESTADO DE FLUJOS DE EFECTIVO (MÉTODO DIRECTO)</h3>
+                <p className="text-sm text-slate-600 uppercase">
+                  DEL 1 DE ENERO AL {new Date(anio, mesActual, 0).getDate()} DE {meses.find(m => m.id === mesActual).nombre.toUpperCase()} DE {anio}
+                </p>
+                <p className="text-xs text-slate-500 italic">(Expresado en Dólares de los Estados Unidos de América)</p>
+              </div>
+
+              {/* Cuerpo del Estado de Flujo de Efectivo */}
+              <div className="w-full">
+                <table className="w-full">
+                  <tbody>
+                    {/* ACTIVIDADES DE OPERACIÓN */}
+                    <tr><td colSpan="2" className="py-2 px-4 font-bold uppercase bg-slate-50">1. Actividades de Operación</td></tr>
+                    <Fila titulo="Efectivo recibido de clientes y otros" monto={data.detalle.OPERACION.saldo_final > 0 ? data.detalle.OPERACION.saldo_final : 0} indent />
+                    <Fila titulo="Efectivo pagado a proveedores, empleados y otros" monto={data.detalle.OPERACION.saldo_final < 0 ? data.detalle.OPERACION.saldo_final : 0} indent />
+                    <Fila titulo="Flujo Neto de Efectivo por Actividades de Operación" monto={data.detalle.OPERACION.saldo_final} isTotal />
+                    
+                    <tr><td colSpan="2" className="py-2"></td></tr>
+                    
+                    {/* ACTIVIDADES DE INVERSIÓN */}
+                    <tr><td colSpan="2" className="py-2 px-4 font-bold uppercase bg-slate-50">2. Actividades de Inversión</td></tr>
+                    <Fila titulo="Efectivo recibido por ventas de activos/inversiones" monto={data.detalle.INVERSION.saldo_final > 0 ? data.detalle.INVERSION.saldo_final : 0} indent />
+                    <Fila titulo="Efectivo pagado por compra de activos/inversiones" monto={data.detalle.INVERSION.saldo_final < 0 ? data.detalle.INVERSION.saldo_final : 0} indent />
+                    <Fila titulo="Flujo Neto de Efectivo por Actividades de Inversión" monto={data.detalle.INVERSION.saldo_final} isTotal />
+                    
+                    <tr><td colSpan="2" className="py-2"></td></tr>
+
+                    {/* ACTIVIDADES DE FINANCIACIÓN */}
+                    <tr><td colSpan="2" className="py-2 px-4 font-bold uppercase bg-slate-50">3. Actividades de Financiación</td></tr>
+                    <Fila titulo="Efectivo recibido por aportes/préstamos" monto={data.detalle.FINANCIACION.saldo_final > 0 ? data.detalle.FINANCIACION.saldo_final : 0} indent />
+                    <Fila titulo="Efectivo pagado por dividendos/préstamos" monto={data.detalle.FINANCIACION.saldo_final < 0 ? data.detalle.FINANCIACION.saldo_final : 0} indent />
+                    <Fila titulo="Flujo Neto de Efectivo por Actividades de Financiación" monto={data.detalle.FINANCIACION.saldo_final} isTotal />
+                    
+                    <tr><td colSpan="2" className="py-2"></td></tr>
+
+                    {/* TOTALES FINALES */}
+                    <Fila titulo="AUMENTO (DISMINUCIÓN) NETO DEL EFECTIVO" monto={data.totales.flujo_neto_actividades} isTotal />
+                    <Fila titulo="Efectivo y equivalentes al inicio del período" monto={data.totales.efectivo_inicio} isTotal />
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td className="py-3 px-4 font-bold text-sm uppercase border-t border-black">
+                        EFECTIVO Y EQUIVALENTES AL FINAL DEL PERÍODO
+                      </td>
+                      <td className="py-3 px-4 text-right font-bold border-t border-b-4 border-double border-black">
+                        {formatoMoneda(data.totales.efectivo_final)}
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+
+              {/* Advertencia de cuadre */}
+              {!data.totales.cuadre_perfecto && (
+                <div className="mt-8 p-4 bg-orange-50 border border-orange-200 rounded-lg text-sm text-orange-700 print:hidden">
+                  <strong>Advertencia de Cuadre:</strong> El aumento/disminución neto de efectivo calculado no coincide exactamente con la variación contable de la cuenta de efectivo. Verifique que todas las cuentas estén correctamente mapeadas a actividades de flujo de efectivo en la configuración.
+                </div>
+              )}
+
+              {/* Firmas configurables */}
+              <div className="grid grid-cols-3 gap-8 mt-24 px-4 print:mt-40">
+                <div className="text-center">
+                  <div className="border-t border-black w-full mb-2"></div>
+                  <input 
+                    type="text" 
+                    value={firmaRepresentante} 
+                    onChange={e => setFirmaRepresentante(e.target.value)}
+                    className="w-full text-center font-bold text-sm bg-transparent outline-none border-none hover:bg-slate-50 focus:bg-slate-50 print:bg-transparent"
+                  />
+                  <p className="text-xs text-slate-600">Representante Legal</p>
+                </div>
+                <div className="text-center">
+                  <div className="border-t border-black w-full mb-2"></div>
+                  <input 
+                    type="text" 
+                    value={firmaContador} 
+                    onChange={e => setFirmaContador(e.target.value)}
+                    className="w-full text-center font-bold text-sm bg-transparent outline-none border-none hover:bg-slate-50 focus:bg-slate-50 print:bg-transparent"
+                  />
+                  <p className="text-xs text-slate-600">Contador</p>
+                </div>
+                <div className="text-center">
+                  <div className="border-t border-black w-full mb-2"></div>
+                  <input 
+                    type="text" 
+                    value={firmaAuditor} 
+                    onChange={e => setFirmaAuditor(e.target.value)}
+                    className="w-full text-center font-bold text-sm bg-transparent outline-none border-none hover:bg-slate-50 focus:bg-slate-50 print:bg-transparent"
+                  />
+                  <p className="text-xs text-slate-600">Auditor Externo</p>
+                </div>
+              </div>
+
+            </>
+          ) : null}
+        </div>
+      </div>
+
+      <style dangerouslySetInnerHTML={{__html: `
+        @media print {
+          body * { visibility: hidden !important; }
+          #reporte-imprimible, #reporte-imprimible * { visibility: visible !important; }
+          #reporte-imprimible { position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; }
+        }
+      `}} />
+    </div>
+  );
+}
+
+export default FlujoEfectivo;

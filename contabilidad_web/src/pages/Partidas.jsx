@@ -107,12 +107,19 @@ function Partidas() {
           </div>
 
           <button 
-            onClick={handleNuevaPartida}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center space-x-2 shadow-lg shadow-indigo-500/20 whitespace-nowrap"
-          >
-            <Plus className="w-4 h-4" />
-            <span className="hidden md:inline">Nueva Partida</span>
-          </button>
+              onClick={() => navigate('/dashboard/partidas/importar')}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center space-x-2 shadow-lg shadow-emerald-500/20 whitespace-nowrap"
+            >
+              <Upload className="w-4 h-4" />
+              <span className="hidden md:inline">Importar Partidas</span>
+            </button>
+            <button 
+              onClick={() => navigate('/dashboard/partidas/nueva')}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center space-x-2 shadow-lg shadow-indigo-500/20 whitespace-nowrap"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="hidden md:inline">Nueva Partida</span>
+            </button>
         </div>
       </div>
 
@@ -160,12 +167,15 @@ function Partidas() {
                 </tr>
               ) : filteredPartidas.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="text-center py-16 text-slate-500">
-                    <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <FileText className="w-8 h-8 text-slate-300" />
+                  <td colSpan="6">
+                    <div className="text-center text-slate-400 py-12">
+                      <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <FileText className="w-8 h-8 text-slate-300" />
+                      </div>
+                      <p className="font-medium text-slate-600 mb-1">No hay partidas registradas</p>
+                      <p className="text-sm">En el mes de {meses.find(m => m.id === mesActual)?.nombre}</p>
+                      <p className="text-xs text-slate-400 mt-2">Favor de recargar la página con Ctrl+F5 si espera ver registros recientes.</p>
                     </div>
-                    <p className="font-medium text-slate-600 mb-1">No hay partidas registradas</p>
-                    <p className="text-sm">En el mes de {meses.find(m => m.id === mesActual)?.nombre}</p>
                   </td>
                 </tr>
               ) : (

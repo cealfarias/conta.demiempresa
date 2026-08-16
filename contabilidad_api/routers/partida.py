@@ -1,8 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, Request, UploadFile, File, Form
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from typing import List
 import math
+import csv
+import io
+import json
+from datetime import datetime
+from decimal import Decimal, InvalidOperation
 
 # ==================== IMPORTACIÓN DE MODELOS Y ESQUEMAS ====================
 from models.partida import PartidaCabecera, PartidaDetalle
@@ -421,3 +426,183 @@ def marcar_partida_impresa(partida_id: int, db: Session = Depends(get_db)):
             raise HTTPException(status_code=500, detail=f"Error al marcar como impresa: {str(e)}")
             
     return {"status": "success", "mensaje": "La partida ya tenía un estado superior"}
+
+# ==================== IMPORTACIN DE PARTIDAS ====================
+@router.post("/importar-validar")
+async def importar_partidas_csv(
+    request: Request,
+    archivo: UploadFile = File(...),
+    mapeo: str = Form(...),
+    empresa_id: str = Query(..., description="ID de la Empresa Activa"),
+    anio: int = Query(..., description="Ao del Ejercicio Contable"),
+    usuario: str = Query(..., description="Usuario activo"),
+    db: Session = Depends(get_db)
+):
+    if not archivo.filename.endswith('.csv'):
+        raise HTTPException(status_code=400, detail="El archivo debe tener extensin .csv")
+
+    try:
+        dict_mapeo = json.loads(mapeo)
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="El diccionario de mapeo es invlido.")
+
+    col_numero = dict_mapeo.get("numero")
+    col_fecha = dict_mapeo.get("fecha")
+    col_cuenta = dict_mapeo.get("cuenta")
+    col_concepto = dict_mapeo.get("concepto")
+    col_debe = dict_mapeo.get("debe")
+    col_haber = dict_mapeo.get("haber")
+
+    if not all([col_numero, col_fecha, col_cuenta, col_debe, col_haber]):
+        raise HTTPException(status_code=400, detail="Faltan columnas obligatorias en el mapeo.")
+
+    content = await archivo.read()
+    try:
+        text = content.decode('utf-8-sig')
+    except:
+        text = content.decode('latin-1')
+
+    reader = csv.DictReader(io.StringIO(text), delimiter=';')
+    if not reader.fieldnames or col_numero not in reader.fieldnames:
+        reader = csv.DictReader(io.StringIO(text), delimiter=',')
+
+    filas = list(reader)
+    if not filas:
+        raise HTTPException(status_code=400, detail="El archivo est vaco.")
+
+    # Agrupar por numero original
+    grupos = {}
+    for i, fila in enumerate(filas):
+        try:
+            n_orig = fila[col_numero].strip()
+        except KeyError:
+            raise HTTPException(status_code=400, detail=f"No se encontr la columna '{col_numero}' en el CSV.")
+        if not n_orig:
+            continue
+        if n_orig not in grupos:
+            grupos[n_orig] = []
+        grupos[n_orig].append((i+2, fila)) # i+2 for excel row number (header is 1)
+
+    errores = []
+    partidas_a_guardar = []
+
+    for n_orig, lineas in grupos.items():
+        # Validar grupo
+        grupo_debe = Decimal('0.00')
+        grupo_haber = Decimal('0.00')
+        
+        fecha_str = lineas[0][1].get(col_fecha, '').strip()
+        try:
+            # Detectar formato YYYY-MM-DD o DD/MM/YYYY
+            if '/' in fecha_str:
+                parts = fecha_str.split('/')
+                if len(parts[0]) == 4:
+                    fecha_obj = datetime.strptime(fecha_str, "%Y/%m/%d").date()
+                else:
+                    fecha_obj = datetime.strptime(fecha_str, "%d/%m/%Y").date()
+            elif '-' in fecha_str:
+                parts = fecha_str.split('-')
+                if len(parts[0]) == 4:
+                    fecha_obj = datetime.strptime(fecha_str, "%Y-%m-%d").date()
+                else:
+                    fecha_obj = datetime.strptime(fecha_str, "%d-%m-%Y").date()
+            else:
+                fecha_obj = datetime.strptime(fecha_str, "%Y%m%d").date()
+        except:
+            errores.append({"partida": n_orig, "error": f"Formato de fecha invlido: {fecha_str}"})
+            continue
+
+        if fecha_obj.year != anio:
+            errores.append({"partida": n_orig, "error": f"El ao de la fecha ({fecha_obj.year}) no coincide con el ao en curso ({anio})."})
+            continue
+
+        mes_obj = fecha_obj.month
+        
+        # Concepto original de la cabecera
+        concepto_orig = lineas[0][1].get(col_concepto, '').strip() if col_concepto else ''
+        concepto_final = f"importacin de partida {n_orig}"
+        if concepto_orig:
+            concepto_final += f" - {concepto_orig}"
+
+        detalles_crear = []
+        
+        cuenta_nivel_3_nombre = ""
+
+        for row_idx, fila in lineas:
+            cuenta_cod = fila.get(col_cuenta, '').strip()
+            
+            # Validar que la cuenta existe y es de detalle
+            cuenta_db = db.query(CuentaContable).filter_by(empresa_id=empresa_id, anio=anio, cuentas=cuenta_cod).first()
+            if not cuenta_db:
+                errores.append({"partida": n_orig, "error": f"Lnea {row_idx}: La cuenta '{cuenta_cod}' no existe en el catlogo."})
+                continue
+            
+            if cuenta_db.clase == "Padre":
+                errores.append({"partida": n_orig, "error": f"Lnea {row_idx}: La cuenta '{cuenta_cod}' es de clase Padre. Solo se permiten cuentas de detalle."})
+                continue
+                
+            # Extraer cuenta N3 si no hay concepto
+            if not concepto_orig and not cuenta_nivel_3_nombre:
+                if len(cuenta_cod) >= 4:
+                    n3_cod = cuenta_cod[:4]
+                    c3_db = db.query(CuentaContable).filter_by(empresa_id=empresa_id, anio=anio, cuentas=n3_cod).first()
+                    if c3_db:
+                        cuenta_nivel_3_nombre = c3_db.nombre
+
+            try:
+                debe_val = Decimal(fila.get(col_debe, '0').replace(',', '') or '0')
+            except InvalidOperation:
+                errores.append({"partida": n_orig, "error": f"Lnea {row_idx}: Valor invlido en Debe '{fila.get(col_debe)}'"})
+                debe_val = Decimal('0')
+                
+            try:
+                haber_val = Decimal(fila.get(col_haber, '0').replace(',', '') or '0')
+            except InvalidOperation:
+                errores.append({"partida": n_orig, "error": f"Lnea {row_idx}: Valor invlido en Haber '{fila.get(col_haber)}'"})
+                haber_val = Decimal('0')
+
+            grupo_debe += debe_val
+            grupo_haber += haber_val
+            
+            detalles_crear.append({
+                "cuenta_codigo": cuenta_cod,
+                "debe": debe_val,
+                "haber": haber_val,
+                "concepto_detalle": fila.get(col_concepto, '').strip() if col_concepto else ''
+            })
+
+        if grupo_debe != grupo_haber:
+            errores.append({"partida": n_orig, "error": f"Descuadre: Debe (${grupo_debe}) != Haber (${grupo_haber}). Diferencia: ${abs(grupo_debe - grupo_haber)}"})
+
+        if not concepto_orig:
+            concepto_final = f"importacin de partida {n_orig} - partida del mes de {mes_obj} {cuenta_nivel_3_nombre}".strip()
+
+        if not errores:
+            partida_obj = {
+                "empresa_id": empresa_id,
+                "anio": anio,
+                "mes": mes_obj,
+                "fecha": fecha_obj,
+                "concepto": concepto_final,
+                "usuario": usuario,
+                "terminal_ip": request.client.host if request.client else "0.0.0.0",
+                "detalles": detalles_crear
+            }
+            partidas_a_guardar.append(partida_obj)
+
+    if errores:
+        raise HTTPException(status_code=400, detail={"mensaje": "Se encontraron incongruencias en la validacin", "errores": errores})
+
+    # Si pas todas las validaciones, procedemos a guardar (generar los propios correlativos en partida_in)
+    importadas = 0
+    from schemas.partida import PartidaCompletaCrear
+    from routers.partida import guardar_partida_completa_transaccional
+
+    for p_dict in partidas_a_guardar:
+        p_crear = PartidaCompletaCrear(**p_dict)
+        # Esto reutiliza la logica que ya valida periodo abierto y cuadre, y asigna el numero correlativo oficial
+        guardar_partida_completa_transaccional(p_crear, db=db)
+        importadas += 1
+
+    return {"success": True, "importadas": importadas, "mensaje": f"Se importaron {importadas} partidas exitosamente."}
+

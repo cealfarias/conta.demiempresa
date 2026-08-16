@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Outlet, Link, useLocation } from 'react-router-dom';
-import { LogOut, LayoutDashboard, FileText, Settings, ShieldCheck, Users, BookOpen, Menu } from 'lucide-react';
-
+import { LogOut, LayoutDashboard, FileText, Settings, ShieldCheck, Users, BookOpen, Menu, Inbox } from 'lucide-react';
+import SoporteModal from '../components/SoporteModal';
 function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSoporteOpen, setIsSoporteOpen] = useState(false);
 
   const empresaNombre = localStorage.getItem('empresa_nombre') || localStorage.getItem('empresa_activa') || 'Sin Empresa';
   const anioActivo = localStorage.getItem('anio_activo') || '----';
@@ -63,6 +64,10 @@ function Dashboard() {
             <ShieldCheck className="w-5 h-5 shrink-0" />
             {isSidebarOpen && <span className="font-medium whitespace-nowrap">Seguridad (2FA)</span>}
           </Link>
+          <button onClick={() => setIsSoporteOpen(true)} className={`w-full flex items-center space-x-3 px-3 py-3 rounded-xl transition-colors text-slate-300 hover:bg-slate-800 hover:text-white ${!isSidebarOpen && 'justify-center'}`} title="Soporte (Inbox)">
+            <Inbox className="w-5 h-5 shrink-0" />
+            {isSidebarOpen && <span className="font-medium whitespace-nowrap">Soporte (Inbox)</span>}
+          </button>
         </nav>
 
         <div className="p-3 border-t border-slate-800">
@@ -116,6 +121,8 @@ function Dashboard() {
           <Outlet />
         </div>
       </main>
+
+      <SoporteModal isOpen={isSoporteOpen} onClose={() => setIsSoporteOpen(false)} />
     </div>
   );
 }

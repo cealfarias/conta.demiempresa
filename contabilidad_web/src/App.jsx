@@ -9,6 +9,7 @@ import SaldosMensuales from './pages/SaldosMensuales';
 import MovimientosMes from './pages/MovimientosMes';
 import Seguridad from './pages/Seguridad';
 import Partidas from './pages/Partidas';
+import ImportarPartidas from './pages/ImportarPartidas';
 import PartidaEditor from './pages/PartidaEditor';
 import PartidaImpresion from './pages/PartidaImpresion';
 import ImportarCatalogo from './pages/ImportarCatalogo';
@@ -85,6 +86,7 @@ function App() {
             <Route path="catalogo/saldos/:codigo" element={<SaldosMensuales />} />
             <Route path="catalogo/movimientos/:codigo/:mes" element={<MovimientosMes />} />
             <Route path="partidas" element={<Partidas />} />
+            <Route path="partidas/importar" element={<ImportarPartidas />} />
             <Route path="partidas/nueva" element={<PartidaEditor />} />
             <Route path="partidas/editar/:id" element={<PartidaEditor />} />
             <Route path="partidas/imprimir/:id" element={<PartidaImpresion />} />

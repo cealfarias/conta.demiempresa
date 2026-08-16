@@ -14,6 +14,7 @@ import PartidaImpresion from './pages/PartidaImpresion';
 import ImportarCatalogo from './pages/ImportarCatalogo';
 import ImportarManual from './pages/ImportarManual';
 import { FileText } from 'lucide-react';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 // Simple Protected Route wrapper
 const ProtectedRoute = ({ children }) => {
@@ -55,37 +56,41 @@ const DashboardHome = () => (
 );
 
 function App() {
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "564147336188-mdfp0vsvn8na8bllflsm8ntrv91cfinp.apps.googleusercontent.com";
+
   return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/registro" element={<Registro />} />
-        <Route path="/terminos" element={<Terminos />} />
-        
-        <Route 
-          path="/dashboard" 
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          } 
-        >
-          <Route index element={<DashboardHome />} />
-          <Route path="seguridad" element={<Seguridad />} />
-          <Route path="catalogo" element={<Catalogo />} />
-          <Route path="catalogo/importar" element={<ImportarCatalogo />} />
-          <Route path="catalogo/importar-manual" element={<ImportarManual />} />
-          <Route path="catalogo/saldos/:codigo" element={<SaldosMensuales />} />
-          <Route path="catalogo/movimientos/:codigo/:mes" element={<MovimientosMes />} />
-          <Route path="partidas" element={<Partidas />} />
-          <Route path="partidas/nueva" element={<PartidaEditor />} />
-          <Route path="partidas/editar/:id" element={<PartidaEditor />} />
-          <Route path="partidas/imprimir/:id" element={<PartidaImpresion />} />
-        </Route>
-        
-        <Route path="/" element={<Navigate to="/login" replace />} />
-      </Routes>
-    </Router>
+    <GoogleOAuthProvider clientId={clientId}>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/registro" element={<Registro />} />
+          <Route path="/terminos" element={<Terminos />} />
+          
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } 
+          >
+            <Route index element={<DashboardHome />} />
+            <Route path="seguridad" element={<Seguridad />} />
+            <Route path="catalogo" element={<Catalogo />} />
+            <Route path="catalogo/importar" element={<ImportarCatalogo />} />
+            <Route path="catalogo/importar-manual" element={<ImportarManual />} />
+            <Route path="catalogo/saldos/:codigo" element={<SaldosMensuales />} />
+            <Route path="catalogo/movimientos/:codigo/:mes" element={<MovimientosMes />} />
+            <Route path="partidas" element={<Partidas />} />
+            <Route path="partidas/nueva" element={<PartidaEditor />} />
+            <Route path="partidas/editar/:id" element={<PartidaEditor />} />
+            <Route path="partidas/imprimir/:id" element={<PartidaImpresion />} />
+          </Route>
+          
+          <Route path="/" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </Router>
+    </GoogleOAuthProvider>
   );
 }
 

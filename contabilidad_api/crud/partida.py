@@ -8,6 +8,7 @@ import math
 # ==================== IMPORTACIÓN DE MODELOS Y ESQUEMAS ====================
 from models.partida import PartidaCabecera, PartidaDetalle
 from models.periodo import ControlPeriodo
+from models.cuenta import CuentaContable
 from schemas.partida import PartidaCompletaCrear, PaginaPartidasRespuesta, CierreContableRequest
 from config.database import get_db
 from crud import cierre as c_cierre
@@ -41,6 +42,35 @@ def verificar_periodo_abierto(empresa_id: str, anio: int, mes: int, db: Session)
         )
         
     return True
+
+
+def validar_cuentas_detalle(db: Session, empresa_id: str, anio: int, detalles: list):
+    """
+    Guardia NIIF: Asegura que ningún renglón de la partida ataque cuentas de mayor/resumen.
+    """
+    codigos_cuentas = [linea.cuenta_codigo for linea in detalles]
+    
+    cuentas_bd = db.query(CuentaContable).filter(
+        CuentaContable.empresa_id == empresa_id,
+        CuentaContable.anio == anio,
+        CuentaContable.cuentas.in_(codigos_cuentas)
+    ).all()
+    
+    mapa_cuentas = {cta.cuentas: cta for cta in cuentas_bd}
+    
+    for i, linea in enumerate(detalles):
+        cta = mapa_cuentas.get(linea.cuenta_codigo)
+        if not cta:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Inconsistencia en línea {i + 1}: La cuenta {linea.cuenta_codigo} no existe en el catálogo del año {anio}."
+            )
+        if getattr(cta, 'resumen', False):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Inconsistencia legal en línea {i + 1}: La cuenta '{cta.cuentas} - {cta.nombre}' es una cuenta de RESUMEN (Padre). NIIF prohíbe realizar movimientos directos a cuentas totalizadoras. Por favor, utilice una cuenta de detalle (hoja)."
+            )
+
 
 
 @router.get("/resumen", response_model=PaginaPartidasRespuesta)
@@ -126,6 +156,9 @@ def guardar_partida_completa_transaccional(partida_in: PartidaCompletaCrear, db:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Inconsistencia en línea {index + 1}: El renglón no registra ningún movimiento financiero."
             )
+
+    # 3.5. Validar que ninguna cuenta sea de resumen
+    validar_cuentas_detalle(db, partida_in.empresa_id, partida_in.anio, partida_in.detalles)
 
     # 4. Iniciar bloque transaccional controlado y bloquear periodo
     periodo = db.query(ControlPeriodo).filter_by(
@@ -251,6 +284,9 @@ def actualizar_partida_completa_transaccional(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Error de cuadre: Suma del Debe (${total_debe}) no coincide con Suma del Haber (${total_haber})."
         )
+
+    # 2.5. Validar que ninguna cuenta sea de resumen
+    validar_cuentas_detalle(db, partida_in.empresa_id, partida_in.anio, partida_in.detalles)
 
     # 3. Localizar la cabecera existente en la BD
     partida = db.query(PartidaCabecera).filter(PartidaCabecera.id == partida_id).first()

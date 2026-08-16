@@ -70,6 +70,7 @@ def obtener_estado_resultados(db: Session, empresa_id: str, anio: int, mes: int,
     
     total_ingresos = 0.0
     total_gastos = 0.0
+    anomalias = []
 
     # 1. Calcular saldos base y movimientos
     for cta in cuentas:
@@ -82,6 +83,9 @@ def obtener_estado_resultados(db: Session, empresa_id: str, anio: int, mes: int,
         # Ignorar resumen si no tiene movimientos anómalos directos
         if resumen and debe_acumulado == 0.0 and haber_acumulado == 0.0:
             continue
+            
+        if resumen and (debe_acumulado != 0.0 or haber_acumulado != 0.0):
+            anomalias.append({"codigo": codigo, "nombre": cta.nombre, "debe": debe_acumulado, "haber": haber_acumulado})
             
         saldo = 0.0
         if codigo.startswith(prefijo_ingresos): 
@@ -140,7 +144,8 @@ def obtener_estado_resultados(db: Session, empresa_id: str, anio: int, mes: int,
             "ingresos": total_ingresos,
             "gastos": total_gastos,
             "utilidad": total_ingresos - total_gastos
-        }
+        },
+        "anomalias": anomalias
     }
 
 
@@ -179,6 +184,7 @@ def obtener_balance_general(db: Session, empresa_id: str, anio: int, mes: int, n
     total_activo = 0.0
     total_pasivo = 0.0
     total_patrimonio = 0.0
+    anomalias_balance = []
 
     # 1. Calcular saldos base y sumar a totales maestros
     for cta in cuentas:
@@ -193,6 +199,9 @@ def obtener_balance_general(db: Session, empresa_id: str, anio: int, mes: int, n
         # Si es resumen sin movimientos anómalos directos, omitir para que se calcule por roll-up
         if resumen and debe == 0.0 and haber == 0.0 and saldo_inicial == 0.0:
             continue
+            
+        if resumen and (debe != 0.0 or haber != 0.0 or saldo_inicial != 0.0):
+            anomalias_balance.append({"codigo": codigo, "nombre": cta.nombre, "debe": debe, "haber": haber})
 
         saldo = 0.0
         if codigo.startswith('1'):
@@ -262,6 +271,8 @@ def obtener_balance_general(db: Session, empresa_id: str, anio: int, mes: int, n
     activos.sort(key=lambda x: x["codigo"])
     pasivos.sort(key=lambda x: x["codigo"])
     patrimonio.sort(key=lambda x: x["codigo"])
+    
+    anomalias_totales = anomalias_balance + estado_resultados.get("anomalias", [])
 
     return {
         "empresa_id": empresa_id,
@@ -275,7 +286,8 @@ def obtener_balance_general(db: Session, empresa_id: str, anio: int, mes: int, n
             "pasivo": total_pasivo,
             "patrimonio": total_patrimonio,
             "pasivo_mas_patrimonio": total_pasivo + total_patrimonio
-        }
+        },
+        "anomalias": anomalias_totales
     }
 
 

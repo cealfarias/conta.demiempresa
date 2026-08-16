@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Building, Calendar, Clock, ArrowRight, AlertCircle, Settings } from 'lucide-react';
+import './Login.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -34,7 +35,13 @@ export default function SeleccionarEntorno() {
         setEmpresas(res.data);
       } catch (err) {
         console.error('Error fetching empresas:', err);
-        setError('No se pudieron cargar las empresas. Verifica tu conexión.');
+        if (err.response) {
+            setError('No se pudieron cargar las empresas. Verifica tu conexión.');
+        } else if (err.request) {
+            setError('Error de Red: El servidor se está iniciando. Por favor, espera unos segundos e intenta nuevamente.');
+        } else {
+            setError('Error interno al cargar empresas.');
+        }
       } finally {
         setLoading(false);
       }
@@ -85,6 +92,8 @@ export default function SeleccionarEntorno() {
         setError(`El ejercicio fiscal ${anio} no se encuentra inicializado. Por favor contacte al Administrador.`);
       } else if (err.response) {
         setError(`Error del servidor (${err.response.status}): ${err.response.data?.detail || JSON.stringify(err.response.data)}`);
+      } else if (err.request) {
+        setError('Error de Red: El servidor se está iniciando. Por favor, espera unos segundos e intenta nuevamente.');
       } else {
         setError(`Error local/red: ${err.message || 'No se pudo conectar con el servidor'}`);
       }
@@ -94,8 +103,8 @@ export default function SeleccionarEntorno() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-cover bg-center" style={{ backgroundImage: "linear-gradient(rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.8)), url('/bg-entorno.jpg')" }}>
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden relative">
         <div className="bg-gradient-to-r from-emerald-600 to-teal-700 p-8 text-center text-white">
           <div className="w-16 h-16 bg-white text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
             <Building className="w-8 h-8" />
@@ -107,9 +116,8 @@ export default function SeleccionarEntorno() {
         <div className="p-8">
           <form onSubmit={handleSubmit}>
             {error && (
-              <div className="mb-6 bg-rose-50 border border-rose-200 text-rose-600 px-4 py-3 rounded-lg flex items-start gap-3 text-sm animate-in fade-in">
-                <AlertCircle className="w-5 h-5 shrink-0" />
-                <p>{error}</p>
+              <div className="login-error">
+                {error}
               </div>
             )}
 

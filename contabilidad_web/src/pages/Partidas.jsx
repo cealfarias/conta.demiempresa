@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Search, Plus, Calendar, FileText, ChevronLeft, ChevronRight, Eye, Edit2, Trash2, Filter, Upload } from 'lucide-react';
+import { Search, Plus, Calendar, FileText, ChevronLeft, ChevronRight, Eye, Edit2, Trash2, Filter, Upload, ArrowUp, ArrowDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -28,6 +28,7 @@ function Partidas() {
   const [paginaActual, setPaginaActual] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
   const [totalRegistros, setTotalRegistros] = useState(0);
+  const [sortConfig, setSortConfig] = useState({ key: 'numero_partida', direction: 'asc' });
   
   const navigate = useNavigate();
 
@@ -71,10 +72,38 @@ function Partidas() {
     navigate('/dashboard/partidas/nueva');
   };
 
-  const filteredPartidas = partidas.filter(p => 
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedPartidas = [...partidas].sort((a, b) => {
+    let valA = a[sortConfig.key];
+    let valB = b[sortConfig.key];
+    
+    // Convert to Date for proper comparison if sorting by date
+    if (sortConfig.key === 'fecha') {
+      valA = new Date(valA).getTime();
+      valB = new Date(valB).getTime();
+    }
+    
+    if (valA < valB) return sortConfig.direction === 'asc' ? -1 : 1;
+    if (valA > valB) return sortConfig.direction === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  const filteredPartidas = sortedPartidas.filter(p => 
     p.concepto.toLowerCase().includes(searchTerm.toLowerCase()) ||
     p.numero_partida.toString().includes(searchTerm)
   );
+
+  const SortIcon = ({ columnKey }) => {
+    if (sortConfig.key !== columnKey) return <span className="w-3 h-3 ml-1 inline-block opacity-0" />;
+    return sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3 ml-1 inline-block text-indigo-500" /> : <ArrowDown className="w-3 h-3 ml-1 inline-block text-indigo-500" />;
+  };
 
   return (
     <div className="p-4 md:p-6 flex flex-col h-[calc(100vh-80px)]">
@@ -149,8 +178,18 @@ function Partidas() {
           <table className="w-full text-left border-collapse text-sm">
             <thead className="sticky top-0 z-10 bg-white">
               <tr className="border-b border-slate-200 text-slate-500 text-[11px] uppercase tracking-wider font-bold">
-                <th className="py-3 px-5 whitespace-nowrap w-24">Partida</th>
-                <th className="py-3 px-5 whitespace-nowrap w-32">Fecha</th>
+                <th 
+                  className="py-3 px-5 whitespace-nowrap w-24 cursor-pointer hover:bg-slate-50 transition-colors select-none"
+                  onClick={() => handleSort('numero_partida')}
+                >
+                  <div className="flex items-center">Partida <SortIcon columnKey="numero_partida" /></div>
+                </th>
+                <th 
+                  className="py-3 px-5 whitespace-nowrap w-32 cursor-pointer hover:bg-slate-50 transition-colors select-none"
+                  onClick={() => handleSort('fecha')}
+                >
+                  <div className="flex items-center">Fecha <SortIcon columnKey="fecha" /></div>
+                </th>
                 <th className="py-3 px-5">Concepto</th>
                 <th className="py-3 px-5 text-center w-32">Estado</th>
                 <th className="py-3 px-5 text-center w-32">Nomenclatura</th>

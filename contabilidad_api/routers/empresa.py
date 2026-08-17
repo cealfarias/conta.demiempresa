@@ -9,6 +9,7 @@ from schemas import configuracion as s_configuracion
 from fastapi import HTTPException, Depends
 from crud import flujo_efectivo as c_flujo
 from schemas import flujo_efectivo as s_flujo
+from auth_module import obtener_usuario_actual, TokenData
 
 # El prefijo maneja la base "/api/v1/empresas"
 router = APIRouter(prefix="/api/v1/empresas", tags=["Control General de Empresas"])
@@ -19,8 +20,8 @@ def crear_empresa(empresa: s_empresa.EmpresaCreate, db: Session = Depends(get_db
     return c_empresa.registrar_nueva_empresa(db=db, empresa_in=empresa)
 
 @router.get("/todas", response_model=List[s_empresa.EmpresaResponse])
-def listar_empresas(db: Session = Depends(get_db)):
-    return c_empresa.obtener_todas_empresas(db=db)
+def listar_empresas(db: Session = Depends(get_db), current_user: TokenData = Depends(obtener_usuario_actual)):
+    return c_empresa.obtener_todas_empresas(db=db, usuario=current_user.username, rol=current_user.rol)
 
 
 @router.post("/reglas-contables")

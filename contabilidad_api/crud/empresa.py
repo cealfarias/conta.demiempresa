@@ -24,5 +24,9 @@ def registrar_nueva_empresa(db: Session, empresa_in: s_empresa.EmpresaCreate):
     db.refresh(nueva_empresa)
     return nueva_empresa
 
-def obtener_todas_empresas(db: Session):
-    return db.query(m_empresa.Empresa).all()
+def obtener_todas_empresas(db: Session, usuario: str = None, rol: str = None):
+    # Si el usuario es administrador global, o si no se especificó filtro, se devuelven todas
+    if not usuario or rol == "admin":
+        return db.query(m_empresa.Empresa).all()
+    # Si es un usuario normal (ej: 'contador' o cualquier otro rol de un tenant), solo ve las que él creó
+    return db.query(m_empresa.Empresa).filter(m_empresa.Empresa.usuario_creacion == usuario).all()

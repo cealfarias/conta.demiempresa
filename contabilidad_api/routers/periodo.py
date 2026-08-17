@@ -24,11 +24,11 @@ def inicializar_ejercicio_fiscal(datos: InicializarPeriodoIn, db: Session = Depe
     """
     Inicializa un nuevo año contable con banderas detalladas en la consola de Uvicorn.
     """
-    print("\n🚩 [API-PERIODOS - BANDERA 1] Petición POST recibida en /inicializar")
+    print("\n> [API-PERIODOS - BANDERA 1] Petición POST recibida en /inicializar")
     print(f"   -> Payload del Frontend: empresa_id='{datos.empresa_id}', anio={datos.anio}, usuario='{datos.usuario}'")
     
     # 1. Validar existencia real en la tabla de control de períodos
-    print("🚩 [API-PERIODOS - BANDERA 2] Consultando la tabla 'control_periodos' en la BD...")
+    print("> [API-PERIODOS - BANDERA 2] Consultando la tabla 'control_periodos' en la BD...")
     # 1. 🛡️ CONTROL DE INTEGRIDAD MODIFICADO PARA EL FRONTEND
     periodo_existente = db.query(ControlPeriodo).filter_by(
         empresa_id=datos.empresa_id, 
@@ -36,13 +36,13 @@ def inicializar_ejercicio_fiscal(datos: InicializarPeriodoIn, db: Session = Depe
     ).first()
 
     if periodo_existente:
-        print("🚩 [API-PERIODOS] El año ya existía. Devolviendo 200 para calmar al Frontend.")
+        print("> [API-PERIODOS] El año ya existía. Devolviendo 200 para calmar al Frontend.")
         # En lugar de lanzar un HTTPException (400), devolvemos un éxito ficticio
         return {
             "mensaje": f"El ejercicio fiscal {datos.anio} ya estaba inicializado. Acceso concedido."
         }
 
-    print("🚩 [API-PERIODOS - BANDERA 4] Validación aprobada. No hay duplicados. Iniciando guardado...")
+    print("> [API-PERIODOS - BANDERA 4] Validación aprobada. No hay duplicados. Iniciando guardado...")
 
     # 2. Registrar la cabecera del Ejercicio Fiscal
     try:
@@ -58,10 +58,10 @@ def inicializar_ejercicio_fiscal(datos: InicializarPeriodoIn, db: Session = Depe
         db.add(nuevo_ejercicio)
         print("   -> [OK] Cabecera encolada exitosamente.")
     except Exception as e:
-        print(f"   ❌ [ERROR CABECERA] No se pudo mapear la cabecera: {str(e)}")
+        print(f"   [X] [ERROR CABECERA] No se pudo mapear la cabecera: {str(e)}")
 
     # 3. Registrar los 12 meses correspondientes en la tabla de control
-    print("🚩 [API-PERIODOS - BANDERA 5] Mapeando los 12 meses en memoria para 'control_periodos'...")
+    print("> [API-PERIODOS - BANDERA 5] Mapeando los 12 meses en memoria para 'control_periodos'...")
     meses_a_insertar = []
     for mes in range(1, 13):
         nuevo_mes = ControlPeriodo(
@@ -76,12 +76,12 @@ def inicializar_ejercicio_fiscal(datos: InicializarPeriodoIn, db: Session = Depe
     print(f"   -> [OK] {len(meses_a_insertar)} meses listos para inserción masiva.")
 
     try:
-        print("🚩 [API-PERIODOS - BANDERA 6] Ejecutando db.add_all() y db.commit()...")
+        print("> [API-PERIODOS - BANDERA 6] Ejecutando db.add_all() y db.commit()...")
         db.add_all(meses_a_insertar)
         db.commit()
-        print("   -> 🎉 [ÉXITO TOTAL] ¡Base de datos actualizada y guardada en disco!")
+        print("   -> [*] [ÉXITO TOTAL] ¡Base de datos actualizada y guardada en disco!")
     except Exception as e:
-        print(f"   ❌ [ERROR CRÍTICO SQL] Fallo al aplicar commit en la base de datos: {str(e)}")
+        print(f"   [X] [ERROR CRÍTICO SQL] Fallo al aplicar commit en la base de datos: {str(e)}")
         db.rollback()
         print("   -> [ROLLBACK] Cambios revertidos de forma segura para evitar corrupción.")
         raise HTTPException(
@@ -98,7 +98,7 @@ def obtener_periodos_ejercicio(empresa_id: str, anio: int, db: Session = Depends
     """
     Devuelve los 12 meses de un ejercicio contable específico para dibujarlos en la tabla del frontend.
     """
-    print(f"\n🚩 [API-PERIODOS] Petición GET recibida en /control/{empresa_id}/{anio}")
+    print(f"\n> [API-PERIODOS] Petición GET recibida en /control/{empresa_id}/{anio}")
     
     # Consultamos los períodos ordenados por mes (del 1 al 12)
     periodos = db.query(ControlPeriodo).filter_by(
@@ -108,7 +108,7 @@ def obtener_periodos_ejercicio(empresa_id: str, anio: int, db: Session = Depends
     
     # Si la base de datos devuelve una lista vacía, lanzamos el verdadero 404
     if not periodos:
-        print("   -> ❌ No se encontraron registros. Devolviendo 404 Not Found.")
+        print("   -> [X] No se encontraron registros. Devolviendo 404 Not Found.")
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Año no inicializado o sin registros en la base de datos."
@@ -210,5 +210,5 @@ def verificar_borradores(empresa_id: str, anio: int, mes: int, db: Session = Dep
         
         return {"conteo_borradores": conteo}
     except Exception as e:
-        print(f"❌ [ERROR AUDITORÍA] Fallo al verificar borradores: {str(e)}")
+        print(f"[X] [ERROR AUDITORÍA] Fallo al verificar borradores: {str(e)}")
         raise HTTPException(status_code=500, detail="Error interno al auditar partidas.")

@@ -65,9 +65,8 @@ function BalanceGeneral() {
 
   const formatearFila = (cuenta) => {
     const isTotal = cuenta.es_total || cuenta.nivel <= 2;
-    const isActivo = cuenta.codigo.startsWith('1');
-    // En el pasivo/patrimonio, el saldo normal es acreedor (negativo), as que invertimos el signo para la presentacin
-    let saldoMostrar = isActivo ? cuenta.saldo : (cuenta.saldo * -1);
+    // El backend ya devuelve el saldo normal positivo (activo: debe-haber, pasivo/pat: haber-debe).
+    let saldoMostrar = cuenta.saldo;
 
     return (
       <tr key={cuenta.codigo} className={`${isTotal ? 'font-bold' : ''}`}>
@@ -262,7 +261,7 @@ function BalanceGeneral() {
                       <tr>
                         <td className="py-2 px-2 font-bold text-sm uppercase">TOTAL PASIVO</td>
                         <td className="py-2 px-2 text-right font-bold border-t border-black">
-                          {formatoMoneda(data.totales.pasivo * -1)}
+                          {formatoMoneda(data.totales.pasivo)}
                         </td>
                       </tr>
                     </tfoot>
@@ -278,7 +277,7 @@ function BalanceGeneral() {
                       <tr>
                         <td className="py-2 px-2 font-bold text-sm uppercase">TOTAL PATRIMONIO</td>
                         <td className="py-2 px-2 text-right font-bold border-t border-black">
-                          {formatoMoneda(data.totales.patrimonio * -1)}
+                          {formatoMoneda(data.totales.patrimonio)}
                         </td>
                       </tr>
                     </tfoot>
@@ -290,7 +289,7 @@ function BalanceGeneral() {
                       <tr>
                         <td className="py-2 px-2 font-bold text-sm uppercase">TOTAL PASIVO Y PATRIMONIO</td>
                         <td className="py-2 px-2 text-right font-bold border-t border-b-4 border-double border-black">
-                          {formatoMoneda(data.totales.pasivo_mas_patrimonio * -1)}
+                          {formatoMoneda(data.totales.pasivo_mas_patrimonio)}
                         </td>
                       </tr>
                     </tfoot>

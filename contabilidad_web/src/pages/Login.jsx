@@ -226,9 +226,9 @@ export default function Login() {
             </form>
 
             <div style={{ textAlign: 'center', marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid #e2e8f0' }}>
-              <a href="https://ventas.demiempresa.online/registro" className="text-muted" style={{ textDecoration: 'none' }}>
+              <Link to="/registro" className="text-muted" style={{ textDecoration: 'none' }}>
                 ¿No tienes un ecosistema? <strong style={{ color: '#059669' }}>Crea tu Empresa aquí</strong>
-              </a>
+              </Link>
             </div>
           </div>
         </div>

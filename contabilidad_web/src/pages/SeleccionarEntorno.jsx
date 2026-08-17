@@ -25,30 +25,6 @@ export default function SeleccionarEntorno() {
     { id: '10', nombre: 'Octubre' }, { id: '11', nombre: 'Noviembre' }, { id: '12', nombre: 'Diciembre' }
   ];
 
-  // Auto-logout si expira el token estando inactivo
-  useEffect(() => {
-    const checkToken = () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        navigate('/login');
-        return;
-      }
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        if (payload.exp * 1000 < Date.now()) {
-          localStorage.clear();
-          navigate('/login');
-        }
-      } catch (e) {
-        // Token inválido
-      }
-    };
-    
-    checkToken();
-    const interval = setInterval(checkToken, 60000); // Check every minute
-    return () => clearInterval(interval);
-  }, [navigate]);
-
   useEffect(() => {
     const fetchEmpresas = async () => {
       try {

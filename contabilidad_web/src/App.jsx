@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import Login from './pages/Login';
 import Registro from './pages/Registro';
 import Terminos from './pages/Terminos';
@@ -24,13 +24,46 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import DashboardInicio from './pages/DashboardInicio';
 import ConfiguracionEmpresa from './pages/ConfiguracionEmpresa';
 
-// Simple Protected Route wrapper
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
   if (!token) {
     return <Navigate to="/login" replace />;
   }
   return children;
+};
+
+// Global session watcher that checks expiration every minute
+const SessionWatcher = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    // No chequear en páginas públicas
+    if (['/login', '/registro', '/terminos'].includes(location.pathname)) return;
+
+    const checkToken = () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (payload.exp * 1000 < Date.now()) {
+          localStorage.clear();
+          navigate('/login');
+        }
+      } catch (e) {
+        // Ignorar
+      }
+    };
+
+    checkToken();
+    const interval = setInterval(checkToken, 60000);
+    return () => clearInterval(interval);
+  }, [navigate, location.pathname]);
+
+  return null;
 };
 
 // Home/Resumen component for Dashboard is now DashboardInicio
@@ -41,6 +74,7 @@ function App() {
   return (
     <GoogleOAuthProvider clientId={clientId}>
       <Router>
+        <SessionWatcher />
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Registro />} />

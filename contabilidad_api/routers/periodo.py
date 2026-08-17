@@ -76,8 +76,8 @@ def inicializar_ejercicio_fiscal(datos: InicializarPeriodoIn, db: Session = Depe
     print(f"   -> [OK] {len(meses_a_insertar)} meses listos para inserción masiva.")
 
     try:
-        print("🚩 [API-PERIODOS - BANDERA 6] Ejecutando db.bulk_save_objects() y db.commit()...")
-        db.bulk_save_objects(meses_a_insertar)
+        print("🚩 [API-PERIODOS - BANDERA 6] Ejecutando db.add_all() y db.commit()...")
+        db.add_all(meses_a_insertar)
         db.commit()
         print("   -> 🎉 [ÉXITO TOTAL] ¡Base de datos actualizada y guardada en disco!")
     except Exception as e:

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FileText, Printer, ArrowLeft } from 'lucide-react';
+import { FileText, Printer, ArrowLeft, TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';

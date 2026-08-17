@@ -63,52 +63,28 @@ function EstadoResultados() {
     return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Math.abs(monto));
   };
 
-  // Cálculos NIIF El Salvador
-  let ingresosOperacion = 0;
-  let costoVentas = 0;
-  let gastosAdmin = 0;
-  let gastosVenta = 0;
-  let otrosIngresos = 0;
-  let otrosGastos = 0;
-
-  if (data) {
-    const totalByPrefix = (arr, prefixes) => {
-      return arr.filter(c => prefixes.some(p => c.codigo.startsWith(p)))
-                .reduce((sum, c) => sum + Math.abs(c.saldo), 0); // Asumimos que la API ya envía saldos absolutos para ER
-    };
-
-    ingresosOperacion = totalByPrefix(data.ingresos, ['51']); // Ingresos Ordinarios
-    otrosIngresos = totalByPrefix(data.ingresos, ['52']); // Otros Ingresos
-    
-    costoVentas = totalByPrefix(data.gastos, ['41']); // Costos
-    gastosVenta = totalByPrefix(data.gastos, ['42']); // Gastos Venta
-    gastosAdmin = totalByPrefix(data.gastos, ['43']); // Gastos Admin
-    otrosGastos = totalByPrefix(data.gastos, ['44']); // Gastos Financieros/Otros
-  }
-
-  const utilidadBruta = ingresosOperacion - costoVentas;
-  const utilidadOperacion = utilidadBruta - gastosAdmin - gastosVenta;
-  const utilidadAntesImpuestos = utilidadOperacion + otrosIngresos - otrosGastos;
-
+  let utilidadAntesImpuestos = data ? data.totales.utilidad : 0;
   let reservaLegal = 0;
   let isr = 0;
   let tasaISRStr = "0%";
+  let utilidadNeta = utilidadAntesImpuestos;
   
-  const exencionISR = data?.exencion_isr === true || data?.exencion_isr === "true" || data?.exencion_isr === 1;
-  const ingresosBrutosGravados = ingresosOperacion + otrosIngresos;
-
-  if (utilidadAntesImpuestos > 0) {
+  if (data && mesActual === 12 && utilidadAntesImpuestos > 0) {
       reservaLegal = utilidadAntesImpuestos * 0.07; 
+      const exencionISR = data.exencion_isr === true || data.exencion_isr === "true" || data.exencion_isr === 1;
+      
       if (exencionISR) {
           isr = 0;
           tasaISRStr = "Exento";
       } else {
+          // Asumimos que los ingresos brutos son todos los ingresos
+          const ingresosBrutosGravados = data.totales.ingresos;
           const tasaISR = ingresosBrutosGravados <= 150000 ? 0.25 : 0.30;
           tasaISRStr = ingresosBrutosGravados <= 150000 ? "25%" : "30%";
           isr = (utilidadAntesImpuestos - reservaLegal) * tasaISR; 
       }
+      utilidadNeta = utilidadAntesImpuestos - reservaLegal - isr;
   }
-  const utilidadNeta = utilidadAntesImpuestos - reservaLegal - isr;
 
   const Fila = ({ titulo, monto, indent = false, isTotal = false, isResta = false }) => (
     <tr>
@@ -120,6 +96,25 @@ function EstadoResultados() {
       </td>
     </tr>
   );
+
+  const formatearFilaDinámica = (cuenta) => {
+    const isTotal = cuenta.nivel <= 2;
+    let saldoMostrar = cuenta.saldo;
+    
+    return (
+      <tr key={cuenta.codigo} className={`${isTotal ? 'font-bold' : ''}`}>
+        <td 
+          className={`py-1.5 px-4 border-b border-slate-100 text-sm ${isTotal ? 'text-slate-800 uppercase' : 'text-slate-600'}`} 
+          style={{ paddingLeft: `${(cuenta.nivel - 1) * 1.5}rem` }}
+        >
+          {cuenta.nombre}
+        </td>
+        <td className={`py-1.5 px-4 border-b border-slate-100 text-sm text-right ${isTotal ? 'text-slate-800' : 'text-slate-700'}`}>
+          {saldoMostrar < 0 && !isTotal ? `(${formatoMoneda(saldoMostrar)})` : formatoMoneda(saldoMostrar)}
+        </td>
+      </tr>
+    );
+  };
 
   return (
     <div className="p-8 max-w-4xl mx-auto flex flex-col h-full overflow-hidden">
@@ -263,40 +258,71 @@ function EstadoResultados() {
               <div className="w-full">
                 <table className="w-full">
                   <tbody>
-                    <Fila titulo="INGRESOS DE OPERACIÓN" monto={ingresosOperacion} isTotal />
-                    <Fila titulo="Menos: Costo de Ventas / Costo de Operación" monto={costoVentas} indent isResta />
-                    <Fila titulo="UTILIDAD BRUTA" monto={utilidadBruta} isTotal />
-                    
-                    <tr><td colSpan="2" className="py-2"></td></tr>
-                    
-                    <Fila titulo="GASTOS DE OPERACIÓN" monto={gastosAdmin + gastosVenta} isTotal />
-                    <Fila titulo="Gastos de Administración" monto={gastosAdmin} indent isResta />
-                    <Fila titulo="Gastos de Venta y Comercialización" monto={gastosVenta} indent isResta />
-                    <Fila titulo="UTILIDAD DE OPERACIÓN" monto={utilidadOperacion} isTotal />
-                    
-                    <tr><td colSpan="2" className="py-2"></td></tr>
-
-                    <Fila titulo="OTROS INGRESOS Y GASTOS" monto={otrosIngresos - otrosGastos} isTotal />
-                    <Fila titulo="Otros Ingresos No Operativos" monto={otrosIngresos} indent />
-                    <Fila titulo="Costos Financieros y Otros Gastos" monto={otrosGastos} indent isResta />
-                    <Fila titulo="UTILIDAD ANTES DE IMPUESTOS Y RESERVAS" monto={utilidadAntesImpuestos} isTotal />
-
-                    <tr><td colSpan="2" className="py-2"></td></tr>
-
-                    <Fila titulo="PROVISIONES (ESTATUTARIA Y FISCAL)" monto={reservaLegal + isr} isTotal />
-                    <Fila titulo="Menos: Reserva Legal (7%)" monto={reservaLegal} indent isResta />
-                    <Fila titulo={`Menos: Impuesto sobre la Renta (${tasaISRStr})`} monto={isr} indent isResta />
-                  </tbody>
-                  <tfoot>
                     <tr>
-                      <td className="py-3 px-4 font-bold text-sm uppercase border-t border-black">
-                        UTILIDAD NETA DEL EJERCICIO
-                      </td>
-                      <td className="py-3 px-4 text-right font-bold border-t border-b-4 border-double border-black">
-                        {formatoMoneda(utilidadNeta)}
+                      <td className="py-2 px-4 font-bold text-sm uppercase text-slate-800" colSpan="2">
+                        INGRESOS
                       </td>
                     </tr>
-                  </tfoot>
+                    {data.ingresos.filter(cta => cta.nivel > 1).map(formatearFilaDinámica)}
+                    <tr>
+                      <td className="py-2 px-4 font-bold text-sm uppercase">TOTAL INGRESOS</td>
+                      <td className="py-2 px-4 text-right font-bold border-t border-black">
+                        {formatoMoneda(data.totales.ingresos)}
+                      </td>
+                    </tr>
+
+                    <tr><td colSpan="2" className="py-4"></td></tr>
+
+                    <tr>
+                      <td className="py-2 px-4 font-bold text-sm uppercase text-slate-800" colSpan="2">
+                        COSTOS Y GASTOS
+                      </td>
+                    </tr>
+                    {data.gastos.filter(cta => cta.nivel > 1).map(formatearFilaDinámica)}
+                    <tr>
+                      <td className="py-2 px-4 font-bold text-sm uppercase">TOTAL COSTOS Y GASTOS</td>
+                      <td className="py-2 px-4 text-right font-bold border-t border-black">
+                        {formatoMoneda(data.totales.gastos)}
+                      </td>
+                    </tr>
+
+                    <tr><td colSpan="2" className="py-4"></td></tr>
+
+                    <tr>
+                      <td className="py-2 px-4 font-bold text-sm uppercase text-slate-800">
+                        {mesActual === 12 ? 'UTILIDAD ANTES DE IMPUESTOS Y RESERVAS' : 'UTILIDAD (PÉRDIDA) DEL EJERCICIO'}
+                      </td>
+                      <td className="py-2 px-4 text-right font-bold border-t border-b-2 border-black">
+                        {formatoMoneda(utilidadAntesImpuestos)}
+                      </td>
+                    </tr>
+
+                    {mesActual === 12 && utilidadAntesImpuestos > 0 && (
+                      <>
+                        <tr><td colSpan="2" className="py-4"></td></tr>
+                        <tr>
+                          <td className="py-2 px-4 font-bold text-sm uppercase text-slate-800" colSpan="2">
+                            PROVISIONES (ESTATUTARIA Y FISCAL)
+                          </td>
+                        </tr>
+                        <Fila titulo="Menos: Reserva Legal (7%)" monto={reservaLegal} indent isResta />
+                        <Fila titulo={`Menos: Impuesto sobre la Renta (${tasaISRStr})`} monto={isr} indent isResta />
+                      </>
+                    )}
+                  </tbody>
+                  
+                  {mesActual === 12 && utilidadAntesImpuestos > 0 && (
+                    <tfoot>
+                      <tr>
+                        <td className="py-3 px-4 font-bold text-sm uppercase border-t border-black">
+                          UTILIDAD NETA DEL EJERCICIO
+                        </td>
+                        <td className="py-3 px-4 text-right font-bold border-t border-b-4 border-double border-black">
+                          {formatoMoneda(utilidadNeta)}
+                        </td>
+                      </tr>
+                    </tfoot>
+                  )}
                 </table>
               </div>
 

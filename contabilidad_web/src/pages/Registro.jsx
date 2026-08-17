@@ -13,6 +13,7 @@ function Registro() {
   const [nit, setNit] = useState('');
   const [giro, setGiro] = useState('');
   const [normativa, setNormativa] = useState('NIIF_PYMES');
+  const [anio, setAnio] = useState(new Date().getFullYear().toString());
   
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -65,6 +66,17 @@ function Registro() {
       };
 
       await axios.post(`${API_URL}/api/v1/usuarios/`, userPayload, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      // 3. Initialize Period
+      const periodoPayload = {
+        empresa_id: empresaId.toUpperCase(),
+        anio: parseInt(anio),
+        usuario: username
+      };
+
+      await axios.post(`${API_URL}/api/v1/periodos/inicializar`, periodoPayload, {
         headers: { 'Content-Type': 'application/json' }
       });
 
@@ -199,17 +211,31 @@ function Registro() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-slate-700 mb-2">Normativa Contable</label>
-              <div className="flex space-x-4">
-                <label className="inline-flex items-center">
-                  <input type="radio" value="NIIF_PYMES" checked={normativa === 'NIIF_PYMES'} onChange={(e) => setNormativa(e.target.value)} className="text-indigo-600 focus:ring-indigo-500" />
-                  <span className="ml-2 text-sm text-slate-700">NIIF para PYMES</span>
-                </label>
-                <label className="inline-flex items-center">
-                  <input type="radio" value="NIFACES" checked={normativa === 'NIFACES'} onChange={(e) => setNormativa(e.target.value)} className="text-indigo-600 focus:ring-indigo-500" />
-                  <span className="ml-2 text-sm text-slate-700">NIFACES</span>
-                </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-2">Normativa Contable</label>
+                <div className="flex space-x-4">
+                  <label className="inline-flex items-center">
+                    <input type="radio" value="NIIF_PYMES" checked={normativa === 'NIIF_PYMES'} onChange={(e) => setNormativa(e.target.value)} className="text-indigo-600 focus:ring-indigo-500" />
+                    <span className="ml-2 text-sm text-slate-700">NIIF para PYMES</span>
+                  </label>
+                  <label className="inline-flex items-center">
+                    <input type="radio" value="NIFACES" checked={normativa === 'NIFACES'} onChange={(e) => setNormativa(e.target.value)} className="text-indigo-600 focus:ring-indigo-500" />
+                    <span className="ml-2 text-sm text-slate-700">NIFACES</span>
+                  </label>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">Año Contable (Inicial)</label>
+                <input 
+                  type="number" 
+                  required
+                  min="2000"
+                  max="2100"
+                  value={anio}
+                  onChange={e => setAnio(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                />
               </div>
             </div>
 

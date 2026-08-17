@@ -182,6 +182,18 @@ def obtener_estado_resultados(db: Session, empresa_id: str, anio: int, mes: int,
     if anomalias:
         anomalias = _obtener_anomalias_detalladas(db, empresa_id, anio, mes, modo, (prefijo_ingresos, prefijo_gastos))
 
+    utilidad_antes_impuestos = total_ingresos - total_gastos
+    reserva_legal = 0.0
+    isr = 0.0
+    
+    if mes == 12 and utilidad_antes_impuestos > 0:
+        reserva_legal = utilidad_antes_impuestos * 0.07
+        if not exencion_isr:
+            tasa_isr = 0.25 if total_ingresos <= 150000 else 0.30
+            isr = (utilidad_antes_impuestos - reserva_legal) * tasa_isr
+
+    utilidad_neta = utilidad_antes_impuestos - reserva_legal - isr
+
     return {
         "empresa_id": empresa_id,
         "anio": anio,
@@ -192,7 +204,10 @@ def obtener_estado_resultados(db: Session, empresa_id: str, anio: int, mes: int,
         "totales": {
             "ingresos": total_ingresos,
             "gastos": total_gastos,
-            "utilidad": total_ingresos - total_gastos
+            "utilidad": utilidad_antes_impuestos,
+            "reserva_legal": reserva_legal,
+            "isr": isr,
+            "utilidad_neta": utilidad_neta
         },
         "anomalias": anomalias
     }
@@ -271,13 +286,20 @@ def obtener_balance_general(db: Session, empresa_id: str, anio: int, mes: int, n
 
     # 3. Integración de Utilidad Neta en el Patrimonio
     estado_resultados = obtener_estado_resultados(db, empresa_id, anio, mes, nivel=1, modo="acumulado")
-    utilidad_ejercicio = float(estado_resultados["totales"]["utilidad"])
+    utilidad_neta = float(estado_resultados["totales"].get("utilidad_neta", estado_resultados["totales"]["utilidad"]))
+    reserva_legal = float(estado_resultados["totales"].get("reserva_legal", 0.0))
+    isr = float(estado_resultados["totales"].get("isr", 0.0))
     
     # Empujamos la utilidad al Nivel 1 del Patrimonio para que la ecuación cuadre visualmente
     if '3' in saldos_acumulados:
-        saldos_acumulados['3'] += utilidad_ejercicio
+        saldos_acumulados['3'] += utilidad_neta
+        saldos_acumulados['3'] += reserva_legal
+    
+    if '2' in saldos_acumulados:
+        saldos_acumulados['2'] += isr
         
-    total_patrimonio += utilidad_ejercicio
+    total_patrimonio += utilidad_neta + reserva_legal
+    total_pasivo += isr
 
     activos, pasivos, patrimonio = [], [], []
 
@@ -308,14 +330,32 @@ def obtener_balance_general(db: Session, empresa_id: str, anio: int, mes: int, n
         elif codigo.startswith('3'): patrimonio.append(item)
 
     # Inyección de cuenta virtual para la utilidad
-    texto_utilidad = "Utilidad del Ejercicio" if utilidad_ejercicio >= 0 else "Pérdida del Ejercicio"
+    texto_utilidad = "Utilidad del Ejercicio" if utilidad_neta >= 0 else "Pérdida del Ejercicio"
     patrimonio.append({
         "codigo": "3-RESULTADO", 
         "nombre": texto_utilidad, 
-        "saldo": utilidad_ejercicio,
+        "saldo": utilidad_neta,
         "nivel": nivel, 
         "resumen": False
     })
+    
+    if reserva_legal > 0:
+        patrimonio.append({
+            "codigo": "3-RESERVA", 
+            "nombre": "Reserva Legal del Ejercicio", 
+            "saldo": reserva_legal,
+            "nivel": nivel, 
+            "resumen": False
+        })
+        
+    if isr > 0:
+        pasivos.append({
+            "codigo": "2-ISR", 
+            "nombre": "Impuesto sobre la Renta por Pagar", 
+            "saldo": isr,
+            "nivel": nivel, 
+            "resumen": False
+        })
 
     activos.sort(key=lambda x: x["codigo"])
     pasivos.sort(key=lambda x: x["codigo"])

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from auth_module import validar_token
+from auth_module import validar_token_dependency
 
 # ==================== IMPORTACIÓN DE ROUTERS DE NEGOCIO CONTABLE ====================
 from routers.empresa import router as empresa_router
@@ -12,7 +12,7 @@ from routers.usuario import router as usuario_router
 from routers.soporte import router as soporte_router
 
 # ==================== ROUTER MAESTRO PROTEGIDO ====================
-api_router = APIRouter(dependencies=[Depends(validar_token)])
+api_router = APIRouter(dependencies=[Depends(validar_token_dependency)])
 
 # Inclusión de los submódulos del sistema
 api_router.include_router(empresa_router)

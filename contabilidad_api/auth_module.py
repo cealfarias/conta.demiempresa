@@ -21,7 +21,7 @@ SECRET_KEY = "LLAVE_MAESTRA_PARA_JWT_PRODUCCION"  # Cambiar en producción
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 120
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login", auto_error=False)
 
 app = FastAPI(title="Módulo de Seguridad Integrado")
 
@@ -185,15 +185,39 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
         "rol": user.rol
     }
 
-@app.get("/api/me")
-def validar_token(token: str = Depends(oauth2_scheme)):
+def validar_token_dependency(request: Request, token: str = Depends(oauth2_scheme)):
+    public_paths = [
+        "/api/v1/empresas/nueva",
+        "/api/v1/usuarios/",
+        "/api/v1/periodos/inicializar"
+    ]
+    
+    path = request.url.path
+    if path in public_paths and request.method == "POST":
+        return None
+        
+    if not token:
+        raise HTTPException(status_code=401, detail="No autenticado")
+        
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return {"valido": True, "usuario": payload.get("sub"), "rol": payload.get("rol")}
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expirado")
     except jwt.PyJWTError:
-        raise HTTPException(status_code=401, detail="Token invlido")
+        raise HTTPException(status_code=401, detail="Token inválido")
+
+@app.get("/api/me")
+def validar_token(token: str = Depends(oauth2_scheme)):
+    if not token:
+        raise HTTPException(status_code=401, detail="No autenticado")
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return {"valido": True, "usuario": payload.get("sub"), "rol": payload.get("rol")}
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expirado")
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=401, detail="Token inválido")
 
 class GoogleLoginRequest(BaseModel):
     credential: str

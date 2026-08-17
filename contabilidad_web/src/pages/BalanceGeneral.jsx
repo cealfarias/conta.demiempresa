@@ -63,21 +63,38 @@ function BalanceGeneral() {
     return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Math.abs(monto));
   };
 
-  const formatearFila = (cuenta) => {
-    const isTotal = cuenta.es_total || cuenta.nivel <= 2;
-    // El backend ya devuelve el saldo normal positivo (activo: debe-haber, pasivo/pat: haber-debe).
+  const formatearFila = (cuenta, index, array) => {
+    // Trataremos como 'Total' a las cuentas padre (Nivel 3 o menor) o las virtuales de resultado
+    const isTotal = cuenta.es_total || cuenta.nivel <= 3;
     let saldoMostrar = cuenta.saldo;
+    
+    // Identificar si es el último hijo para poner la línea de cierre en el Parcial
+    const nextCuenta = array[index + 1];
+    const isLastChild = !isTotal && (!nextCuenta || nextCuenta.nivel < cuenta.nivel);
 
     return (
       <tr key={cuenta.codigo} className={`${isTotal ? 'font-bold' : ''}`}>
         <td 
-          className={`py-1 px-2 border-b border-slate-100 text-xs ${isTotal ? 'text-slate-800 uppercase' : 'text-slate-600'}`} 
+          className={`py-1.5 px-2 border-slate-100 text-xs ${isTotal ? 'text-slate-800 uppercase' : 'text-slate-600'}`} 
           style={{ paddingLeft: `${(cuenta.nivel - 2) * 1.5 + 0.5}rem` }}
         >
           {cuenta.nombre}
         </td>
-        <td className={`py-1 px-2 border-b border-slate-100 text-xs text-right ${isTotal ? 'text-slate-800' : 'text-slate-600'}`}>
-          {saldoMostrar < 0 && !isTotal ? `(${formatoMoneda(saldoMostrar)})` : formatoMoneda(saldoMostrar)}
+        
+        {/* Columna PARCIAL (Nivel 4+) */}
+        <td className="py-1.5 px-2 text-xs text-right w-24">
+          {!isTotal && (
+            <div className={`inline-block min-w-[70px] ${isLastChild ? 'border-b border-black pb-0.5' : ''}`}>
+               {saldoMostrar < 0 ? `(${formatoMoneda(saldoMostrar)})` : formatoMoneda(saldoMostrar)}
+            </div>
+          )}
+        </td>
+
+        {/* Columna TOTAL (Nivel <= 3) */}
+        <td className={`py-1.5 px-2 text-xs text-right w-28 ${isTotal ? 'text-slate-800' : 'text-slate-600'}`}>
+          {isTotal && (
+             saldoMostrar < 0 ? `(${formatoMoneda(saldoMostrar)})` : formatoMoneda(saldoMostrar)
+          )}
         </td>
       </tr>
     );
@@ -240,7 +257,7 @@ function BalanceGeneral() {
                     <tfoot>
                       <tr>
                         <td className="py-2 px-2 font-bold text-sm uppercase">TOTAL ACTIVO</td>
-                        <td className="py-2 px-2 text-right font-bold border-t border-b-4 border-double border-black">
+                        <td colSpan="2" className="py-2 px-2 text-right font-bold border-t border-b-4 border-double border-black">
                           {formatoMoneda(data.totales.activo)}
                         </td>
                       </tr>
@@ -260,7 +277,7 @@ function BalanceGeneral() {
                     <tfoot>
                       <tr>
                         <td className="py-2 px-2 font-bold text-sm uppercase">TOTAL PASIVO</td>
-                        <td className="py-2 px-2 text-right font-bold border-t border-black">
+                        <td colSpan="2" className="py-2 px-2 text-right font-bold border-t border-black">
                           {formatoMoneda(data.totales.pasivo)}
                         </td>
                       </tr>
@@ -276,7 +293,7 @@ function BalanceGeneral() {
                     <tfoot>
                       <tr>
                         <td className="py-2 px-2 font-bold text-sm uppercase">TOTAL PATRIMONIO</td>
-                        <td className="py-2 px-2 text-right font-bold border-t border-black">
+                        <td colSpan="2" className="py-2 px-2 text-right font-bold border-t border-black">
                           {formatoMoneda(data.totales.patrimonio)}
                         </td>
                       </tr>
@@ -288,7 +305,7 @@ function BalanceGeneral() {
                     <tfoot>
                       <tr>
                         <td className="py-2 px-2 font-bold text-sm uppercase">TOTAL PASIVO Y PATRIMONIO</td>
-                        <td className="py-2 px-2 text-right font-bold border-t border-b-4 border-double border-black">
+                        <td colSpan="2" className="py-2 px-2 text-right font-bold border-t border-b-4 border-double border-black">
                           {formatoMoneda(data.totales.pasivo_mas_patrimonio)}
                         </td>
                       </tr>

@@ -91,16 +91,23 @@ function EstadoResultados() {
       <td className={`py-1.5 px-4 border-b border-slate-100 text-sm ${indent ? 'pl-8 text-slate-600' : 'text-slate-800 font-medium'} ${isTotal ? 'font-bold uppercase' : ''}`}>
         {titulo}
       </td>
+      {/* Parcial */}
+      <td className="py-1.5 px-4 border-b border-slate-100 w-24"></td>
+      {/* Total */}
       <td className={`py-1.5 px-4 border-b border-slate-100 text-sm text-right ${isTotal ? 'font-bold' : 'text-slate-700'}`}>
         {isResta && monto > 0 ? `(${formatoMoneda(monto)})` : formatoMoneda(monto)}
       </td>
     </tr>
   );
 
-  const formatearFilaDinámica = (cuenta) => {
+  const formatearFilaDinámica = (cuenta, index, array) => {
     const isTotal = cuenta.nivel <= 2;
     let saldoMostrar = cuenta.saldo;
     
+    // Identificar si es el último hijo para poner la línea de cierre en el Parcial
+    const nextCuenta = array[index + 1];
+    const isLastChild = !isTotal && (!nextCuenta || nextCuenta.nivel < cuenta.nivel);
+
     return (
       <tr key={cuenta.codigo} className={`${isTotal ? 'font-bold' : ''}`}>
         <td 
@@ -109,8 +116,21 @@ function EstadoResultados() {
         >
           {cuenta.nombre}
         </td>
+        
+        {/* Parcial */}
+        <td className="py-1.5 px-4 border-b border-slate-100 text-sm text-right w-24">
+          {!isTotal && (
+            <div className={`inline-block min-w-[70px] ${isLastChild ? 'border-b border-black pb-0.5' : ''}`}>
+               {saldoMostrar < 0 ? `(${formatoMoneda(saldoMostrar)})` : formatoMoneda(saldoMostrar)}
+            </div>
+          )}
+        </td>
+
+        {/* Total */}
         <td className={`py-1.5 px-4 border-b border-slate-100 text-sm text-right ${isTotal ? 'text-slate-800' : 'text-slate-700'}`}>
-          {saldoMostrar < 0 && !isTotal ? `(${formatoMoneda(saldoMostrar)})` : formatoMoneda(saldoMostrar)}
+          {isTotal && (
+             saldoMostrar < 0 ? `(${formatoMoneda(saldoMostrar)})` : formatoMoneda(saldoMostrar)
+          )}
         </td>
       </tr>
     );
@@ -259,37 +279,37 @@ function EstadoResultados() {
                 <table className="w-full">
                   <tbody>
                     <tr>
-                      <td className="py-2 px-4 font-bold text-sm uppercase text-slate-800" colSpan="2">
+                      <td className="py-2 px-4 font-bold text-sm uppercase text-slate-800" colSpan="3">
                         INGRESOS
                       </td>
                     </tr>
                     {data.ingresos.filter(cta => cta.nivel > 1).map(formatearFilaDinámica)}
                     <tr>
                       <td className="py-2 px-4 font-bold text-sm uppercase">TOTAL INGRESOS</td>
-                      <td className="py-2 px-4 text-right font-bold border-t border-black">
+                      <td colSpan="2" className="py-2 px-4 text-right font-bold border-t border-black">
                         {formatoMoneda(data.totales.ingresos)}
                       </td>
                     </tr>
 
-                    <tr><td colSpan="2" className="py-4"></td></tr>
+                    <tr><td colSpan="3" className="py-4"></td></tr>
 
                     <tr>
-                      <td className="py-2 px-4 font-bold text-sm uppercase text-slate-800" colSpan="2">
+                      <td className="py-2 px-4 font-bold text-sm uppercase text-slate-800" colSpan="3">
                         COSTOS Y GASTOS
                       </td>
                     </tr>
                     {data.gastos.filter(cta => cta.nivel > 1).map(formatearFilaDinámica)}
                     <tr>
                       <td className="py-2 px-4 font-bold text-sm uppercase">TOTAL COSTOS Y GASTOS</td>
-                      <td className="py-2 px-4 text-right font-bold border-t border-black">
+                      <td colSpan="2" className="py-2 px-4 text-right font-bold border-t border-black">
                         {formatoMoneda(data.totales.gastos)}
                       </td>
                     </tr>
 
-                    <tr><td colSpan="2" className="py-4"></td></tr>
+                    <tr><td colSpan="3" className="py-4"></td></tr>
 
                     <tr>
-                      <td className="py-2 px-4 font-bold text-sm uppercase text-slate-800">
+                      <td colSpan="2" className="py-2 px-4 font-bold text-sm uppercase text-slate-800">
                         {mesActual === 12 ? 'UTILIDAD ANTES DE IMPUESTOS Y RESERVAS' : 'UTILIDAD (PÉRDIDA) DEL EJERCICIO'}
                       </td>
                       <td className="py-2 px-4 text-right font-bold border-t border-b-2 border-black">
@@ -299,9 +319,9 @@ function EstadoResultados() {
 
                     {mesActual === 12 && utilidadAntesImpuestos > 0 && (
                       <>
-                        <tr><td colSpan="2" className="py-4"></td></tr>
+                        <tr><td colSpan="3" className="py-4"></td></tr>
                         <tr>
-                          <td className="py-2 px-4 font-bold text-sm uppercase text-slate-800" colSpan="2">
+                          <td className="py-2 px-4 font-bold text-sm uppercase text-slate-800" colSpan="3">
                             PROVISIONES (ESTATUTARIA Y FISCAL)
                           </td>
                         </tr>
@@ -314,7 +334,7 @@ function EstadoResultados() {
                   {mesActual === 12 && utilidadAntesImpuestos > 0 && (
                     <tfoot>
                       <tr>
-                        <td className="py-3 px-4 font-bold text-sm uppercase border-t border-black">
+                        <td colSpan="2" className="py-3 px-4 font-bold text-sm uppercase border-t border-black">
                           UTILIDAD NETA DEL EJERCICIO
                         </td>
                         <td className="py-3 px-4 text-right font-bold border-t border-b-4 border-double border-black">

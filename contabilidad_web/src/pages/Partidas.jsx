@@ -266,13 +266,13 @@ function Partidas() {
                         </button>
                         <button 
                           onClick={() => navigate(`/dashboard/partidas/editar/${partida.id}`)}
-                          disabled={partida.estado !== 'Borrador'}
+                          disabled={!(partida.estado === 'Borrador' || (partida.estado === 'Mayorizado' && ['Administrador', 'Contador'].includes(localStorage.getItem('rol'))))}
                           className={`p-1.5 rounded-lg transition-colors ${
-                            partida.estado === 'Borrador' 
+                            (partida.estado === 'Borrador' || (partida.estado === 'Mayorizado' && ['Administrador', 'Contador'].includes(localStorage.getItem('rol'))))
                             ? 'text-slate-400 hover:text-emerald-600 hover:bg-emerald-50' 
                             : 'text-slate-200 cursor-not-allowed'
                           }`} 
-                          title={partida.estado === 'Borrador' ? "Editar" : "Candado activado"}
+                          title={(partida.estado === 'Borrador' || (partida.estado === 'Mayorizado' && ['Administrador', 'Contador'].includes(localStorage.getItem('rol')))) ? "Editar" : "Candado activado"}
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>

@@ -13,7 +13,7 @@ from decimal import Decimal, InvalidOperation
 from models.partida import PartidaCabecera, PartidaDetalle
 from models.periodo import ControlPeriodo
 from models.cuenta import CuentaContable
-from schemas.partida import PartidaCompletaCrear, PaginaPartidasRespuesta, CierreContableRequest
+from schemas.partida import PartidaCompletaCrear, PaginaPartidasRespuesta, CierreContableRequest, EstadoPartidaUpdate
 from config.database import get_db
 from crud import cierre as c_cierre
 from auth_module import obtener_usuario_actual, TokenData
@@ -426,6 +426,32 @@ def marcar_partida_impresa(partida_id: int, db: Session = Depends(get_db)):
             raise HTTPException(status_code=500, detail=f"Error al marcar como impresa: {str(e)}")
             
     return {"status": "success", "mensaje": "La partida ya tenía un estado superior"}
+
+@router.put("/estado/{partida_id}", status_code=status.HTTP_200_OK)
+def cambiar_estado_partida(
+    partida_id: int, 
+    estado_update: EstadoPartidaUpdate, 
+    db: Session = Depends(get_db)
+):
+    """
+    Cambia el estado de una partida (ej. de Mayorizada a Borrador).
+    """
+    partida = db.query(PartidaCabecera).filter(PartidaCabecera.id == partida_id).first()
+    if not partida:
+        raise HTTPException(status_code=404, detail="Partida no encontrada")
+        
+    verificar_periodo_abierto(partida.empresa_id, partida.anio, partida.mes, db)
+    
+    if estado_update.estado not in ["Borrador", "Mayorizada", "Anulada"]:
+        raise HTTPException(status_code=400, detail="Estado no permitido")
+
+    try:
+        partida.estado = estado_update.estado
+        db.commit()
+        return {"status": "success", "mensaje": f"Estado cambiado a {estado_update.estado}"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error al cambiar estado: {str(e)}")
 
 # ==================== IMPORTACIN DE PARTIDAS ====================
 @router.post("/importar-validar")

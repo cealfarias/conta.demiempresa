@@ -236,6 +236,24 @@ function FlujoEfectivo() {
                     
                     <tr><td colSpan="3" className="py-2"></td></tr>
 
+                    {/* SIN CLASIFICAR (Aparece si hay cuentas que no tienen regla de mapeo) */}
+                    {data.detalle.SIN_CLASIFICAR.cuentas.length > 0 && (
+                      <>
+                        <tr><td colSpan="3" className="py-2 px-4 font-bold uppercase bg-rose-50 text-rose-800 flex items-center gap-2">
+                          <Info className="w-4 h-4" /> 
+                          ⚠ Cuentas Sin Clasificar (Requieren Mapeo en Configuración)
+                        </td></tr>
+                        {data.detalle.SIN_CLASIFICAR.cuentas.map(formatearFilaDinámica)}
+                        <tr>
+                          <td className="py-2 px-4 font-bold text-sm uppercase text-rose-800">Impacto Neto Sin Clasificar</td>
+                          <td colSpan="2" className="py-2 px-4 text-right font-bold border-t border-rose-300 text-rose-800">
+                            {formatoMoneda(data.detalle.SIN_CLASIFICAR.total)}
+                          </td>
+                        </tr>
+                        <tr><td colSpan="3" className="py-2"></td></tr>
+                      </>
+                    )}
+
                     {/* TOTALES FINALES */}
                     <tr>
                       <td className="py-2 px-4 font-bold text-sm uppercase text-slate-800">AUMENTO (DISMINUCIÓN) NETO DEL EFECTIVO</td>

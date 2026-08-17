@@ -37,7 +37,6 @@ function PartidaEditor() {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = response.data;
-      const data = response.data;
       setEstado(data.estado || 'Borrador');
       if (data.estado !== 'Borrador') {
         showToast(`La partida está '${data.estado}' y es de solo lectura.`);

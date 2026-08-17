@@ -62,11 +62,49 @@ function FlujoEfectivo() {
     return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Math.abs(monto));
   };
 
+  const formatearFilaDinámica = (cuenta, index, array) => {
+    const isTotal = cuenta.resumen || false;
+    let saldoMostrar = cuenta.impacto;
+    
+    // Identificar si es el último hijo para poner la línea de cierre en el Parcial
+    const nextCuenta = array[index + 1];
+    const isLastChild = !isTotal && !nextCuenta;
+
+    return (
+      <tr key={cuenta.codigo} className={`${isTotal ? 'font-bold' : ''}`}>
+        <td 
+          className={`py-1.5 px-4 border-b border-slate-100 text-sm pl-8 text-slate-600`}
+        >
+          {cuenta.nombre}
+        </td>
+        
+        {/* Parcial */}
+        <td className="py-1.5 px-4 border-b border-slate-100 text-sm text-right w-24">
+          {!isTotal && (
+            <div className={`inline-block min-w-[70px] ${isLastChild ? 'border-b border-black pb-0.5' : ''}`}>
+               {saldoMostrar < 0 ? `(${formatoMoneda(saldoMostrar)})` : formatoMoneda(saldoMostrar)}
+            </div>
+          )}
+        </td>
+
+        {/* Total */}
+        <td className={`py-1.5 px-4 border-b border-slate-100 text-sm text-right text-slate-700`}>
+          {isTotal && (
+             saldoMostrar < 0 ? `(${formatoMoneda(saldoMostrar)})` : formatoMoneda(saldoMostrar)
+          )}
+        </td>
+      </tr>
+    );
+  };
+
   const Fila = ({ titulo, monto, indent = false, isTotal = false }) => (
     <tr>
       <td className={`py-1.5 px-4 border-b border-slate-100 text-sm ${indent ? 'pl-8 text-slate-600' : 'text-slate-800 font-medium'} ${isTotal ? 'font-bold uppercase' : ''}`}>
         {titulo}
       </td>
+      {/* Parcial */}
+      <td className="py-1.5 px-4 border-b border-slate-100 w-24"></td>
+      {/* Total */}
       <td className={`py-1.5 px-4 border-b border-slate-100 text-sm text-right ${isTotal ? 'font-bold' : 'text-slate-700'}`}>
         {monto < 0 ? `(${formatoMoneda(monto)})` : formatoMoneda(monto)}
       </td>
@@ -143,7 +181,7 @@ function FlujoEfectivo() {
               <div className="text-center mb-8">
                 <h2 className="text-xl font-bold text-slate-800 uppercase">CANTARES S.A DE C.V.</h2>
                 {/* TODO: Sacar el nombre de la empresa activa del contexto */}
-                <h3 className="text-lg font-bold text-slate-700">ESTADO DE FLUJOS DE EFECTIVO (MÉTODO DIRECTO)</h3>
+                <h3 className="text-lg font-bold text-slate-700">ESTADO DE FLUJOS DE EFECTIVO (MÉTODO INDIRECTO)</h3>
                 <p className="text-sm text-slate-600 uppercase">
                   DEL 1 DE ENERO AL {new Date(anio, mesActual, 0).getDate()} DE {meses.find(m => m.id === mesActual).nombre.toUpperCase()} DE {anio}
                 </p>
@@ -155,36 +193,58 @@ function FlujoEfectivo() {
                 <table className="w-full">
                   <tbody>
                     {/* ACTIVIDADES DE OPERACIÓN */}
-                    <tr><td colSpan="2" className="py-2 px-4 font-bold uppercase bg-slate-50">1. Actividades de Operación</td></tr>
-                    <Fila titulo="Efectivo recibido de clientes y otros" monto={data.detalle.OPERACION.saldo_final > 0 ? data.detalle.OPERACION.saldo_final : 0} indent />
-                    <Fila titulo="Efectivo pagado a proveedores, empleados y otros" monto={data.detalle.OPERACION.saldo_final < 0 ? data.detalle.OPERACION.saldo_final : 0} indent />
-                    <Fila titulo="Flujo Neto de Efectivo por Actividades de Operación" monto={data.detalle.OPERACION.saldo_final} isTotal />
+                    <tr><td colSpan="3" className="py-2 px-4 font-bold uppercase bg-slate-50 text-slate-800">1. Actividades de Operación</td></tr>
+                    {data.detalle.OPERACION.cuentas.map(formatearFilaDinámica)}
+                    <tr>
+                      <td className="py-2 px-4 font-bold text-sm uppercase text-slate-800">Flujo Neto de Efectivo por Actividades de Operación</td>
+                      <td colSpan="2" className="py-2 px-4 text-right font-bold border-t border-black">
+                        {formatoMoneda(data.detalle.OPERACION.total)}
+                      </td>
+                    </tr>
                     
-                    <tr><td colSpan="2" className="py-2"></td></tr>
+                    <tr><td colSpan="3" className="py-2"></td></tr>
                     
                     {/* ACTIVIDADES DE INVERSIÓN */}
-                    <tr><td colSpan="2" className="py-2 px-4 font-bold uppercase bg-slate-50">2. Actividades de Inversión</td></tr>
-                    <Fila titulo="Efectivo recibido por ventas de activos/inversiones" monto={data.detalle.INVERSION.saldo_final > 0 ? data.detalle.INVERSION.saldo_final : 0} indent />
-                    <Fila titulo="Efectivo pagado por compra de activos/inversiones" monto={data.detalle.INVERSION.saldo_final < 0 ? data.detalle.INVERSION.saldo_final : 0} indent />
-                    <Fila titulo="Flujo Neto de Efectivo por Actividades de Inversión" monto={data.detalle.INVERSION.saldo_final} isTotal />
+                    <tr><td colSpan="3" className="py-2 px-4 font-bold uppercase bg-slate-50 text-slate-800">2. Actividades de Inversión</td></tr>
+                    {data.detalle.INVERSION.cuentas.map(formatearFilaDinámica)}
+                    <tr>
+                      <td className="py-2 px-4 font-bold text-sm uppercase text-slate-800">Flujo Neto de Efectivo por Actividades de Inversión</td>
+                      <td colSpan="2" className="py-2 px-4 text-right font-bold border-t border-black">
+                        {formatoMoneda(data.detalle.INVERSION.total)}
+                      </td>
+                    </tr>
                     
-                    <tr><td colSpan="2" className="py-2"></td></tr>
+                    <tr><td colSpan="3" className="py-2"></td></tr>
 
                     {/* ACTIVIDADES DE FINANCIACIÓN */}
-                    <tr><td colSpan="2" className="py-2 px-4 font-bold uppercase bg-slate-50">3. Actividades de Financiación</td></tr>
-                    <Fila titulo="Efectivo recibido por aportes/préstamos" monto={data.detalle.FINANCIACION.saldo_final > 0 ? data.detalle.FINANCIACION.saldo_final : 0} indent />
-                    <Fila titulo="Efectivo pagado por dividendos/préstamos" monto={data.detalle.FINANCIACION.saldo_final < 0 ? data.detalle.FINANCIACION.saldo_final : 0} indent />
-                    <Fila titulo="Flujo Neto de Efectivo por Actividades de Financiación" monto={data.detalle.FINANCIACION.saldo_final} isTotal />
+                    <tr><td colSpan="3" className="py-2 px-4 font-bold uppercase bg-slate-50 text-slate-800">3. Actividades de Financiación</td></tr>
+                    {data.detalle.FINANCIACION.cuentas.map(formatearFilaDinámica)}
+                    <tr>
+                      <td className="py-2 px-4 font-bold text-sm uppercase text-slate-800">Flujo Neto de Efectivo por Actividades de Financiación</td>
+                      <td colSpan="2" className="py-2 px-4 text-right font-bold border-t border-black">
+                        {formatoMoneda(data.detalle.FINANCIACION.total)}
+                      </td>
+                    </tr>
                     
-                    <tr><td colSpan="2" className="py-2"></td></tr>
+                    <tr><td colSpan="3" className="py-2"></td></tr>
 
                     {/* TOTALES FINALES */}
-                    <Fila titulo="AUMENTO (DISMINUCIÓN) NETO DEL EFECTIVO" monto={data.totales.flujo_neto_actividades} isTotal />
-                    <Fila titulo="Efectivo y equivalentes al inicio del período" monto={data.totales.efectivo_inicio} isTotal />
+                    <tr>
+                      <td className="py-2 px-4 font-bold text-sm uppercase text-slate-800">AUMENTO (DISMINUCIÓN) NETO DEL EFECTIVO</td>
+                      <td colSpan="2" className="py-2 px-4 text-right font-bold border-t border-b-2 border-black">
+                        {formatoMoneda(data.totales.flujo_neto_actividades)}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 px-4 font-bold text-sm uppercase text-slate-800">Efectivo y equivalentes al inicio del período</td>
+                      <td colSpan="2" className="py-2 px-4 text-right font-bold">
+                        {formatoMoneda(data.totales.efectivo_inicio)}
+                      </td>
+                    </tr>
                   </tbody>
                   <tfoot>
                     <tr>
-                      <td className="py-3 px-4 font-bold text-sm uppercase border-t border-black">
+                      <td colSpan="2" className="py-3 px-4 font-bold text-sm uppercase border-t border-black">
                         EFECTIVO Y EQUIVALENTES AL FINAL DEL PERÍODO
                       </td>
                       <td className="py-3 px-4 text-right font-bold border-t border-b-4 border-double border-black">

@@ -32,6 +32,12 @@ export default function SeleccionarEntorno() {
         const res = await axios.get(`${API_URL}/api/v1/empresas/todas`, {
           headers: { Authorization: `Bearer ${token}` }
         });
+        
+        if (res.data && res.data.length === 0) {
+          navigate('/registro');
+          return;
+        }
+        
         setEmpresas(res.data);
       } catch (err) {
         console.error('Error fetching empresas:', err);

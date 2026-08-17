@@ -62,7 +62,7 @@ const DashboardHome = () => (
 );
 
 function App() {
-  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "564147336188-mdfp0vsvn8na8bllflsm8ntrv91cfinp.apps.googleusercontent.com";
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "520602063183-02kdfek3f8vp2g146j2khacmhj4nbn6a.apps.googleusercontent.com";
 
   return (
     <GoogleOAuthProvider clientId={clientId}>

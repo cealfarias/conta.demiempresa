@@ -21,6 +21,8 @@ import EstadoResultados from './pages/EstadoResultados';
 import FlujoEfectivo from './pages/FlujoEfectivo';
 import { FileText } from 'lucide-react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import DashboardInicio from './pages/DashboardInicio';
+import ConfiguracionEmpresa from './pages/ConfiguracionEmpresa';
 
 // Simple Protected Route wrapper
 const ProtectedRoute = ({ children }) => {
@@ -31,35 +33,7 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-// Home/Resumen component for Dashboard
-const DashboardHome = () => (
-  <div className="p-8">
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-        <h3 className="text-slate-500 text-sm font-medium mb-2">Activos Totales</h3>
-        <p className="text-3xl font-bold text-slate-800">$0.00</p>
-      </div>
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-        <h3 className="text-slate-500 text-sm font-medium mb-2">Pasivos Totales</h3>
-        <p className="text-3xl font-bold text-slate-800">$0.00</p>
-      </div>
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-        <h3 className="text-slate-500 text-sm font-medium mb-2">Patrimonio Neto</h3>
-        <p className="text-3xl font-bold text-slate-800">$0.00</p>
-      </div>
-    </div>
-
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center py-20">
-      <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-4">
-        <FileText className="w-10 h-10 text-emerald-400" />
-      </div>
-      <h3 className="text-xl font-bold text-slate-700 mb-2">Dashboard en línea</h3>
-      <p className="text-slate-500 max-w-md mx-auto">
-        Tu sistema contable está conectado a la API de Python. Selecciona una opción en el menú lateral.
-      </p>
-    </div>
-  </div>
-);
+// Home/Resumen component for Dashboard is now DashboardInicio
 
 function App() {
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "520602063183-02kdfek3f8vp2g146j2khacmhj4nbn6a.apps.googleusercontent.com";
@@ -82,8 +56,9 @@ function App() {
               </ProtectedRoute>
             } 
           >
-            <Route index element={<DashboardHome />} />
+            <Route index element={<DashboardInicio />} />
             <Route path="seguridad" element={<Seguridad />} />
+            <Route path="configuracion" element={<ConfiguracionEmpresa />} />
             <Route path="catalogo" element={<Catalogo />} />
             <Route path="catalogo/importar" element={<ImportarCatalogo />} />
             <Route path="catalogo/importar-manual" element={<ImportarManual />} />

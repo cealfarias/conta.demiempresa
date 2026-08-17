@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Outlet, Link, useLocation } from 'react-router-dom';
-import { LogOut, LayoutDashboard, FileText, Settings, ShieldCheck, Users, BookOpen, Menu, Inbox } from 'lucide-react';
+import { Home, Book, FileText, Settings as ConfigIcon, LogOut, Shield, HelpCircle, FileSpreadsheet, Settings, Menu } from 'lucide-react';
 import SoporteModal from '../components/SoporteModal';
 function Dashboard() {
   const navigate = useNavigate();
@@ -45,29 +45,33 @@ function Dashboard() {
         
         <nav className="flex-1 py-6 px-3 space-y-2 overflow-hidden">
           <Link to="/dashboard" className={`flex items-center space-x-3 px-3 py-3 rounded-xl transition-colors ${location.pathname === '/dashboard' ? 'bg-emerald-600/20 text-emerald-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'} ${!isSidebarOpen && 'justify-center'}`} title="Resumen">
-            <LayoutDashboard className="w-5 h-5 shrink-0" />
+            <Home className="w-5 h-5 shrink-0" />
             {isSidebarOpen && <span className="font-medium whitespace-nowrap">Resumen</span>}
           </Link>
           <Link to="/dashboard/catalogo" className={`flex items-center space-x-3 px-3 py-3 rounded-xl transition-colors ${location.pathname === '/dashboard/catalogo' ? 'bg-emerald-600/20 text-emerald-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'} ${!isSidebarOpen && 'justify-center'}`} title="Catálogo de Cuentas">
-            <BookOpen className="w-5 h-5 shrink-0" />
+            <Book className="w-5 h-5 shrink-0" />
             {isSidebarOpen && <span className="font-medium whitespace-nowrap">Catálogo de Cuentas</span>}
           </Link>
           <Link to="/dashboard/partidas" className={`flex items-center space-x-3 px-3 py-3 rounded-xl transition-colors ${location.pathname === '/dashboard/partidas' ? 'bg-emerald-600/20 text-emerald-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'} ${!isSidebarOpen && 'justify-center'}`} title="Partidas Diarias">
             <FileText className="w-5 h-5 shrink-0" />
             {isSidebarOpen && <span className="font-medium whitespace-nowrap">Partidas Diarias</span>}
           </Link>
-          <Link to="/dashboard/reportes" className={`flex items-center space-x-3 px-3 py-3 rounded-xl transition-colors ${location.pathname.startsWith('/dashboard/reportes') ? 'bg-emerald-600/20 text-emerald-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'} ${!isSidebarOpen && 'justify-center'}`} title="Reportes">
-            <Users className="w-5 h-5 shrink-0" />
-            {isSidebarOpen && <span className="font-medium whitespace-nowrap">Reportes</span>}
+          <Link to="/dashboard/reportes" className={`flex items-center space-x-3 px-3 py-3 rounded-xl transition-colors ${location.pathname.startsWith('/dashboard/reportes') ? 'bg-emerald-600/20 text-emerald-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'} ${!isSidebarOpen && 'justify-center'}`} title="Estados Financieros">
+            <FileSpreadsheet className="w-5 h-5" />
+            {isSidebarOpen && <span className="font-medium whitespace-nowrap">Estados Financieros</span>}
           </Link>
           <Link to="/dashboard/seguridad" className={`flex items-center space-x-3 px-3 py-3 rounded-xl transition-colors ${location.pathname === '/dashboard/seguridad' ? 'bg-emerald-600/20 text-emerald-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'} ${!isSidebarOpen && 'justify-center'}`} title="Seguridad (2FA)">
-            <ShieldCheck className="w-5 h-5 shrink-0" />
+            <Shield className="w-5 h-5 shrink-0" />
             {isSidebarOpen && <span className="font-medium whitespace-nowrap">Seguridad (2FA)</span>}
           </Link>
           <button onClick={() => setIsSoporteOpen(true)} className={`w-full flex items-center space-x-3 px-3 py-3 rounded-xl transition-colors text-slate-300 hover:bg-slate-800 hover:text-white ${!isSidebarOpen && 'justify-center'}`} title="Soporte (Inbox)">
-            <Inbox className="w-5 h-5 shrink-0" />
+            <HelpCircle className="w-5 h-5" />
             {isSidebarOpen && <span className="font-medium whitespace-nowrap">Soporte (Inbox)</span>}
           </button>
+          <Link to="/dashboard/configuracion" className={`flex items-center space-x-3 px-3 py-3 rounded-xl transition-colors ${location.pathname === '/dashboard/configuracion' ? 'bg-emerald-600/20 text-emerald-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'} ${!isSidebarOpen && 'justify-center'}`} title="Configuración de la Empresa">
+            <Settings className="w-5 h-5" />
+            {isSidebarOpen && <span className="font-medium whitespace-nowrap">Configuración</span>}
+          </Link>
         </nav>
 
         <div className="p-3 border-t border-slate-800">

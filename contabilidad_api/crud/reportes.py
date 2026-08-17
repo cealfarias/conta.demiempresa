@@ -346,16 +346,17 @@ def obtener_balance_general(db: Session, empresa_id: str, anio: int, mes: int, n
 
 
 def obtener_flujo_efectivo(db: Session, empresa_id: str, anio: int, mes: int):
-    # Sin modificaciones en esta función, se mantiene idéntica para asegurar estabilidad.
     reglas = db.query(MapeoFlujoEfectivo).filter(
         MapeoFlujoEfectivo.empresa_id == empresa_id
     ).all()
     reglas.sort(key=lambda x: len(x.prefijo_cuenta), reverse=True)
 
+    # Solo consultamos cuentas de balance (1, 2, 3) para calcular las variaciones
     cuentas = db.query(CuentaContable).filter(
         CuentaContable.empresa_id == empresa_id,
         CuentaContable.anio == anio,
-        CuentaContable.resumen == False
+        CuentaContable.resumen == False,
+        (CuentaContable.cuentas.like('1%') | CuentaContable.cuentas.like('2%') | CuentaContable.cuentas.like('3%'))
     ).all()
 
     movimientos = db.query(
@@ -368,7 +369,8 @@ def obtener_flujo_efectivo(db: Session, empresa_id: str, anio: int, mes: int):
         PartidaDetalle.empresa_id == empresa_id,
         PartidaDetalle.anio == anio,
         PartidaCabecera.mes <= mes,
-        PartidaCabecera.estado.notin_(["Borrador", "Cierre"])
+        PartidaCabecera.estado.notin_(["Borrador", "Cierre"]),
+        (PartidaDetalle.cuenta_codigo.like('1%') | PartidaDetalle.cuenta_codigo.like('2%') | PartidaDetalle.cuenta_codigo.like('3%'))
     ).group_by(PartidaDetalle.cuenta_codigo).all()
 
     dict_movimientos = {
@@ -378,9 +380,13 @@ def obtener_flujo_efectivo(db: Session, empresa_id: str, anio: int, mes: int):
         } for mov in movimientos
     }
 
+    # 1. Obtener la Utilidad (Pérdida) Antes de Impuestos y Reservas (UAIR)
+    estado_resultados = obtener_estado_resultados(db, empresa_id, anio, mes, nivel=1, modo="acumulado")
+    utilidad_ejercicio = float(estado_resultados["totales"]["utilidad"])
+
     flujo = {
         "EFECTIVO": {"cuentas": [], "saldo_inicial": 0.0, "variacion": 0.0, "saldo_final": 0.0},
-        "OPERACION": {"cuentas": [], "total": 0.0},
+        "OPERACION": {"cuentas": [], "total": utilidad_ejercicio},
         "INVERSION": {"cuentas": [], "total": 0.0},
         "FINANCIACION": {"cuentas": [], "total": 0.0},
         "SIN_CLASIFICAR": {"cuentas": [], "total": 0.0}
@@ -391,6 +397,15 @@ def obtener_flujo_efectivo(db: Session, empresa_id: str, anio: int, mes: int):
             if codigo.startswith(regla.prefijo_cuenta):
                 return regla.actividad
         return "SIN_CLASIFICAR"
+
+    # Inyectamos la UAIR al inicio de la Operación
+    texto_utilidad = "Utilidad (Pérdida) Antes de Impuestos y Reservas" if utilidad_ejercicio >= 0 else "Pérdida Antes de Impuestos y Reservas"
+    flujo["OPERACION"]["cuentas"].append({
+        "codigo": "0-UAIR", 
+        "nombre": texto_utilidad, 
+        "impacto": utilidad_ejercicio,
+        "resumen": False
+    })
 
     for cta in cuentas:
         codigo = cta.cuentas
@@ -418,7 +433,7 @@ def obtener_flujo_efectivo(db: Session, empresa_id: str, anio: int, mes: int):
             impacto = haber - debe
             if impacto != 0:
                 flujo[actividad]["cuentas"].append({
-                    "codigo": codigo, "nombre": nombre, "impacto": impacto
+                    "codigo": codigo, "nombre": f"Ajuste por: {nombre}", "impacto": impacto, "resumen": False
                 })
                 flujo[actividad]["total"] += impacto
 

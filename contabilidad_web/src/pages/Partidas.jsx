@@ -238,13 +238,13 @@ function Partidas() {
                       <span className={`inline-flex items-center px-2.5 py-1 text-[11px] rounded-full font-semibold border ${
                         partida.estado === 'Impresa' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 
                         partida.estado === 'Borrador' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                        partida.estado === 'Mayorizado' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                        partida.estado === 'Mayorizada' ? 'bg-blue-50 text-blue-700 border-blue-200' :
                         'bg-rose-50 text-rose-700 border-rose-200'
                       }`}>
                         <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
                           partida.estado === 'Impresa' ? 'bg-emerald-500' : 
                           partida.estado === 'Borrador' ? 'bg-amber-500' :
-                          partida.estado === 'Mayorizado' ? 'bg-blue-500' :
+                          partida.estado === 'Mayorizada' ? 'bg-blue-500' :
                           'bg-rose-500'
                         }`}></span>
                         {partida.estado}
@@ -266,13 +266,13 @@ function Partidas() {
                         </button>
                         <button 
                           onClick={() => navigate(`/dashboard/partidas/editar/${partida.id}`)}
-                          disabled={!(partida.estado === 'Borrador' || (partida.estado === 'Mayorizado' && ['Administrador', 'Contador'].includes(localStorage.getItem('rol'))))}
+                          disabled={!(partida.estado === 'Borrador' || (partida.estado === 'Mayorizada' && ['administrador', 'contador'].includes((localStorage.getItem('rol') || '').trim().toLowerCase())))}
                           className={`p-1.5 rounded-lg transition-colors ${
-                            (partida.estado === 'Borrador' || (partida.estado === 'Mayorizado' && ['Administrador', 'Contador'].includes(localStorage.getItem('rol'))))
+                            (partida.estado === 'Borrador' || (partida.estado === 'Mayorizada' && ['administrador', 'contador'].includes((localStorage.getItem('rol') || '').trim().toLowerCase())))
                             ? 'text-slate-400 hover:text-emerald-600 hover:bg-emerald-50' 
                             : 'text-slate-200 cursor-not-allowed'
                           }`} 
-                          title={(partida.estado === 'Borrador' || (partida.estado === 'Mayorizado' && ['Administrador', 'Contador'].includes(localStorage.getItem('rol')))) ? "Editar" : "Candado activado"}
+                          title={(partida.estado === 'Borrador' || (partida.estado === 'Mayorizada' && ['administrador', 'contador'].includes((localStorage.getItem('rol') || '').trim().toLowerCase()))) ? "Editar" : "Candado activado"}
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>

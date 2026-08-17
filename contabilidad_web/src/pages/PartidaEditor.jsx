@@ -22,7 +22,7 @@ function PartidaEditor() {
   ]);
   
   const [guardando, setGuardando] = useState(false);
-  const rol = localStorage.getItem('rol');
+  const rol = (localStorage.getItem('rol') || '').trim().toLowerCase();
 
   useEffect(() => {
     fetchCatalogo().then(() => {
@@ -254,7 +254,7 @@ function PartidaEditor() {
       )}
 
       {/* Burbuja de estado Mayorizada */}
-      {id && estado === 'Mayorizada' && (rol === 'Contador' || rol === 'Administrador') && (
+      {id && estado === 'Mayorizada' && (rol === 'contador' || rol === 'administrador') && (
         <div className="mb-6 relative bg-white border border-amber-200 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
           <div className="absolute top-0 left-0 w-1.5 h-full bg-amber-500"></div>
           <div className="p-5 sm:p-6">

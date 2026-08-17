@@ -276,6 +276,8 @@ def obtener_balance_general(db: Session, empresa_id: str, anio: int, mes: int, n
     # Empujamos la utilidad al Nivel 1 del Patrimonio para que la ecuación cuadre visualmente
     if '3' in saldos_acumulados:
         saldos_acumulados['3'] += utilidad_ejercicio
+    if '31' in saldos_acumulados:
+        saldos_acumulados['31'] += utilidad_ejercicio
         
     total_patrimonio += utilidad_ejercicio
 
@@ -310,7 +312,7 @@ def obtener_balance_general(db: Session, empresa_id: str, anio: int, mes: int, n
     # Inyección de cuenta virtual para la utilidad
     texto_utilidad = "Utilidad del Ejercicio" if utilidad_ejercicio >= 0 else "Pérdida del Ejercicio"
     patrimonio.append({
-        "codigo": "3-RESULTADO", 
+        "codigo": "31-RESULTADO", 
         "nombre": texto_utilidad, 
         "saldo": utilidad_ejercicio,
         "nivel": nivel, 

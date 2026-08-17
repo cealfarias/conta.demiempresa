@@ -64,8 +64,8 @@ function BalanceGeneral() {
   };
 
   const formatearFila = (cuenta, index, array) => {
-    // Trataremos como 'Total' a las cuentas padre (Nivel 3 o menor) o las virtuales de resultado
-    const isTotal = cuenta.es_total || cuenta.nivel <= 3;
+    // Trataremos como 'Total' a las cuentas padre (resumen = true) o nivel 1/2 obligatoriamente
+    const isTotal = cuenta.es_total || cuenta.resumen || cuenta.nivel <= 2;
     let saldoMostrar = cuenta.saldo;
     
     // Identificar si es el último hijo para poner la línea de cierre en el Parcial

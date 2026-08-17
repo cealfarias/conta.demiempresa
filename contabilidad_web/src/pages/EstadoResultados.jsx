@@ -101,7 +101,7 @@ function EstadoResultados() {
   );
 
   const formatearFilaDinámica = (cuenta, index, array) => {
-    const isTotal = cuenta.nivel <= 2;
+    const isTotal = cuenta.es_total || cuenta.resumen || cuenta.nivel <= 2;
     let saldoMostrar = cuenta.saldo;
     
     // Identificar si es el último hijo para poner la línea de cierre en el Parcial

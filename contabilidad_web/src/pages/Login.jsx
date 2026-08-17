@@ -210,9 +210,22 @@ export default function Login() {
 
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <GoogleLogin
-                  onSuccess={(credentialResponse) => {
-                    // Google SSO
-                    console.log(credentialResponse);
+                  onSuccess={async (credentialResponse) => {
+                    try {
+                      setLoading(true);
+                      const response = await axios.post(`${API_URL}/api/login/google`, {
+                        credential: credentialResponse.credential
+                      });
+                      if (response.data.access_token) {
+                        localStorage.setItem('token', response.data.access_token);
+                        localStorage.setItem('rol', response.data.rol);
+                        setTimeout(() => navigate('/seleccionar-entorno'), 600);
+                      }
+                    } catch (err) {
+                      setError(err.response?.data?.detail || 'Error al iniciar sesión con Google.');
+                    } finally {
+                      setLoading(false);
+                    }
                   }}
                   onError={() => {
                     console.log('Login Failed');

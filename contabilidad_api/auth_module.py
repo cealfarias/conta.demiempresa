@@ -8,6 +8,8 @@ import bcrypt
 import jwt
 import pyotp
 from pydantic import BaseModel
+from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
 
 # ================= IMPORTACIONES ARQUITECTURA UNIFICADA =================
 # Importamos la conexión central y el modelo ORM del sistema contable
@@ -192,6 +194,38 @@ def validar_token(token: str = Depends(oauth2_scheme)):
         raise HTTPException(status_code=401, detail="Token expirado")
     except jwt.PyJWTError:
         raise HTTPException(status_code=401, detail="Token invlido")
+
+class GoogleLoginRequest(BaseModel):
+    credential: str
+
+@app.post("/api/login/google", response_model=TokenResponse)
+def google_login(req: GoogleLoginRequest, db: Session = Depends(get_db)):
+    try:
+        # Reemplazar por tu Client ID de produccion
+        CLIENT_ID = "520602063183-02kdfek3f8vp2g146j2khacmhj4nbn6a.apps.googleusercontent.com"
+        idinfo = id_token.verify_oauth2_token(req.credential, google_requests.Request(), CLIENT_ID)
+        email = idinfo['email']
+        
+        user = db.query(Usuario).filter(Usuario.email == email).first()
+        if not user:
+            raise HTTPException(status_code=401, detail="Usuario no registrado en el sistema. Por favor crea un entorno primero.")
+            
+        if not user.is_active:
+            raise HTTPException(status_code=400, detail="El usuario está inactivo.")
+
+        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        access_token = create_access_token(
+            data={"sub": user.username, "rol": user.rol},
+            expires_delta=access_token_expires
+        )
+        
+        return {
+            "access_token": access_token, 
+            "token_type": "bearer",
+            "rol": user.rol
+        }
+    except ValueError:
+        raise HTTPException(status_code=401, detail="Token de Google inválido")
 
 @app.post("/api/login/verify-2fa", response_model=TokenResponse)
 def verify_2fa(req: Verify2FARequest, db: Session = Depends(get_db)):

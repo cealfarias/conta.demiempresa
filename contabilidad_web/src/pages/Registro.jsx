@@ -1,19 +1,30 @@
 import React, { useState } from 'react';
-import { User, Mail, Lock, ArrowRight, ShieldCheck, Eye, EyeOff, Activity } from 'lucide-react';
+import { ShieldCheck, ArrowRight } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
+import bgImage from '../assets/bg-registro.png';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 function Registro() {
+  const [empresaId, setEmpresaId] = useState('');
+  const [nombreEmpresa, setNombreEmpresa] = useState('');
+  const [nit, setNit] = useState('');
+  const [giro, setGiro] = useState('');
+  const [normativa, setNormativa] = useState('NIIF_PYMES');
+  
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [acceptedMailing, setAcceptedMailing] = useState(false);
+  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
@@ -27,29 +38,43 @@ function Registro() {
     setError('');
 
     try {
-      const payload = {
+      // 1. Create Company
+      const empresaPayload = {
+        id: empresaId.toUpperCase(),
+        razon_social: nombreEmpresa,
+        nit: nit,
+        giro: giro || 'General',
+        normativa: normativa,
+        terminal_ip: "127.0.0.1",
+        usuario_creacion: username
+      };
+
+      await axios.post(`${API_URL}/api/v1/empresas/nueva`, empresaPayload, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      // 2. Create User
+      const userPayload = {
         username: username,
         email: email,
-        rol: "usuario",
+        rol: "Administrador",
         is_active: true,
         password: password,
         usuario_creacion: "sistema",
         terminal_ip: "127.0.0.1"
       };
 
-      await axios.post(`${API_URL}/api/v1/usuarios/`, payload, {
+      await axios.post(`${API_URL}/api/v1/usuarios/`, userPayload, {
         headers: { 'Content-Type': 'application/json' }
       });
 
       setSuccess(true);
-      setTimeout(() => navigate('/login'), 2500);
+      setTimeout(() => navigate('/login'), 3000);
 
     } catch (err) {
       console.error("Register Error:", err);
       if (err.response) {
-        setError(`Error (${err.response.status}): ${err.response.data?.detail || 'No se pudo crear la cuenta.'}`);
-      } else if (err.request) {
-        setError('Error de conexión. El servidor no responde.');
+        setError(`Error: ${err.response.data?.detail || 'No se pudo crear el entorno.'}`);
       } else {
         setError('Ocurrió un error inesperado al procesar la solicitud.');
       }
@@ -61,164 +86,228 @@ function Registro() {
   if (success) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <div className="bg-white p-10 rounded-3xl shadow-xl w-full max-w-md text-center animate-in zoom-in-95 duration-500">
+        <div className="bg-white p-10 rounded-3xl shadow-xl w-full max-w-md text-center">
           <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <ShieldCheck className="w-10 h-10 text-emerald-600" />
           </div>
-          <h2 className="text-2xl font-bold text-slate-800 mb-2">¡Cuenta Creada!</h2>
-          <p className="text-slate-600 mb-6">Tu cuenta ha sido registrada exitosamente. Redirigiendo al inicio de sesión...</p>
+          <h2 className="text-2xl font-bold text-slate-800 mb-2">¡Entorno Creado!</h2>
+          <p className="text-slate-600 mb-6">La empresa y tu cuenta de administrador han sido registradas exitosamente. Redirigiendo al inicio de sesión...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row overflow-hidden">
-      {/* Left side: Branding / Info */}
-      <div className="bg-slate-900 md:w-5/12 p-10 flex flex-col justify-between relative overflow-hidden hidden md:flex">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-40 h-40 bg-emerald-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
-          <div className="absolute top-40 right-10 w-40 h-40 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
-          <div className="absolute -bottom-10 left-20 w-40 h-40 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
+    <div className="min-h-screen flex flex-col md:flex-row bg-[#EBEBEB] overflow-x-hidden">
+      {/* Left side: Background Image & Overlay */}
+      <div className="md:w-[45%] relative hidden md:flex flex-col justify-center p-12">
+        <div 
+          className="absolute inset-0 z-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${bgImage})` }}
+        >
+          {/* Glassmorphism Dark Overlay */}
+          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
         </div>
-
+        
         <div className="relative z-10">
-          <div className="flex items-center space-x-2 text-white mb-16">
-            <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center shadow-lg">
-              <Activity className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-bold tracking-tight">Ecosistema SaaS</span>
-          </div>
-          
-          <h1 className="text-4xl font-bold text-white mb-6 leading-tight">
-            Únete a la nueva era de la gestión contable.
+          <h1 className="text-4xl font-bold text-white mb-4 leading-tight">
+            El Motor de Tu<br />Crecimiento<br />Empresarial
           </h1>
-          <p className="text-slate-400 text-lg max-w-sm leading-relaxed">
-            Un solo usuario para acceder a todas las aplicaciones empresariales de tu ecosistema.
+          <p className="text-slate-200 text-base mb-10 max-w-md leading-relaxed">
+            Digitaliza, integra y toma el control absoluto de todas las áreas operativas de tu negocio.
           </p>
-        </div>
-
-        <div className="relative z-10 text-slate-500 text-sm">
-          &copy; 2026 Ecosistema SaaS. Todos los derechos reservados.
+          
+          <ul className="space-y-6">
+            <li className="flex items-center text-slate-100 font-medium">
+              <div className="w-10 h-10 bg-slate-800/60 rounded-full flex items-center justify-center mr-4">🏢</div>
+              Gestión Integral de Áreas y Sucursales
+            </li>
+            <li className="flex items-center text-slate-100 font-medium">
+              <div className="w-10 h-10 bg-slate-800/60 rounded-full flex items-center justify-center mr-4">📦</div>
+              Inventario Preciso y Trazabilidad Total
+            </li>
+            <li className="flex items-center text-slate-100 font-medium">
+              <div className="w-10 h-10 bg-slate-800/60 rounded-full flex items-center justify-center mr-4">📈</div>
+              Facturación Electrónica al Instante (DTE)
+            </li>
+          </ul>
         </div>
       </div>
 
-      {/* Right side: Register Form */}
-      <div className="flex-1 flex items-center justify-center p-6 sm:p-12">
-        <div className="w-full max-w-md">
-          <div className="md:hidden flex items-center space-x-2 text-slate-900 mb-8">
-            <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center shadow-md">
-              <Activity className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-bold tracking-tight">Ecosistema SaaS</span>
-          </div>
-
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Crear Cuenta</h2>
-            <p className="text-slate-500 mt-2">Ingresa tus datos para registrarte.</p>
+      {/* Right side: Form Container */}
+      <div className="md:w-[55%] flex justify-center items-center p-4 sm:p-8 relative">
+        <div className="w-full max-w-xl">
+          
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-slate-800">Crear nueva Empresa</h2>
+            <p className="text-sm text-slate-500 mt-1">Ingresa los datos para crear tu espacio de facturación</p>
           </div>
 
           <form onSubmit={handleRegister} className="space-y-5">
             {error && (
-              <div className="bg-rose-50 text-rose-600 p-3 rounded-lg text-sm border border-rose-100 flex items-start animate-in fade-in">
-                <ShieldCheck className="w-4 h-4 mr-2 shrink-0 mt-0.5" />
-                <span>{error}</span>
+              <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm font-medium border border-red-100 text-center">
+                {error}
               </div>
             )}
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Nombre de Usuario</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-slate-400" />
-                </div>
-                <input
-                  type="text"
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">Nombre Empresa</label>
+                <input 
+                  type="text" 
                   required
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-2.5 border border-slate-200 rounded-xl bg-slate-50 text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors sm:text-sm outline-none"
-                  placeholder="ej. juanperez"
+                  value={nombreEmpresa}
+                  onChange={e => setNombreEmpresa(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">ID Empresa (Corto)</label>
+                <input 
+                  type="text" 
+                  maxLength={10}
+                  required
+                  placeholder="Ej: DEMI"
+                  value={empresaId}
+                  onChange={e => setEmpresaId(e.target.value.toUpperCase())}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm uppercase"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">NIT / NRC (Opcional)</label>
+                <input 
+                  type="text" 
+                  value={nit}
+                  onChange={e => setNit(e.target.value)}
+                  placeholder="0614-..."
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">Giro de Negocio</label>
+                <input 
+                  type="text" 
+                  required
+                  placeholder="Ej: Venta de tecnología"
+                  value={giro}
+                  onChange={e => setGiro(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Correo Electrónico</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-slate-400" />
-                </div>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-2.5 border border-slate-200 rounded-xl bg-slate-50 text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors sm:text-sm outline-none"
-                  placeholder="tu@correo.com"
-                />
+              <label className="block text-xs font-medium text-slate-700 mb-2">Normativa Contable</label>
+              <div className="flex space-x-4">
+                <label className="inline-flex items-center">
+                  <input type="radio" value="NIIF_PYMES" checked={normativa === 'NIIF_PYMES'} onChange={(e) => setNormativa(e.target.value)} className="text-indigo-600 focus:ring-indigo-500" />
+                  <span className="ml-2 text-sm text-slate-700">NIIF para PYMES</span>
+                </label>
+                <label className="inline-flex items-center">
+                  <input type="radio" value="NIFACES" checked={normativa === 'NIFACES'} onChange={(e) => setNormativa(e.target.value)} className="text-indigo-600 focus:ring-indigo-500" />
+                  <span className="ml-2 text-sm text-slate-700">NIFACES</span>
+                </label>
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Contraseña</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-slate-400" />
-                </div>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-xl bg-slate-50 text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors sm:text-sm outline-none"
-                  placeholder="••••••••"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
-                >
-                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                </button>
-              </div>
-            </div>
-
-            <div className="flex items-center mt-4">
-              <input
-                id="terms"
-                type="checkbox"
+              <label className="block text-xs font-medium text-slate-700 mb-1">Usuario Administrador</label>
+              <input 
+                type="text" 
                 required
-                checked={acceptedTerms}
-                onChange={(e) => setAcceptedTerms(e.target.checked)}
-                className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-slate-300 rounded cursor-pointer"
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+                className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm"
               />
-              <label htmlFor="terms" className="ml-2 block text-sm text-slate-700">
-                He leído y acepto los <Link to="/terminos" target="_blank" className="text-emerald-600 hover:text-emerald-500 font-medium">Términos de Referencia</Link>
-              </label>
             </div>
 
-            <button
-              type="submit"
+            <div>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Correo Electrónico</label>
+              <input 
+                type="email" 
+                required
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Contraseña Maestra</label>
+              <input 
+                type="password" 
+                required
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+              />
+            </div>
+
+            <div className="bg-slate-50 p-4 rounded-md border border-slate-200 mt-6">
+              <div className="flex items-start mb-3">
+                <input 
+                  type="checkbox" 
+                  checked={acceptedTerms}
+                  onChange={(e) => setAcceptedTerms(e.target.checked)}
+                  className="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded cursor-pointer"
+                />
+                <label className="ml-2 text-xs text-slate-600 cursor-pointer" onClick={() => setAcceptedTerms(!acceptedTerms)}>
+                  He leído y acepto los <span className="text-indigo-600 hover:underline">Términos de Referencia</span> y el <span className="text-indigo-600 hover:underline">Contrato de Servicio</span> de Facturación e Inventario SaaS.
+                </label>
+              </div>
+              <div className="flex items-start">
+                <input 
+                  type="checkbox"
+                  checked={acceptedMailing}
+                  onChange={(e) => setAcceptedMailing(e.target.checked)}
+                  className="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded cursor-pointer"
+                />
+                <label className="ml-2 text-xs text-slate-600 cursor-pointer" onClick={() => setAcceptedMailing(!acceptedMailing)}>
+                  Acepto recibir correos con actualizaciones y novedades de facturación electrónica.
+                </label>
+              </div>
+            </div>
+
+            <button 
+              type="submit" 
               disabled={loading}
-              className="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-slate-900 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+              className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
             >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              ) : (
-                <>
-                  Crear Cuenta <ArrowRight className="ml-2 h-4 w-4" />
-                </>
-              )}
+              {loading ? 'Registrando Entorno...' : 'Registrar Empresa'}
             </button>
+
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-[#EBEBEB] text-slate-500">O regístrate con</span>
+              </div>
+            </div>
+
+            <div className="flex justify-center">
+              <GoogleLogin
+                onSuccess={(credentialResponse) => {
+                  console.log(credentialResponse);
+                }}
+                onError={() => {
+                  console.log('Login Failed');
+                }}
+                theme="outline"
+                size="large"
+                text="signup_with"
+                width="100%"
+              />
+            </div>
             
-            <p className="text-center text-sm text-slate-500 mt-6">
-              ¿Ya tienes una cuenta?{' '}
-              <Link to="/login" className="font-semibold text-emerald-600 hover:text-emerald-500 transition-colors">
-                Ingresa aquí
-              </Link>
-            </p>
           </form>
+
+          <p className="mt-8 text-center text-sm text-slate-600">
+            ¿Ya tienes un espacio? <Link to="/login" className="font-bold text-indigo-600 hover:text-indigo-500">Inicia Sesión aquí</Link>
+          </p>
         </div>
       </div>
     </div>

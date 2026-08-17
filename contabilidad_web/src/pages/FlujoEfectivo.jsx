@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { DollarSign, Printer, ArrowLeft } from 'lucide-react';
+import { DollarSign, Printer, ArrowLeft, Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -181,7 +181,15 @@ function FlujoEfectivo() {
               <div className="text-center mb-8">
                 <h2 className="text-xl font-bold text-slate-800 uppercase">CANTARES S.A DE C.V.</h2>
                 {/* TODO: Sacar el nombre de la empresa activa del contexto */}
-                <h3 className="text-lg font-bold text-slate-700">ESTADO DE FLUJOS DE EFECTIVO (MÉTODO INDIRECTO)</h3>
+                <div className="flex items-center justify-center gap-2">
+                  <h3 className="text-lg font-bold text-slate-700">ESTADO DE FLUJOS DE EFECTIVO (MÉTODO INDIRECTO)</h3>
+                  <div 
+                    title="Elaborado de conformidad con la Norma Internacional de Contabilidad 7 (NIC 7 / NIIF) y lineamientos de la Junta de Vigilancia de la Contaduría Pública (JVCP) de El Salvador."
+                    className="text-slate-400 hover:text-indigo-500 cursor-help print:hidden"
+                  >
+                    <Info className="w-4 h-4" />
+                  </div>
+                </div>
                 <p className="text-sm text-slate-600 uppercase">
                   DEL 1 DE ENERO AL {new Date(anio, mesActual, 0).getDate()} DE {meses.find(m => m.id === mesActual).nombre.toUpperCase()} DE {anio}
                 </p>

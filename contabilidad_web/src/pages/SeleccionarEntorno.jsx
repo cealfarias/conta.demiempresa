@@ -124,7 +124,8 @@ export default function SeleccionarEntorno() {
           navigate('/dashboard');
           return;
         } catch (initErr) {
-          setError(`El ejercicio fiscal ${anio} no se pudo auto-inicializar. Por favor use el botón de Soporte.`);
+          const detail = initErr.response?.data?.detail || initErr.message;
+          setError(`No se pudo auto-inicializar el año ${anio}. Servidor dice: ${detail}. Usa el botón de Soporte.`);
         }
       } else if (err.response) {
         setError(`Error del servidor (${err.response.status}): ${err.response.data?.detail || JSON.stringify(err.response.data)}`);

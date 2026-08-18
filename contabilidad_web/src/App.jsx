@@ -38,7 +38,6 @@ const SessionWatcher = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // No chequear en páginas públicas
     if (['/login', '/registro', '/terminos'].includes(location.pathname)) return;
 
     const checkToken = () => {
@@ -49,12 +48,15 @@ const SessionWatcher = () => {
       }
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
-        if (payload.exp * 1000 < Date.now()) {
+        const currentTime = Math.floor(Date.now() / 1000);
+        // Add a 5 minute grace period to avoid immediate kickouts due to slight clock skew
+        if (payload.exp && payload.exp < (currentTime - 300)) {
+          console.warn(`Token expirado. Exp: ${payload.exp}, Actual: ${currentTime}`);
           localStorage.clear();
           navigate('/login');
         }
       } catch (e) {
-        // Ignorar
+        console.error("Error validando token en SessionWatcher", e);
       }
     };
 

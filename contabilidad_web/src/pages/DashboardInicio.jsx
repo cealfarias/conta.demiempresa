@@ -7,7 +7,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const DashboardInicio = () => {
   const navigate = useNavigate();
-  const empresaId = localStorage.getItem('empresa_id');
+  const empresaId = localStorage.getItem('empresa_activa');
   const [data, setData] = useState({
     activo: 0,
     pasivo: 0,
@@ -21,19 +21,20 @@ const DashboardInicio = () => {
   }, [empresaId]);
 
   const fetchResumen = async () => {
+    if (!empresaId) return;
     try {
       const token = localStorage.getItem('token');
       const headers = { Authorization: `Bearer ${token}` };
       
       // Get current date year for query
-      const currentYear = new Date().getFullYear();
-      const currentMonth = new Date().getMonth() + 1; // 1-12
+      const currentYear = localStorage.getItem('anio_activo') || new Date().getFullYear();
+      const currentMonth = localStorage.getItem('mes_activo') || (new Date().getMonth() + 1); // 1-12
       
       // Fetch balance general to get totals
-      const bgResponse = await axios.get(`${API_URL}/api/v1/reportes/balance_general/${empresaId}?anio=${currentYear}&mes=${currentMonth}`, { headers });
+      const bgResponse = await axios.get(`${API_URL}/api/v1/reportes/balance-general/${empresaId}/${currentYear}/${currentMonth}`, { headers });
       
       // Fetch estado resultados to get UAIR
-      const erResponse = await axios.get(`${API_URL}/api/v1/reportes/estado_resultados/${empresaId}?anio=${currentYear}&mes=${currentMonth}`, { headers });
+      const erResponse = await axios.get(`${API_URL}/api/v1/reportes/estado-resultados/${empresaId}/${currentYear}/${currentMonth}`, { headers });
       
       setData({
         activo: bgResponse.data.totales.ACTIVO || 0,

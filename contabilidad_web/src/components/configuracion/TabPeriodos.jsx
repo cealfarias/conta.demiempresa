@@ -133,8 +133,11 @@ function TabPeriodos({ empresaId }) {
 
   const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
-  const isAnioCerrado = periodos.length > 0 && periodos.every(p => !p.anio_abierto);
-  const todosMesesCerrados = periodos.length === 12 && periodos.every(p => !p.mes_abierto);
+  const periodosArray = Array.isArray(periodos) ? periodos : [];
+  const ejerciciosArray = Array.isArray(ejercicios) ? ejercicios : [];
+
+  const isAnioCerrado = periodosArray.length > 0 && periodosArray.every(p => !p.anio_abierto);
+  const todosMesesCerrados = periodosArray.length === 12 && periodosArray.every(p => !p.mes_abierto);
 
   return (
     <div>
@@ -196,16 +199,16 @@ function TabPeriodos({ empresaId }) {
             className="px-4 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500/20 font-medium text-slate-700 bg-slate-50"
             value={selectedAnio || ''}
             onChange={(e) => setSelectedAnio(parseInt(e.target.value))}
-            disabled={ejercicios.length === 0}
+            disabled={ejerciciosArray.length === 0}
           >
-            {ejercicios.length === 0 && <option value="">Sin años</option>}
-            {ejercicios.map(anio => (
+            {ejerciciosArray.length === 0 && <option value="">Sin años</option>}
+            {ejerciciosArray.map(anio => (
               <option key={anio} value={anio}>Ejercicio {anio}</option>
             ))}
           </select>
         </div>
 
-        {periodos.length > 0 ? (
+        {periodosArray.length > 0 ? (
           <div>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm text-slate-600">
@@ -218,7 +221,7 @@ function TabPeriodos({ empresaId }) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {periodos.map((p) => (
+                  {periodosArray.map((p) => (
                     <tr key={p.mes} className="hover:bg-slate-50 transition-colors">
                       <td className="px-6 py-4 font-medium text-slate-800">
                         {nombresMeses[p.mes - 1]}

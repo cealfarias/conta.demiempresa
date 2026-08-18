@@ -16,7 +16,17 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   
   const queryParams = new URLSearchParams(location.search);
-  const isExpired = queryParams.get('expired') === 'true';
+  const isExpiredQuery = queryParams.get('expired') === 'true';
+  const [isExpired, setIsExpired] = React.useState(isExpiredQuery);
+
+  React.useEffect(() => {
+    if (isExpired) {
+      const timer = setTimeout(() => {
+        setIsExpired(false);
+      }, 10000);
+      return () => clearTimeout(timer);
+    }
+  }, [isExpired]);
   
   // 2FA State
   const [requires2FA, setRequires2FA] = useState(false);

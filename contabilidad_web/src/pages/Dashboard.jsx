@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Outlet, Link, useLocation } from 'react-router-dom';
 import { Home, Book, FileText, Settings as ConfigIcon, LogOut, Shield, HelpCircle, FileSpreadsheet, Settings, Menu } from 'lucide-react';
 import SoporteModal from '../components/SoporteModal';
+import AssistantAvatar from '../components/AssistantAvatar';
 import axios from 'axios';
 import { Toaster, toast } from 'react-hot-toast';
 function Dashboard() {
@@ -216,6 +217,7 @@ function Dashboard() {
       </main>
 
       <SoporteModal isOpen={isSoporteOpen} onClose={() => setIsSoporteOpen(false)} />
+      <AssistantAvatar />
       <Toaster />
     </div>
   );

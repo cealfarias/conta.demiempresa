@@ -23,6 +23,35 @@ function Dashboard() {
     navigate('/login');
   };
 
+  // Extract User Info from JWT
+  let currentUsername = 'Usuario';
+  let currentUserRole = 'Rol no definido';
+  let userInitials = 'US';
+  try {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      const decoded = JSON.parse(jsonPayload);
+      
+      currentUsername = decoded.sub || 'Usuario';
+      
+      // Mapear el ID del rol a un nombre amigable
+      if (decoded.rol === 1) currentUserRole = 'Administrador';
+      else if (decoded.rol === 2) currentUserRole = 'Contador';
+      else if (decoded.rol === 3) currentUserRole = 'Auditor / Consulta';
+      else if (decoded.rol === 4) currentUserRole = 'Auxiliar Contable';
+      else currentUserRole = `Rol ${decoded.rol}`;
+      
+      userInitials = currentUsername.substring(0, 2).toUpperCase();
+    }
+  } catch(e) {
+    console.error("Error decoding token for navbar", e);
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 flex print:block print:bg-white">
       {/* Sidebar */}
@@ -112,11 +141,11 @@ function Dashboard() {
           
           <div className="flex items-center space-x-4">
             <div className="text-right hidden md:block">
-              <p className="text-sm font-bold text-slate-700">Usuario: admin</p>
-              <p className="text-xs text-slate-500">Rol: Administrador</p>
+              <p className="text-sm font-bold text-slate-700">Usuario: {currentUsername}</p>
+              <p className="text-xs text-slate-500">Rol: {currentUserRole}</p>
             </div>
             <div className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center text-emerald-400 font-bold border-2 border-emerald-500/30">
-              AD
+              {userInitials}
             </div>
           </div>
         </header>

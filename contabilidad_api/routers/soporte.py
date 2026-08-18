@@ -9,7 +9,7 @@ import schemas.soporte
 import crud.soporte
 
 router = APIRouter(
-    prefix="/soporte",
+    prefix="/api/v1/soporte",
     tags=["Soporte Técnico"]
 )
 

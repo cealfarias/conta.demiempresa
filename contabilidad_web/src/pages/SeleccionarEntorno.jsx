@@ -105,8 +105,27 @@ export default function SeleccionarEntorno() {
         return;
       }
       if (err.response?.status === 404) {
-        // Ejercicio no inicializado
-        setError(`El ejercicio fiscal ${anio} no se encuentra inicializado. Por favor contacte al Administrador.`);
+        try {
+          const usuario = localStorage.getItem('username') || 'admin';
+          await axios.post(`${API_URL}/api/v1/periodos/inicializar`, {
+            empresa_id: empresaId,
+            anio: parseInt(anio),
+            usuario: usuario
+          }, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          
+          const empresaSelect = empresas.find(e => e.id === empresaId);
+          const empresaNombre = empresaSelect ? (empresaSelect.nombre_comercial || empresaSelect.razon_social) : empresaId;
+          localStorage.setItem('empresa_activa', empresaId);
+          localStorage.setItem('anio_activo', anio);
+          localStorage.setItem('mes_activo', mes);
+          localStorage.setItem('empresa_nombre', empresaNombre);
+          navigate('/dashboard');
+          return;
+        } catch (initErr) {
+          setError(`El ejercicio fiscal ${anio} no se pudo auto-inicializar. Por favor use el botón de Soporte.`);
+        }
       } else if (err.response) {
         setError(`Error del servidor (${err.response.status}): ${err.response.data?.detail || JSON.stringify(err.response.data)}`);
       } else if (err.request) {

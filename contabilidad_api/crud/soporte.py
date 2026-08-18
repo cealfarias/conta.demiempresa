@@ -51,8 +51,14 @@ def agregar_mensaje_ticket(db: Session, ticket_id: int, usuario_id: int, conteni
     db.add(mensaje)
     
     ticket.fecha_actualizacion = datetime.utcnow()
-    if es_propietario and ticket.estado == "ABIERTO":
-        ticket.estado = "EN_PROCESO"
+    if ticket.estado != "RESUELTO":
+        if es_propietario:
+            ticket.estado = "RESPONDIDO"
+        else:
+            ticket.estado = "ESPERANDO RESPUESTA"
+    else:
+        if not es_propietario:
+            ticket.estado = "REABIERTO"
 
     db.commit()
     db.refresh(mensaje)

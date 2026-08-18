@@ -156,7 +156,7 @@ def contar_tickets_no_leidos(
         query = query.filter(models.soporte.TicketSoporte.estado.in_(["ABIERTO", "ESPERANDO RESPUESTA", "REABIERTO"]))
     else:
         query = query.filter(models.soporte.TicketSoporte.empresa_id == usuario_db.empresa_id)
-        query = query.filter(models.soporte.TicketSoporte.estado == "RESPONDIDO")
+        query = query.filter(models.soporte.TicketSoporte.estado.in_(["RESPONDIDO", "EN_PROCESO"]))
         
     return query.count()
 

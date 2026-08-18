@@ -82,10 +82,11 @@ function Dashboard() {
       currentUsername = decoded.sub || 'Usuario';
       
       // Mapear el ID del rol a un nombre amigable
-      if (decoded.rol === 1) currentUserRole = 'Administrador';
-      else if (decoded.rol === 2) currentUserRole = 'Contador';
-      else if (decoded.rol === 3) currentUserRole = 'Auditor / Consulta';
-      else if (decoded.rol === 4) currentUserRole = 'Auxiliar Contable';
+      const rawRol = String(decoded.rol).toLowerCase();
+      if (rawRol.includes('admin')) currentUserRole = 'Administrador';
+      else if (rawRol === 'contador' || rawRol === '2') currentUserRole = 'Contador';
+      else if (rawRol === 'auditor' || rawRol === '3') currentUserRole = 'Auditor / Consulta';
+      else if (rawRol === 'auxiliar' || rawRol === '4') currentUserRole = 'Auxiliar Contable';
       else currentUserRole = `Rol ${decoded.rol}`;
       
       userInitials = currentUsername.substring(0, 2).toUpperCase();
@@ -154,10 +155,12 @@ function Dashboard() {
             <Shield className="w-5 h-5 shrink-0" />
             {isSidebarOpen && <span className="font-medium whitespace-nowrap">Suscripción Premium</span>}
           </Link>
-          <Link to="/dashboard/configuracion" className={`flex items-center space-x-3 px-3 py-3 rounded-xl transition-colors ${location.pathname === '/dashboard/configuracion' ? 'bg-emerald-600/20 text-emerald-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'} ${!isSidebarOpen && 'justify-center'}`} title="Configuración de la Empresa">
-            <Settings className="w-5 h-5" />
-            {isSidebarOpen && <span className="font-medium whitespace-nowrap">Configuración</span>}
-          </Link>
+          {currentUserRole !== 'Auditor / Consulta' && currentUserRole !== 'Auxiliar Contable' && (
+            <Link to="/dashboard/configuracion" className={`flex items-center space-x-3 px-3 py-3 rounded-xl transition-colors ${location.pathname === '/dashboard/configuracion' ? 'bg-emerald-600/20 text-emerald-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'} ${!isSidebarOpen && 'justify-center'}`} title="Configuración de la Empresa">
+              <Settings className="w-5 h-5" />
+              {isSidebarOpen && <span className="font-medium whitespace-nowrap">Configuración</span>}
+            </Link>
+          )}
         </nav>
 
         <div className="p-3 border-t border-slate-800">

@@ -10,6 +10,8 @@ function Partidas() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
+  const userRole = localStorage.getItem('rol') || 'Auditor';
+
   const anularPartida = async (id, nomenclatura) => {
     if (!window.confirm(`¿Está seguro que desea ANULAR la partida No. ${nomenclatura}? Los montos se reducirán a cero y esta acción no se puede deshacer.`)) return;
     
@@ -133,22 +135,26 @@ function Partidas() {
                 <option key={m.id} value={m.id}>{m.nombre}</option>
               ))}
             </select>
-          </div>
-
-          <button 
-              onClick={() => navigate('/dashboard/partidas/importar')}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center space-x-2 shadow-lg shadow-emerald-500/20 whitespace-nowrap"
-            >
-              <Upload className="w-4 h-4" />
-              <span className="hidden md:inline">Importar Partidas</span>
-            </button>
-            <button 
-              onClick={() => navigate('/dashboard/partidas/nueva')}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center space-x-2 shadow-lg shadow-indigo-500/20 whitespace-nowrap"
-            >
-              <Plus className="w-4 h-4" />
-              <span className="hidden md:inline">Nueva Partida</span>
-            </button>
+            </div>
+  
+            {userRole !== 'Auditor' && (
+              <div className="flex space-x-2">
+                <button 
+                  onClick={() => navigate('/dashboard/partidas/importar')}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center space-x-2 shadow-lg shadow-emerald-500/20 whitespace-nowrap"
+                >
+                  <Upload className="w-4 h-4" />
+                  <span className="hidden md:inline">Importar Partidas</span>
+                </button>
+                <button 
+                  onClick={() => navigate('/dashboard/partidas/nueva')}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center space-x-2 shadow-lg shadow-indigo-500/20 whitespace-nowrap"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span className="hidden md:inline">Nueva Partida</span>
+                </button>
+              </div>
+            )}
         </div>
       </div>
 
@@ -266,25 +272,25 @@ function Partidas() {
                         </button>
                         <button 
                           onClick={() => navigate(`/dashboard/partidas/editar/${partida.id}`)}
-                          disabled={!(partida.estado === 'Borrador' || (partida.estado === 'Mayorizada' && ['administrador', 'contador', 'admin'].includes((localStorage.getItem('rol') || '').trim().toLowerCase())))}
+                          disabled={userRole === 'Auditor' || !(partida.estado === 'Borrador' || (partida.estado === 'Mayorizada' && ['administrador', 'contador', 'admin'].includes((localStorage.getItem('rol') || '').trim().toLowerCase())))}
                           className={`p-1.5 rounded-lg transition-colors ${
-                            (partida.estado === 'Borrador' || (partida.estado === 'Mayorizada' && ['administrador', 'contador', 'admin'].includes((localStorage.getItem('rol') || '').trim().toLowerCase())))
+                            userRole !== 'Auditor' && (partida.estado === 'Borrador' || (partida.estado === 'Mayorizada' && ['administrador', 'contador', 'admin'].includes((localStorage.getItem('rol') || '').trim().toLowerCase())))
                             ? 'text-slate-400 hover:text-emerald-600 hover:bg-emerald-50' 
                             : 'text-slate-200 cursor-not-allowed'
                           }`} 
-                          title={(partida.estado === 'Borrador' || (partida.estado === 'Mayorizada' && ['administrador', 'contador', 'admin'].includes((localStorage.getItem('rol') || '').trim().toLowerCase()))) ? "Editar" : "Candado activado"}
+                          title={userRole === 'Auditor' ? "Solo lectura" : (partida.estado === 'Borrador' || (partida.estado === 'Mayorizada' && ['administrador', 'contador', 'admin'].includes((localStorage.getItem('rol') || '').trim().toLowerCase()))) ? "Editar" : "Candado activado"}
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button 
                           onClick={() => anularPartida(partida.id, partida.nomenclatura)}
-                          disabled={partida.estado !== 'Borrador'}
+                          disabled={userRole === 'Auditor' || partida.estado !== 'Borrador'}
                           className={`p-1.5 rounded-lg transition-colors ${
-                            partida.estado === 'Borrador' 
+                            userRole !== 'Auditor' && partida.estado === 'Borrador' 
                             ? 'text-slate-400 hover:text-rose-600 hover:bg-rose-50' 
                             : 'text-slate-200 cursor-not-allowed'
                           }`} 
-                          title={partida.estado === 'Borrador' ? "Anular Partida" : "No se puede anular en este estado"}
+                          title={userRole === 'Auditor' ? "Solo lectura" : partida.estado === 'Borrador' ? "Anular Partida" : "No se puede anular en este estado"}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>

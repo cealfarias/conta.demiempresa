@@ -15,6 +15,7 @@ function Catalogo() {
   const [searchTerm, setSearchTerm] = useState('');
   const [nivelFiltro, setNivelFiltro] = useState('todos');
   const [showPaywall, setShowPaywall] = useState(false);
+  const userRole = localStorage.getItem('rol') || 'Auditor';
   
   // Estados para el Tooltip Flotante
   const [hoverData, setHoverData] = useState({ visible: false, type: null, x: 0, y: 0, loading: false, data: null, cuentaGanadora: null, cuentaCodigo: null });
@@ -207,25 +208,29 @@ function Catalogo() {
             <span>Exportar</span>
           </button>
           
-          <button 
-            onClick={() => navigate('/dashboard/catalogo/importar-manual')}
-            className="bg-sky-600 hover:bg-sky-700 text-white px-3 py-1.5 md:px-4 md:py-2 text-[11px] md:text-sm rounded-lg font-medium transition-colors flex items-center space-x-1.5 md:space-x-2 shadow-sm shadow-sky-500/20"
-          >
-            <Book className="w-3.5 h-3.5 md:w-4 md:h-4" />
-            <span>Manual</span>
-          </button>
-
-          <button 
-            onClick={() => navigate('/dashboard/catalogo/importar')}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 md:px-4 md:py-2 text-[11px] md:text-sm rounded-lg font-medium transition-colors flex items-center space-x-1.5 md:space-x-2 shadow-sm shadow-indigo-500/20"
-          >
-            <FileUp className="w-3.5 h-3.5 md:w-4 md:h-4" />
-            <span>Importar CSV</span>
-          </button>
-          <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 md:px-4 md:py-2 text-[11px] md:text-sm rounded-lg font-medium transition-colors flex items-center space-x-1.5 md:space-x-2 shadow-sm shadow-emerald-500/20">
-            <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
-            <span>Nueva Cuenta</span>
-          </button>
+          {(userRole === 'Administrador' || userRole === 'Contador') && (
+            <>
+              <button 
+                onClick={() => navigate('/dashboard/catalogo/importar-manual')}
+                className="bg-sky-600 hover:bg-sky-700 text-white px-3 py-1.5 md:px-4 md:py-2 text-[11px] md:text-sm rounded-lg font-medium transition-colors flex items-center space-x-1.5 md:space-x-2 shadow-sm shadow-sky-500/20"
+              >
+                <Book className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                <span>Manual</span>
+              </button>
+    
+              <button 
+                onClick={() => navigate('/dashboard/catalogo/importar')}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 md:px-4 md:py-2 text-[11px] md:text-sm rounded-lg font-medium transition-colors flex items-center space-x-1.5 md:space-x-2 shadow-sm shadow-indigo-500/20"
+              >
+                <FileUp className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                <span>Importar CSV</span>
+              </button>
+              <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 md:px-4 md:py-2 text-[11px] md:text-sm rounded-lg font-medium transition-colors flex items-center space-x-1.5 md:space-x-2 shadow-sm shadow-emerald-500/20">
+                <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                <span>Nueva Cuenta</span>
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -346,9 +351,11 @@ function Catalogo() {
                     </td>
                     <td className="py-1.5 px-4 text-center">
                       <div className="flex items-center justify-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button className="p-1 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded transition-colors" title="Editar cuenta">
-                          <Edit2 className="w-3.5 h-3.5" />
-                        </button>
+                        {(userRole === 'Administrador' || userRole === 'Contador') && (
+                          <button className="p-1 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded transition-colors" title="Editar cuenta">
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
                         <button 
                           onClick={() => {
                             navigate(`/dashboard/catalogo/saldos/${cuenta.cuentas}`, { state: { cuenta } });
@@ -358,9 +365,11 @@ function Catalogo() {
                         >
                           <BarChart2 className="w-3.5 h-3.5" />
                         </button>
-                        <button className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors" title="Eliminar cuenta">
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                        {(userRole === 'Administrador' || userRole === 'Contador') && (
+                          <button className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors" title="Eliminar cuenta">
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

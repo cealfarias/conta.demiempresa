@@ -466,18 +466,20 @@ function PartidaEditor() {
             >
               Cancelar
             </button>
-            <button 
-              onClick={handleGuardar}
-              disabled={!isCuadrada || guardando}
-              className={`px-6 py-2.5 rounded-xl text-sm font-bold flex items-center space-x-2 transition-all shadow-lg ${
-                isCuadrada && !guardando
-                  ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/30' 
-                  : 'bg-slate-300 text-slate-500 cursor-not-allowed shadow-none'
-              }`}
-            >
-              <Save className="w-4 h-4" />
-              <span>{guardando ? 'Guardando...' : (id ? 'Actualizar Partida' : 'Guardar Partida')}</span>
-            </button>
+            {rol !== 'auditor' && (
+              <button 
+                onClick={handleGuardar}
+                disabled={!isCuadrada || guardando}
+                className={`px-6 py-2.5 rounded-xl text-sm font-bold flex items-center space-x-2 transition-all shadow-lg ${
+                  isCuadrada && !guardando
+                    ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/30' 
+                    : 'bg-slate-300 text-slate-500 cursor-not-allowed shadow-none'
+                }`}
+              >
+                <Save className="w-4 h-4" />
+                <span>{guardando ? 'Guardando...' : (id ? 'Actualizar Partida' : 'Guardar Partida')}</span>
+              </button>
+            )}
           </div>
         </div>
       </div>

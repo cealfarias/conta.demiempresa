@@ -35,8 +35,8 @@ function Dashboard() {
         const currentCount = res.data;
         setUnreadCount(currentCount);
 
-        if (!isInitialLoad && currentCount > lastUnreadCount) {
-          toast.success(`Tienes nuevos mensajes en Soporte`, {
+        if ((!isInitialLoad && currentCount > lastUnreadCount) || (isInitialLoad && currentCount > 0)) {
+          toast.success(`Tienes ${currentCount} mensajes sin leer en Soporte`, {
             duration: 10000,
             position: 'bottom-right',
             style: {

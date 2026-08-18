@@ -3,6 +3,7 @@ import { Settings, Calendar, Users, DollarSign } from 'lucide-react';
 import TabFlujoEfectivo from '../components/configuracion/TabFlujoEfectivo';
 import TabPeriodos from '../components/configuracion/TabPeriodos';
 import TabUsuarios from '../components/configuracion/TabUsuarios';
+import ErrorBoundary from '../components/ErrorBoundary';
 
 function ConfiguracionEmpresa() {
   const [activeTab, setActiveTab] = useState('periodos');
@@ -15,7 +16,8 @@ function ConfiguracionEmpresa() {
   ];
 
   return (
-    <div className="p-8 pb-32 max-w-5xl mx-auto">
+    <ErrorBoundary>
+      <div className="p-8 pb-32 max-w-5xl mx-auto">
       <div className="flex items-center space-x-4 mb-8">
         <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center">
           <Settings className="w-6 h-6 text-indigo-600" />
@@ -49,6 +51,7 @@ function ConfiguracionEmpresa() {
         {activeTab === 'flujo' && <TabFlujoEfectivo empresaId={empresaId} />}
       </div>
     </div>
+    </ErrorBoundary>
   );
 }
 

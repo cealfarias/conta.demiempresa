@@ -44,27 +44,41 @@ def inicializar_ejercicio_fiscal(datos: InicializarPeriodoIn, db: Session = Depe
 
     print("> [API-PERIODOS - BANDERA 4] Validación aprobada. No hay duplicados. Iniciando guardado...")
 
-    # 2. Registrar la cabecera del Ejercicio Fiscal
-    try:
-        print("   -> Mapeando registro en cabecera 'EjercicioFiscal'...")
-        nuevo_ejercicio = EjercicioFiscal(
-            empresa_id=datos.empresa_id,
-            anio=datos.anio,
-            fecha_inicio=datetime.date(datos.anio, 1, 1),
-            fecha_fin=datetime.date(datos.anio, 12, 31),
-            estado_cerrado=False,
-            usuario_creacion=datos.usuario
-        )
-        db.add(nuevo_ejercicio)
-        print("   -> [OK] Cabecera encolada exitosamente.")
-    except Exception as e:
-        print(f"   [X] [ERROR CABECERA] No se pudo mapear la cabecera: {str(e)}")
+    # 2. Registrar la cabecera del Ejercicio Fiscal si no existe
+    ej_existente = db.query(EjercicioFiscal).filter_by(empresa_id=datos.empresa_id, anio=datos.anio).first()
+    if not ej_existente:
+        try:
+            print("   -> Mapeando registro en cabecera 'EjercicioFiscal'...")
+            from sqlalchemy import func
+            max_ej_id = db.query(func.max(EjercicioFiscal.id)).scalar() or 0
+            
+            nuevo_ejercicio = EjercicioFiscal(
+                id=max_ej_id + 1,
+                empresa_id=datos.empresa_id,
+                anio=datos.anio,
+                fecha_inicio=datetime.date(datos.anio, 1, 1),
+                fecha_fin=datetime.date(datos.anio, 12, 31),
+                estado_cerrado=False,
+                usuario_creacion=datos.usuario
+            )
+            db.add(nuevo_ejercicio)
+            print("   -> [OK] Cabecera encolada exitosamente.")
+        except Exception as e:
+            print(f"   [X] [ERROR CABECERA] No se pudo mapear la cabecera: {str(e)}")
+    else:
+        print("   -> [INFO] Cabecera 'EjercicioFiscal' ya existía, se omitirá su creación.")
 
     # 3. Registrar los 12 meses correspondientes en la tabla de control
     print("> [API-PERIODOS - BANDERA 5] Mapeando los 12 meses en memoria para 'control_periodos'...")
+    
+    # FIX: Evitar error de secuencia desincronizada en PostgreSQL asignando ID manualmente
+    from sqlalchemy import func
+    max_id = db.query(func.max(ControlPeriodo.id)).scalar() or 0
+    
     meses_a_insertar = []
-    for mes in range(1, 13):
+    for i, mes in enumerate(range(1, 13)):
         nuevo_mes = ControlPeriodo(
+            id=max_id + i + 1,
             empresa_id=datos.empresa_id,
             anio=datos.anio,
             mes=mes,

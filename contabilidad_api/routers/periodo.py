@@ -44,16 +44,25 @@ def inicializar_ejercicio_fiscal(datos: InicializarPeriodoIn, db: Session = Depe
 
     print("> [API-PERIODOS - BANDERA 4] Validación aprobada. No hay duplicados. Iniciando guardado...")
 
+    # ==============================================================================
+    # FIX DEFINITIVO PARA POSTGRESQL: Sincronizar secuencias
+    # ==============================================================================
+    try:
+        if db.bind.dialect.name == 'postgresql':
+            from sqlalchemy import text
+            db.execute(text("SELECT setval('ejercicios_fiscales_id_seq', COALESCE((SELECT MAX(id) FROM ejercicios_fiscales), 1));"))
+            db.execute(text("SELECT setval('control_periodos_id_seq', COALESCE((SELECT MAX(id) FROM control_periodos), 1));"))
+            db.commit()
+    except Exception as e:
+        print(f"   [INFO] No se pudo sincronizar secuencias (probablemente no sea postgres): {e}")
+
     # 2. Registrar la cabecera del Ejercicio Fiscal si no existe
     ej_existente = db.query(EjercicioFiscal).filter_by(empresa_id=datos.empresa_id, anio=datos.anio).first()
     if not ej_existente:
         try:
             print("   -> Mapeando registro en cabecera 'EjercicioFiscal'...")
-            from sqlalchemy import func, insert
-            max_ej_id = db.query(func.max(EjercicioFiscal.id)).scalar() or 0
-            
+            from sqlalchemy import insert
             db.execute(insert(EjercicioFiscal).values(
-                id=max_ej_id + 1,
                 empresa_id=datos.empresa_id,
                 anio=datos.anio,
                 fecha_inicio=datetime.date(datos.anio, 1, 1),
@@ -70,13 +79,10 @@ def inicializar_ejercicio_fiscal(datos: InicializarPeriodoIn, db: Session = Depe
     # 3. Registrar los 12 meses correspondientes en la tabla de control
     print("> [API-PERIODOS - BANDERA 5] Mapeando los 12 meses en memoria para 'control_periodos'...")
     
-    from sqlalchemy import func, insert
-    max_id = db.query(func.max(ControlPeriodo.id)).scalar() or 0
-    
+    from sqlalchemy import insert
     meses_a_insertar = []
-    for i, mes in enumerate(range(1, 13)):
+    for mes in range(1, 13):
         meses_a_insertar.append({
-            "id": max_id + i + 1,
             "empresa_id": datos.empresa_id,
             "anio": datos.anio,
             "mes": mes,

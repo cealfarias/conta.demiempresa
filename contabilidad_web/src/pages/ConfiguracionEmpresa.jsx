@@ -45,7 +45,7 @@ function ConfiguracionEmpresa() {
 
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
         {activeTab === 'periodos' && <TabPeriodos empresaId={empresaId} />}
-        {activeTab === 'usuarios' && <TabUsuarios />}
+        {activeTab === 'usuarios' && <TabUsuarios empresaId={empresaId} />}
         {activeTab === 'flujo' && <TabFlujoEfectivo empresaId={empresaId} />}
       </div>
     </div>

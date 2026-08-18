@@ -4,7 +4,7 @@ import { Users, UserPlus, Trash2, ShieldCheck, Mail, Save, X, AlertTriangle, Che
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
-function TabUsuarios() {
+function TabUsuarios({ empresaId }) {
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,13 +19,15 @@ function TabUsuarios() {
   });
 
   useEffect(() => {
-    fetchUsuarios();
-  }, []);
+    if (empresaId) {
+      fetchUsuarios();
+    }
+  }, [empresaId]);
 
   const fetchUsuarios = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_URL}/api/v1/usuarios/`);
+      const response = await axios.get(`${API_URL}/api/v1/usuarios/?empresa_id=${empresaId}`);
       setUsuarios(response.data);
       setError(null);
     } catch (err) {
@@ -50,6 +52,7 @@ function TabUsuarios() {
       
       const payload = {
         ...nuevoUser,
+        empresa_id: empresaId,
         usuario_creacion: usuarioLogueado,
         terminal_ip: '127.0.0.1' // Frontend no suele enviar IP real directamente a menos que backend lo asuma
       };

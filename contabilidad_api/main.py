@@ -1,6 +1,17 @@
 from fastapi import FastAPI, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
+# ==================== MIGRACIONES EN TIEMPO DE ARRANQUE ====================
+from config.database import engine
+from sqlalchemy import text
+try:
+    with engine.begin() as conn:
+        conn.execute(text("ALTER TABLE usuarios ADD COLUMN empresa_id VARCHAR;"))
+        print("[MIGRACIÓN] Se añadió la columna 'empresa_id' a la tabla 'usuarios'.")
+except Exception as e:
+    # Ignoramos si la columna ya existe
+    pass
+
 # ==================== ROUTERS CENTRALIZADOS ====================
 from routers.api import api_router
 # Módulo de seguridad

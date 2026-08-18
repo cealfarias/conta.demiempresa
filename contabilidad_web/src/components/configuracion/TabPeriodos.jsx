@@ -94,7 +94,7 @@ function TabPeriodos({ empresaId }) {
   };
 
   const handleCerrarMes = async (mes) => {
-    if (!window.confirm(`¿Estás seguro de que deseas cerrar el mes ${mes}? Ya no podrás crear más partidas en este período.`)) {
+    if (!window.confirm(`¿Estás seguro de que deseas cerrar el mes ${mes} de ${selectedAnio}? No podrás agregar más partidas a este mes.`)) {
       return;
     }
     
@@ -104,6 +104,31 @@ function TabPeriodos({ empresaId }) {
       await axios.put(`${API_URL}/api/v1/periodos/cierre-mes/${empresaId}/${selectedAnio}/${mes}`);
       setSuccess(`Mes ${mes} cerrado exitosamente.`);
       await fetchControlMeses(selectedAnio);
+
+      // --- AUTOMATIZACIÓN DE WHATSAPP ---
+      try {
+        // 1. Obtener datos del estado de resultados
+        const resReporte = await axios.get(`${API_URL}/api/v1/reportes/estado-resultados/${empresaId}/${selectedAnio}/${mes}`);
+        const data = resReporte.data;
+        const uair = data.utilidad_antes_impuestos || 0;
+        
+        // 2. Obtener el número del Administrador
+        const resUsuarios = await axios.get(`${API_URL}/api/v1/usuarios/?empresa_id=${empresaId}`);
+        const admin = resUsuarios.data.find(u => u.rol === 'Administrador');
+        
+        if (admin && admin.telefono) {
+          const formatCurrency = (val) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
+          
+          const mensaje = `Hola ${admin.username}, el Contador ha cerrado exitosamente el mes ${mes}/${selectedAnio}.\n\n*Resumen Financiero:*\n📈 Utilidad (UAIR): ${formatCurrency(uair)}\n\nEl reporte completo está disponible en el sistema.`;
+          
+          const cleanPhone = admin.telefono.replace(/\D/g, '');
+          window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(mensaje)}`, '_blank');
+        }
+      } catch (waErr) {
+        console.error("No se pudo automatizar WhatsApp:", waErr);
+      }
+      // ----------------------------------
+
     } catch (err) {
       setError(err.response?.data?.detail || `Error al cerrar el mes ${mes}.`);
     } finally {

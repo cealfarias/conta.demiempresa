@@ -19,6 +19,7 @@ function Registro() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [telefono, setTelefono] = useState('');
   
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [acceptedMailing, setAcceptedMailing] = useState(false);
@@ -40,6 +41,14 @@ function Registro() {
     setError('');
 
     try {
+      // 0. Verificar si el correo ya existe
+      const checkRes = await axios.get(`${API_URL}/api/v1/usuarios/check-email/${encodeURIComponent(email)}`);
+      if (checkRes.data.exists) {
+        setError('Este correo electrónico ya está registrado. Solo se permite una empresa por usuario. Adquiere una Licencia Multi-Empresa para agregar más entidades.');
+        setLoading(false);
+        return;
+      }
+
       // 1. Create Company
       const empresaPayload = {
         id: empresaId.toUpperCase(),
@@ -59,7 +68,9 @@ function Registro() {
       const userPayload = {
         username: username,
         email: email,
+        telefono: telefono || null,
         rol: "Administrador",
+        empresa_id: empresaId.toUpperCase(),
         is_active: true,
         password: password,
         usuario_creacion: "sistema",
@@ -251,15 +262,27 @@ function Registro() {
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-slate-700 mb-1">Correo Electrónico</label>
-              <input 
-                type="email" 
-                required
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">Correo Electrónico</label>
+                <input 
+                  type="email" 
+                  required
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">WhatsApp (Opcional)</label>
+                <input 
+                  type="tel" 
+                  placeholder="+503 7000 0000"
+                  value={telefono}
+                  onChange={e => setTelefono(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                />
+              </div>
             </div>
 
             <div>

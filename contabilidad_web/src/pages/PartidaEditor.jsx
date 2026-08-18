@@ -63,7 +63,9 @@ function PartidaEditor() {
   const fetchCatalogo = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/api/v1/catalogo/?empresa_id=CANTARES&anio=2026`, {
+      const empresaActiva = localStorage.getItem('empresa_activa');
+      const anioActivo = localStorage.getItem('anio_activo') || new Date().getFullYear();
+      const response = await axios.get(`${API_URL}/api/v1/catalogo/?empresa_id=${empresaActiva}&anio=${anioActivo}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setCatalogoCompleto(response.data);
@@ -187,7 +189,7 @@ function PartidaEditor() {
     try {
       const token = localStorage.getItem('token');
       const payload = {
-        empresa_id: 'CANTARES',
+        empresa_id: localStorage.getItem('empresa_activa'),
         anio: parseInt(fecha.split('-')[0], 10),
         mes: parseInt(fecha.split('-')[1], 10),
         fecha: fecha,

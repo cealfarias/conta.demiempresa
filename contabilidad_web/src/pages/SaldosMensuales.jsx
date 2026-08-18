@@ -14,7 +14,7 @@ function SaldosMensuales() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
-  const [empresaId] = useState('CANTARES'); // Hardcoded for now, could be context
+  const [empresaId] = useState(localStorage.getItem('empresa_activa'));
   const [anio] = useState(2026); // Hardcoded for now, could be context
 
   useEffect(() => {

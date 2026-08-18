@@ -12,7 +12,7 @@ function MovimientosMes() {
   
   const [cuentaInfo] = useState(location.state?.cuenta || { cuentas: codigo, nombre: 'Cargando...' });
   const [mesNombre] = useState(location.state?.mesNombre || `Mes ${mes}`);
-  const [empresaId] = useState(location.state?.empresaId || 'CANTARES');
+  const [empresaId] = useState(location.state?.empresaId || localStorage.getItem('empresa_activa'));
   const [anio] = useState(location.state?.anio || 2026);
 
   const [loading, setLoading] = useState(true);

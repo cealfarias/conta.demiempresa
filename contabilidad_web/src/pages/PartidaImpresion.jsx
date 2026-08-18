@@ -120,7 +120,7 @@ function PartidaImpresion() {
           
           {/* Cabecera del Documento */}
           <div className="text-center mb-10 relative z-10">
-            <h1 className="text-2xl font-bold uppercase tracking-widest text-slate-900 mb-1">CANTARES</h1>
+            <h1 className="text-2xl font-bold uppercase tracking-widest text-slate-900 mb-1">{localStorage.getItem('nombre_empresa_activa') || 'Empresa Activa'}</h1>
             <h2 className="text-xl font-semibold text-slate-700 mb-6 uppercase">Comprobante de Diario</h2>
             
             <div className="flex justify-between items-end border-b-2 border-slate-900 pb-4 text-sm font-medium text-slate-800">
@@ -128,7 +128,7 @@ function PartidaImpresion() {
                 <p className="mb-1"><span className="font-bold">Fecha:</span> {new Date(partida.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
                 <p className="mb-2"><span className="font-bold">Estado:</span> <span className={partida.estado === 'Anulada' ? 'text-rose-600 font-bold' : ''}>{partida.estado}</span></p>
                 <p className="text-[10px] text-slate-500 print:text-slate-700 italic">
-                  Impreso el {new Date().toLocaleString('es-ES')} - Sistema Contable Cantares
+                  Impreso el {new Date().toLocaleString('es-ES')} - Sistema Contable {localStorage.getItem('nombre_empresa_activa') || 'Empresa Activa'}
                 </p>
               </div>
               <div className="text-right">

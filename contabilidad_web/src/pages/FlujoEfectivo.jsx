@@ -179,7 +179,7 @@ function FlujoEfectivo() {
             <>
               {/* Encabezado del Reporte */}
               <div className="text-center mb-8">
-                <h2 className="text-xl font-bold text-slate-800 uppercase">CANTARES S.A DE C.V.</h2>
+                <h2 className="text-xl font-bold text-slate-800 uppercase">{localStorage.getItem('nombre_empresa_activa') || 'Empresa Activa'}</h2>
                 {/* TODO: Sacar el nombre de la empresa activa del contexto */}
                 <div className="flex items-center justify-center gap-2">
                   <h3 className="text-lg font-bold text-slate-700">ESTADO DE FLUJOS DE EFECTIVO (MÉTODO INDIRECTO)</h3>

@@ -47,11 +47,11 @@ function Partidas() {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      // Forzamos empresa CANTARES y año 2026 por ahora
+      
       const response = await axios.get(`${API_URL}/api/v1/partidas/resumen`, {
         params: {
-          empresa_id: 'CANTARES',
-          anio: 2026,
+          empresa_id: localStorage.getItem('empresa_activa'),
+          anio: localStorage.getItem('anio_activo') || new Date().getFullYear(),
           mes: mesActual,
           page: paginaActual
         },

@@ -84,7 +84,7 @@ function TabFlujoEfectivo({ empresaId }) {
       {error && (
         <div className="bg-red-50 text-red-600 p-4 rounded-xl flex items-center space-x-3 mb-6 border border-red-100">
           <AlertTriangle className="w-5 h-5 shrink-0" />
-          <p>{error}</p>
+          <p>{typeof error === 'string' ? error : JSON.stringify(error)}</p>
         </div>
       )}
 

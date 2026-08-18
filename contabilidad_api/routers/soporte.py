@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from config.database import get_db
 from auth_module import obtener_usuario_actual
+from utils.email import notificar_nuevo_ticket, notificar_nuevo_mensaje_ticket
 import models.soporte
 import models.usuario
 import schemas.soporte
@@ -16,6 +17,7 @@ router = APIRouter(
 @router.post("/tickets", response_model=schemas.soporte.TicketSoporteResponse)
 def crear_ticket(
     ticket_in: schemas.soporte.TicketSoporteCreate,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     usuario_actual = Depends(obtener_usuario_actual)
 ):
@@ -28,6 +30,13 @@ def crear_ticket(
         ticket_data=ticket_in,
         empresa_id=usuario_db.empresa_id,
         usuario_id=usuario_db.id
+    )
+    
+    background_tasks.add_task(
+        notificar_nuevo_ticket,
+        ticket_in.asunto,
+        ticket_in.mensaje,
+        usuario_db.email or usuario_db.username
     )
     
     res = schemas.soporte.TicketSoporteResponse.from_orm(ticket)
@@ -70,6 +79,7 @@ def listar_tickets(
 def enviar_mensaje(
     ticket_id: int,
     mensaje_in: schemas.soporte.MensajeTicketCreate,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     usuario_actual = Depends(obtener_usuario_actual)
 ):
@@ -93,6 +103,15 @@ def enviar_mensaje(
         usuario_id=usuario_db.id,
         contenido=mensaje_in.contenido,
         es_propietario=es_propietario
+    )
+    
+    ticket_owner_email = ticket.usuario.email if ticket.usuario and ticket.usuario.email else "usuario@example.com"
+    background_tasks.add_task(
+        notificar_nuevo_mensaje_ticket,
+        ticket.asunto,
+        mensaje_in.contenido,
+        usuario_db.username,
+        ticket_owner_email
     )
     
     res = schemas.soporte.MensajeTicketResponse.from_orm(mensaje)

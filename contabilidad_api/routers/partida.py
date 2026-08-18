@@ -250,7 +250,11 @@ def obtener_partida_individual_con_detalles(partida_id: int, db: Session = Depen
         "concepto": partida.concepto,
         "estado": partida.estado,
         "nomenclatura": nomenclatura_generada,
-        "detalles": lineas_mapeadas
+        "detalles": lineas_mapeadas,
+        "usuario_creacion": partida.usuario_creacion,
+        "fecha_creacion": partida.fecha_creacion.isoformat() if partida.fecha_creacion else None,
+        "usuario_modificacion": partida.usuario_modificacion,
+        "fecha_modificacion": partida.fecha_modificacion.isoformat() if partida.fecha_modificacion else None
     }
 @router.put("/actualizar/{partida_id}", status_code=status.HTTP_200_OK)
 def actualizar_partida_completa_transaccional(
@@ -315,6 +319,8 @@ def actualizar_partida_completa_transaccional(
         partida.fecha = partida_in.fecha
         partida.concepto = partida_in.concepto
         partida.usuario_modificacion = partida_in.usuario
+        partida.fecha_modificacion = datetime.utcnow()
+        partida.terminal_ip = partida_in.terminal_ip
         
         # 5. Remover quirúrgicamente los detalles viejos para evitar duplicados
         db.query(PartidaDetalle).filter(PartidaDetalle.partida_id == partida_id).delete()

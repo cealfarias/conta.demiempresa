@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Save, X, Plus, Trash2, Calculator, AlertCircle, ArrowLeft, ShieldCheck } from 'lucide-react';
+import { Save, X, Plus, Trash2, Calculator, AlertCircle, ArrowLeft, ShieldCheck, Clock, User, ShieldAlert } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -16,6 +16,7 @@ function PartidaEditor() {
   const [fecha, setFecha] = useState(new Date().toISOString().split('T')[0]);
   const [concepto, setConcepto] = useState('');
   const [estado, setEstado] = useState('Borrador');
+  const [auditInfo, setAuditInfo] = useState(null);
   const [detalles, setDetalles] = useState([
     { id: 1, cuenta_codigo: '', cuenta_nombre: '', debe: '', haber: '', concepto_detalle: '' },
     { id: 2, cuenta_codigo: '', cuenta_nombre: '', debe: '', haber: '', concepto_detalle: '' }
@@ -23,6 +24,7 @@ function PartidaEditor() {
   
   const [guardando, setGuardando] = useState(false);
   const rol = (localStorage.getItem('rol') || '').trim().toLowerCase();
+  const isPremium = localStorage.getItem('licencia_tipo') === 'premium';
 
   useEffect(() => {
     fetchCatalogo().then(() => {
@@ -45,6 +47,12 @@ function PartidaEditor() {
       setFecha(data.fecha.split('T')[0]);
       setConcepto(data.concepto);
       setNomenclatura(data.nomenclatura || '');
+      setAuditInfo({
+        usuario_creacion: data.usuario_creacion,
+        fecha_creacion: data.fecha_creacion,
+        usuario_modificacion: data.usuario_modificacion,
+        fecha_modificacion: data.fecha_modificacion
+      });
       if (data.detalles && data.detalles.length > 0) {
         setDetalles(data.detalles.map((d, index) => ({
           id: Date.now() + index,
@@ -254,34 +262,75 @@ function PartidaEditor() {
           </div>
         </div>
       )}
-
-      {/* Burbuja de estado Mayorizada */}
-      {id && estado === 'Mayorizada' && (rol === 'contador' || rol === 'administrador' || rol === 'admin') && (
-        <div className="mb-6 relative bg-white border border-amber-200 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
-          <div className="absolute top-0 left-0 w-1.5 h-full bg-amber-500"></div>
-          <div className="p-5 sm:p-6">
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 bg-amber-100 rounded-full p-2.5 mt-1">
-                <ShieldCheck className="h-6 w-6 text-amber-600" />
-              </div>
-              <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <h3 className="text-base font-bold text-slate-800 tracking-tight">Partida Mayorizada</h3>
-                  <p className="mt-1 text-sm text-slate-600 leading-relaxed">
-                    Esta partida se encuentra protegida. ¿Quieres editar la partida? Cambia el estado con un solo clic.
-                  </p>
+           {/* Burbuja de estado Mayorizada */}
+        {id && estado === 'Mayorizada' && (rol === 'contador' || rol === 'administrador' || rol === 'admin') && (
+          <div className="mb-6 relative bg-white border border-amber-200 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+            <div className="absolute top-0 left-0 w-1.5 h-full bg-amber-500"></div>
+            <div className="p-5 sm:p-6">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 bg-amber-100 rounded-full p-2.5 mt-1">
+                  <ShieldCheck className="h-6 w-6 text-amber-600" />
                 </div>
-                <button 
-                  onClick={handleChangeEstado}
-                  className="inline-flex items-center justify-center px-4 py-2 border border-amber-300 shadow-sm text-xs font-bold rounded-lg text-amber-800 bg-amber-50 hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 transition-colors shrink-0"
-                >
-                  Cambiar a Borrador
-                </button>
+                <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <h3 className="text-base font-bold text-slate-800 tracking-tight">Partida Mayorizada</h3>
+                    <p className="mt-1 text-sm text-slate-600 leading-relaxed">
+                      Esta partida se encuentra protegida. ¿Quieres editar la partida? Cambia el estado con un solo clic.
+                    </p>
+                  </div>
+                  <button 
+                    onClick={handleChangeEstado}
+                    className="inline-flex items-center justify-center px-4 py-2 border border-amber-300 shadow-sm text-xs font-bold rounded-lg text-amber-800 bg-amber-50 hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 transition-colors shrink-0"
+                  >
+                    Cambiar a Borrador
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+
+        {/* Panel de Auditoría (Exclusivo Premium) */}
+        {id && isPremium && auditInfo && (
+          <div className="mb-6 relative bg-white border border-indigo-100 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+            <div className="absolute top-0 left-0 w-1.5 h-full bg-indigo-500"></div>
+            <div className="p-4 sm:p-5">
+              <div className="flex items-center gap-3 mb-3">
+                <ShieldAlert className="h-5 w-5 text-indigo-500" />
+                <h3 className="text-sm font-bold text-slate-800 tracking-tight">Panel de Auditoría Avanzada</h3>
+                <span className="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase tracking-wider border border-indigo-100">
+                  Premium
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 flex items-start space-x-3">
+                  <div className="mt-0.5"><User className="w-4 h-4 text-slate-400" /></div>
+                  <div>
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Registro Original</p>
+                    <p className="text-slate-700"><span className="font-medium">{auditInfo.usuario_creacion}</span></p>
+                    <div className="flex items-center text-slate-500 text-xs mt-1">
+                      <Clock className="w-3 h-3 mr-1" />
+                      {auditInfo.fecha_creacion ? new Date(auditInfo.fecha_creacion).toLocaleString() : 'N/A'}
+                    </div>
+                  </div>
+                </div>
+                {auditInfo.usuario_modificacion && (
+                  <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 flex items-start space-x-3">
+                    <div className="mt-0.5"><User className="w-4 h-4 text-slate-400" /></div>
+                    <div>
+                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Última Modificación</p>
+                      <p className="text-slate-700"><span className="font-medium">{auditInfo.usuario_modificacion}</span></p>
+                      <div className="flex items-center text-slate-500 text-xs mt-1">
+                        <Clock className="w-3 h-3 mr-1" />
+                        {auditInfo.fecha_modificacion ? new Date(auditInfo.fecha_modificacion).toLocaleString() : 'N/A'}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col flex-1 overflow-hidden">
         {/* Cabecera de la Partida */}

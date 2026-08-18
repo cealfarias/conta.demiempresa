@@ -6,6 +6,7 @@ class UsuarioBase(BaseModel):
     username: str
     email: str = Field(pattern=r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
     rol: str
+    empresa_id: Optional[str] = None
     is_active: Optional[bool] = True
 
 class UsuarioCreate(UsuarioBase):

@@ -28,5 +28,13 @@ def obtener_todas_empresas(db: Session, usuario: str = None, rol: str = None):
     # Si el usuario es administrador global, o si no se especificó filtro, se devuelven todas
     if not usuario or rol == "admin":
         return db.query(m_empresa.Empresa).all()
-    # Si es un usuario normal (ej: 'contador' o cualquier otro rol de un tenant), solo ve las que él creó
+        
+    from models.usuario import Usuario
+    user_obj = db.query(Usuario).filter(Usuario.username == usuario).first()
+    
+    if user_obj and getattr(user_obj, 'empresa_id', None):
+        # Si el usuario tiene una empresa asignada (ej: Contador de DEMI), solo ve esa empresa
+        return db.query(m_empresa.Empresa).filter(m_empresa.Empresa.id == user_obj.empresa_id).all()
+        
+    # Si es un usuario normal sin empresa fija (ej: dueño local que creó empresas), ve las que él creó
     return db.query(m_empresa.Empresa).filter(m_empresa.Empresa.usuario_creacion == usuario).all()

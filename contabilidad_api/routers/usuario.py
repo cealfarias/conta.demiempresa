@@ -23,8 +23,8 @@ def create_user(usuario: UsuarioCreate, db: Session = Depends(get_db)):
     return crud_usuario.create_usuario(db=db, usuario=usuario)
 
 @router.get("/", response_model=List[Usuario])
-def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    usuarios = crud_usuario.get_usuarios(db, skip=skip, limit=limit)
+def read_users(empresa_id: str = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    usuarios = crud_usuario.get_usuarios(db, empresa_id=empresa_id, skip=skip, limit=limit)
     return usuarios
 
 @router.get("/{usuario_id}", response_model=Usuario)

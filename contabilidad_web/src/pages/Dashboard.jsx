@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Outlet, Link, useLocation } from 'react-router-dom';
 import { Home, Book, FileText, Settings as ConfigIcon, LogOut, Shield, HelpCircle, FileSpreadsheet, Settings, Menu } from 'lucide-react';
 import SoporteModal from '../components/SoporteModal';
+import axios from 'axios';
+import { Toaster, toast } from 'react-hot-toast';
 function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isSoporteOpen, setIsSoporteOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const empresaNombre = localStorage.getItem('empresa_nombre') || localStorage.getItem('empresa_activa') || 'Sin Empresa';
   const anioActivo = localStorage.getItem('anio_activo') || '----';
@@ -16,6 +19,45 @@ function Dashboard() {
       navigate('/seleccionar-entorno', { replace: true });
     }
   }, [navigate]);
+
+  useEffect(() => {
+    let lastUnreadCount = 0;
+    let isInitialLoad = true;
+
+    const fetchUnread = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+        const API_URL = import.meta.env.VITE_API_URL || 'https://conta-demiempresa.onrender.com';
+        const res = await axios.get(`${API_URL}/api/v1/soporte/unread`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const currentCount = res.data;
+        setUnreadCount(currentCount);
+
+        if (!isInitialLoad && currentCount > lastUnreadCount) {
+          toast.success(`Tienes nuevos mensajes en Soporte`, {
+            duration: 10000,
+            position: 'bottom-right',
+            style: {
+              background: '#0f172a',
+              color: '#fff',
+              border: '1px solid #334155'
+            },
+            icon: '💬',
+          });
+        }
+        lastUnreadCount = currentCount;
+        isInitialLoad = false;
+      } catch (e) {
+        // ignore
+      }
+    };
+
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -93,9 +135,20 @@ function Dashboard() {
             <Shield className="w-5 h-5 shrink-0" />
             {isSidebarOpen && <span className="font-medium whitespace-nowrap">Seguridad (2FA)</span>}
           </Link>
-          <button onClick={() => setIsSoporteOpen(true)} className={`w-full flex items-center space-x-3 px-3 py-3 rounded-xl transition-colors text-slate-300 hover:bg-slate-800 hover:text-white ${!isSidebarOpen && 'justify-center'}`} title="Soporte (Inbox)">
-            <HelpCircle className="w-5 h-5" />
+          <button onClick={() => setIsSoporteOpen(true)} className={`w-full flex items-center space-x-3 px-3 py-3 rounded-xl transition-colors text-slate-300 hover:bg-slate-800 hover:text-white ${!isSidebarOpen && 'justify-center'} relative`} title="Soporte (Inbox)">
+            <div className="relative">
+              <HelpCircle className="w-5 h-5" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                </span>
+              )}
+            </div>
             {isSidebarOpen && <span className="font-medium whitespace-nowrap">Soporte (Inbox)</span>}
+            {isSidebarOpen && unreadCount > 0 && (
+               <span className="ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{unreadCount}</span>
+            )}
           </button>
           <Link to="/dashboard/configuracion" className={`flex items-center space-x-3 px-3 py-3 rounded-xl transition-colors ${location.pathname === '/dashboard/configuracion' ? 'bg-emerald-600/20 text-emerald-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'} ${!isSidebarOpen && 'justify-center'}`} title="Configuración de la Empresa">
             <Settings className="w-5 h-5" />
@@ -156,6 +209,7 @@ function Dashboard() {
       </main>
 
       <SoporteModal isOpen={isSoporteOpen} onClose={() => setIsSoporteOpen(false)} />
+      <Toaster />
     </div>
   );
 }

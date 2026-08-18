@@ -132,7 +132,11 @@ export default function SeleccionarEntorno() {
 
         <div className="p-8">
           <form onSubmit={handleSubmit}>
-            <GlobalErrorAlert error={error} context="Selección de Entorno" />
+            <GlobalErrorAlert 
+              error={error} 
+              context="Selección de Entorno" 
+              extraInfo={{ EmpresaIntentada: empresaId, Anio: anio }} 
+            />
 
             <div className="space-y-5">
               <div>

@@ -1,14 +1,38 @@
 import React from 'react';
 import { AlertCircle, LifeBuoy } from 'lucide-react';
 
-export default function GlobalErrorAlert({ error, context = "Sistema Contable" }) {
+export default function GlobalErrorAlert({ error, context = "Sistema Contable", extraInfo = {} }) {
   if (!error) return null;
 
-  // We are on an unauthenticated page if there is no token or if we pass a specific prop, 
-  // but for now, since this is for Login/Registro/Entorno, we just default to mailto.
-  // In the future for Dashboard we will hook this up to the internal ticket system.
+  const url = typeof window !== 'undefined' ? window.location.href : 'Desconocida';
+  const time = new Date().toLocaleString();
+  const username = typeof localStorage !== 'undefined' ? (localStorage.getItem('username') || 'No autenticado') : 'Desconocido';
   
-  const mailToUrl = `mailto:cealfarias@gmail.com?subject=Problema Técnico - ${encodeURIComponent(context)}&body=${encodeURIComponent("Hola soporte, estoy experimentando este problema:\n\n" + error + "\n\nPasos para reproducir:\n1. ")}`;
+  let infoExtraStr = '';
+  if (Object.keys(extraInfo).length > 0) {
+    infoExtraStr = Object.entries(extraInfo)
+      .filter(([_, val]) => val) // Solo incluir valores que existan
+      .map(([key, val]) => `- ${key}: ${val}`)
+      .join('\n');
+  }
+
+  const bodyContent = `Hola soporte, necesito ayuda con el siguiente error.
+
+📋 DETALLE DEL ERROR:
+${error}
+
+🔍 INFORMACIÓN DE DIAGNÓSTICO:
+- Pantalla: ${context}
+- URL: ${url}
+- Fecha/Hora: ${time}
+- Sesión Local: ${username}
+${infoExtraStr}
+
+🛠️ PASOS PARA REPRODUCIR (Opcional):
+1. 
+`;
+
+  const mailToUrl = `mailto:cealfarias@gmail.com?subject=Problema Técnico - ${encodeURIComponent(context)}&body=${encodeURIComponent(bodyContent)}`;
 
   return (
     <div className="bg-red-50/90 border border-red-200 text-red-700 px-4 py-4 rounded-xl mb-6 shadow-sm flex flex-col gap-3 transition-all animate-in fade-in slide-in-from-top-2">

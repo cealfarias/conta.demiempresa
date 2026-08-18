@@ -157,7 +157,11 @@ function Registro() {
           </div>
 
           <form onSubmit={handleRegister} className="space-y-5">
-            <GlobalErrorAlert error={error} context="Registro de Empresa" />
+            <GlobalErrorAlert 
+              error={error} 
+              context="Registro de Empresa" 
+              extraInfo={{ EmpresaID: empresaId, NombreEmpresa: nombreEmpresa, AdminUser: username }}
+            />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>

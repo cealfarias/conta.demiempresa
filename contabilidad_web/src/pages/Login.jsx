@@ -169,7 +169,11 @@ export default function Login() {
             </div>
 
             <form onSubmit={handleLoginSubmit}>
-              <GlobalErrorAlert error={error} context="Login General" />
+              <GlobalErrorAlert 
+                error={error} 
+                context="Login General" 
+                extraInfo={{ UsuarioIntentado: username }}
+              />
 
               <div className="form-group">
                 <label className="form-label">Correo Electrónico / Usuario</label>

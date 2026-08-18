@@ -7,7 +7,7 @@ import ErrorBoundary from '../components/ErrorBoundary';
 
 function ConfiguracionEmpresa() {
   const [activeTab, setActiveTab] = useState('periodos');
-  const empresaId = localStorage.getItem('empresa_id');
+  const empresaId = localStorage.getItem('empresa_activa');
 
   const tabs = [
     { id: 'periodos', label: 'Períodos Contables', icon: Calendar },

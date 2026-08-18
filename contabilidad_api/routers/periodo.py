@@ -79,31 +79,39 @@ def inicializar_ejercicio_fiscal(datos: InicializarPeriodoIn, db: Session = Depe
     # 3. Registrar los 12 meses correspondientes en la tabla de control
     print("> [API-PERIODOS - BANDERA 5] Mapeando los 12 meses en memoria para 'control_periodos'...")
     
-    from sqlalchemy import insert
-    meses_a_insertar = []
-    for mes in range(1, 13):
-        meses_a_insertar.append({
-            "empresa_id": datos.empresa_id,
-            "anio": datos.anio,
-            "mes": mes,
-            "mes_abierto": True,
-            "anio_abierto": True,
-            "total_partidas": 0
-        })
-    print(f"   -> [OK] {len(meses_a_insertar)} meses listos para inserción masiva.")
-
+    # FIX ABSOLUTO: Inserción SQL cruda para evadir por completo el ORM y las secuencias de Postgres
     try:
-        print("> [API-PERIODOS - BANDERA 6] Ejecutando db.add_all() y db.commit()...")
-        db.execute(insert(ControlPeriodo).values(meses_a_insertar))
+        from sqlalchemy import text
+        print("> [API-PERIODOS] Obteniendo el MAX(id) absoluto de la tabla...")
+        max_id_result = db.execute(text("SELECT MAX(id) FROM control_periodos")).fetchone()
+        max_id = max_id_result[0] if max_id_result[0] is not None else 0
+        
+        print(f"> [API-PERIODOS] MAX(id) actual es {max_id}. Insertando 12 meses con IDs manuales...")
+        for i, mes in enumerate(range(1, 13)):
+            nuevo_id = max_id + i + 1
+            db.execute(
+                text("""
+                    INSERT INTO control_periodos (id, empresa_id, anio, mes, mes_abierto, anio_abierto, total_partidas)
+                    VALUES (:id, :emp, :anio, :mes, :ma, :aa, :tp)
+                """),
+                {
+                    "id": nuevo_id,
+                    "emp": datos.empresa_id,
+                    "anio": datos.anio,
+                    "mes": mes,
+                    "ma": True,
+                    "aa": True,
+                    "tp": 0
+                }
+            )
         db.commit()
-        print("   -> [*] [ÉXITO TOTAL] ¡Base de datos actualizada y guardada en disco!")
+        print("   -> [*] [ÉXITO TOTAL] ¡Base de datos actualizada usando RAW SQL!")
     except Exception as e:
-        print(f"   [X] [ERROR CRÍTICO SQL] Fallo al aplicar commit en la base de datos: {str(e)}")
+        print(f"   [X] [ERROR CRÍTICO SQL RAW] Fallo al insertar: {str(e)}")
         db.rollback()
-        print("   -> [ROLLBACK] Cambios revertidos de forma segura para evitar corrupción.")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error inesperado al asentar los períodos: {str(e)}"
+            detail=f"Error inesperado al asentar los períodos (RAW SQL): {str(e)}"
         )
 
     return {

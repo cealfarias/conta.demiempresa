@@ -7,7 +7,7 @@ class TicketSoporte(Base):
     __tablename__ = "sop_ticket"
 
     id = Column(Integer, primary_key=True, index=True)
-    empresa_id = Column(String, ForeignKey("empresas.id"), nullable=False)
+    empresa_id = Column(String, ForeignKey("empresas.id"), nullable=True)
     usuario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=False)
     asunto = Column(String(200), nullable=False)
     categoria = Column(String(50), default="Soporte Técnico")

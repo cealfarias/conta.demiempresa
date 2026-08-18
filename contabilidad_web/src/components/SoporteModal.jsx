@@ -29,6 +29,7 @@ export default function SoporteModal({ isOpen, onClose }) {
   const isOwner = user?.email?.toLowerCase() === 'cealfarias@gmail.com' ||
                   user?.username?.toLowerCase() === 'cealfarias' ||
                   user?.username?.toLowerCase() === 'cesararias' ||
+                  user?.username?.toLowerCase() === 'admin' ||
                   user?.username?.toLowerCase() === 'propietario';
   
   // Form para nuevo ticket (solo visible para clientes)
@@ -81,7 +82,8 @@ export default function SoporteModal({ isOpen, onClose }) {
       setSelectedTicket(creado);
       setActiveTab('inbox');
     } catch (err) {
-      alert("Error al enviar mensaje a soporte: " + err.message);
+      const msg = err.response?.data?.detail || err.message;
+      alert("Error al enviar mensaje a soporte: " + msg);
     } finally {
       setLoading(false);
     }

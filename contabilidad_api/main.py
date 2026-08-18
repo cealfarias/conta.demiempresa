@@ -9,7 +9,12 @@ try:
         conn.execute(text("ALTER TABLE usuarios ADD COLUMN empresa_id VARCHAR;"))
         print("[MIGRACIÓN] Se añadió la columna 'empresa_id' a la tabla 'usuarios'.")
 except Exception as e:
-    # Ignoramos si la columna ya existe
+    pass
+
+try:
+    with engine.begin() as conn:
+        conn.execute(text("ALTER TABLE sop_ticket ALTER COLUMN empresa_id DROP NOT NULL;"))
+except Exception as e:
     pass
 
 # ==================== ROUTERS CENTRALIZADOS ====================
@@ -27,6 +32,7 @@ import models.partida
 import models.periodo
 import models.empresa
 import models.manual
+import models.soporte
 
 # Crear todas las tablas en la BD si no existen (ideal para Postgres en Render)
 Base.metadata.create_all(bind=engine)

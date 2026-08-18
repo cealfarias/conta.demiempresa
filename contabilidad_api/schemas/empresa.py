@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field, field_validator
 from typing import Optional
+from datetime import datetime
 from .auditoria import AuditoriaBase
 
 class EmpresaBase(BaseModel):
@@ -22,5 +23,6 @@ class EmpresaCreate(EmpresaBase):
     usuario_creacion: str
 
 class EmpresaResponse(EmpresaBase):
+    fecha_creacion: Optional[datetime] = None
     class Config:
         from_attributes = True

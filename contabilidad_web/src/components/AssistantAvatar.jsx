@@ -123,7 +123,22 @@ export default function AssistantAvatar() {
   }, []);
 
   // Check if we are in premium trial or logic
-  // For now, always show. In the future: if (!isPremium && trialExpired) return null;
+  const isPremium = localStorage.getItem('licencia_tipo') === 'premium';
+  const fechaCreacion = localStorage.getItem('empresa_fecha_creacion');
+  
+  let isTrialActive = false;
+  if (fechaCreacion) {
+    const creationDate = new Date(fechaCreacion);
+    const currentDate = new Date();
+    const diffTime = Math.abs(currentDate - creationDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+    isTrialActive = diffDays <= 30;
+  } else {
+    // Si no hay fecha de creación (ej. cuenta antigua antes de esta actu), asumimos trial activo para que pruebe.
+    isTrialActive = true;
+  }
+
+  if (!isPremium && !isTrialActive) return null;
 
   return (
     <div className="fixed bottom-6 right-6 z-[100] flex flex-col items-end">

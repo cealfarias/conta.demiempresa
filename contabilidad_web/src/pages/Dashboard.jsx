@@ -66,6 +66,30 @@ function Dashboard() {
     navigate('/login');
   };
 
+  const isPremium = localStorage.getItem('licencia_tipo') === 'premium';
+  const fechaCreacion = localStorage.getItem('empresa_fecha_creacion');
+  
+  let isTrialActive = false;
+  let isTrialExpired = false;
+  let trialDaysLeft = 0;
+  
+  if (fechaCreacion) {
+    const creationDate = new Date(fechaCreacion);
+    const currentDate = new Date();
+    const diffTime = currentDate - creationDate;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+    if (diffDays <= 30) {
+      isTrialActive = true;
+      trialDaysLeft = 30 - diffDays;
+    } else {
+      isTrialExpired = true;
+    }
+  } else {
+    // Para cuentas legacy, asumimos que están en trial
+    isTrialActive = true;
+    trialDaysLeft = 30;
+  }
+
   // Extract User Info from JWT
   let currentUsername = 'Usuario';
   let currentUserRole = 'Rol no definido';
@@ -211,9 +235,25 @@ function Dashboard() {
           </div>
         </header>
 
-        <div className="flex-1 overflow-auto bg-slate-50 relative print:overflow-visible print:bg-white">
-          <Outlet />
-        </div>
+          <div className="flex-1 overflow-auto bg-slate-50 relative print:overflow-visible print:bg-white flex flex-col">
+            {/* Banner de Promoción / Trial */}
+            {!isPremium && isTrialActive && (
+              <div className="bg-indigo-600 px-4 py-3 text-white text-center text-sm font-medium shrink-0 print:hidden shadow-sm">
+                🎁 Estás usando la versión de prueba (Gratis por 30 días). Te quedan {trialDaysLeft} días. ¡Aprovecha la promoción de fin de año pronto!
+              </div>
+            )}
+            {!isPremium && isTrialExpired && (
+              <div className="bg-rose-600 px-4 py-3 text-white text-center text-sm font-medium shrink-0 print:hidden shadow-sm flex items-center justify-center space-x-2">
+                <span>⚠️ Tu versión de prueba ha expirado. Algunas funciones pro están limitadas.</span>
+                <Link to="/dashboard/suscripcion" className="underline font-bold hover:text-rose-200 transition-colors">
+                  Actualizar ahora
+                </Link>
+              </div>
+            )}
+            <div className="flex-1 relative">
+              <Outlet />
+            </div>
+          </div>
       </main>
 
       <SoporteModal isOpen={isSoporteOpen} onClose={() => setIsSoporteOpen(false)} />

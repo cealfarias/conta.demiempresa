@@ -94,6 +94,9 @@ export default function SeleccionarEntorno() {
       localStorage.setItem('anio_activo', anio);
       localStorage.setItem('mes_activo', mes);
       localStorage.setItem('empresa_nombre', empresaNombre);
+      if (empresaSelect && empresaSelect.fecha_creacion) {
+        localStorage.setItem('empresa_fecha_creacion', empresaSelect.fecha_creacion);
+      }
 
       navigate('/dashboard');
       
@@ -121,6 +124,9 @@ export default function SeleccionarEntorno() {
           localStorage.setItem('anio_activo', anio);
           localStorage.setItem('mes_activo', mes);
           localStorage.setItem('empresa_nombre', empresaNombre);
+          if (empresaSelect && empresaSelect.fecha_creacion) {
+            localStorage.setItem('empresa_fecha_creacion', empresaSelect.fecha_creacion);
+          }
           navigate('/dashboard');
           return;
         } catch (initErr) {

@@ -20,7 +20,19 @@ def create_user(usuario: UsuarioCreate, db: Session = Depends(get_db)):
     if db_email:
         raise HTTPException(status_code=400, detail="El correo electrónico ya está registrado")
         
+    if usuario.empresa_id:
+        current_users = crud_usuario.get_usuarios(db, empresa_id=usuario.empresa_id, skip=0, limit=100)
+        if len(current_users) >= 4:
+            raise HTTPException(status_code=402, detail="Límite de licencia alcanzado. Máximo 4 usuarios permitidos.")
+            
     return crud_usuario.create_usuario(db=db, usuario=usuario)
+
+@router.get("/check-email/{email}")
+def check_email(email: str, db: Session = Depends(get_db)):
+    db_email = crud_usuario.get_usuario_by_email(db, email=email)
+    if db_email:
+        return {"exists": True}
+    return {"exists": False}
 
 @router.get("/", response_model=List[Usuario])
 def read_users(empresa_id: str = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):

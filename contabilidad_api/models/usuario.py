@@ -11,6 +11,7 @@ class Usuario(Base):
     hashed_password = Column(String, nullable=False)
     rol = Column(String, nullable=False) # Ej: admin, contador
     empresa_id = Column(String, nullable=True) # Puede ser nulo para superadmins
+    telefono = Column(String, nullable=True) # Para notificaciones por WhatsApp
     is_active = Column(Boolean, default=True)
 
     # Campos 2FA (Opcional)

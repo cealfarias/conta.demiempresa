@@ -7,6 +7,7 @@ class UsuarioBase(BaseModel):
     email: str = Field(pattern=r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
     rol: str
     empresa_id: Optional[str] = None
+    telefono: Optional[str] = None
     is_active: Optional[bool] = True
 
 class UsuarioCreate(UsuarioBase):
@@ -17,6 +18,7 @@ class UsuarioCreate(UsuarioBase):
 class UsuarioUpdate(BaseModel):
     email: Optional[str] = Field(None, pattern=r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
     rol: Optional[str] = None
+    telefono: Optional[str] = None
     is_active: Optional[bool] = None
     password: Optional[str] = None
     usuario_modificacion: str

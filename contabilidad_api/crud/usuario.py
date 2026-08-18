@@ -39,6 +39,7 @@ def create_usuario(db: Session, usuario: UsuarioCreate):
         hashed_password=hashed_password,
         rol=usuario.rol,
         empresa_id=usuario.empresa_id,
+        telefono=usuario.telefono,
         is_active=usuario.is_active,
         usuario_creacion=usuario.usuario_creacion,
         terminal_ip=usuario.terminal_ip

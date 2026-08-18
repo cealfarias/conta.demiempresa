@@ -4,6 +4,18 @@ import axios from 'axios'
 import './index.css'
 import App from './App.jsx'
 
+// Interceptor global para agregar el token a todas las peticiones
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 // Interceptor global para capturar 401 Unauthorized (Token expirado)
 axios.interceptors.response.use(
   (response) => response,

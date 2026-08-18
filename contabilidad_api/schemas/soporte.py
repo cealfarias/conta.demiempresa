@@ -25,7 +25,7 @@ class TicketSoporteCreate(BaseModel):
 
 class TicketSoporteResponse(BaseModel):
     id: int
-    empresa_id: int
+    empresa_id: Optional[str] = None
     nombre_empresa: Optional[str] = "Empresa"
     usuario_id: int
     nombre_usuario: Optional[str] = "Usuario"

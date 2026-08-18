@@ -3,7 +3,7 @@ import models.soporte
 import schemas.soporte
 from datetime import datetime
 
-def crear_ticket_soporte(db: Session, ticket_data: schemas.soporte.TicketSoporteCreate, empresa_id: int, usuario_id: int):
+def crear_ticket_soporte(db: Session, ticket_data: schemas.soporte.TicketSoporteCreate, empresa_id: str, usuario_id: int):
     ticket = models.soporte.TicketSoporte(
         empresa_id=empresa_id,
         usuario_id=usuario_id,
@@ -28,7 +28,7 @@ def crear_ticket_soporte(db: Session, ticket_data: schemas.soporte.TicketSoporte
     db.refresh(ticket)
     return ticket
 
-def obtener_tickets_usuario(db: Session, empresa_id: int, es_propietario: bool = False):
+def obtener_tickets_usuario(db: Session, empresa_id: str, es_propietario: bool = False):
     query = db.query(models.soporte.TicketSoporte)
     if not es_propietario:
         query = query.filter(models.soporte.TicketSoporte.empresa_id == empresa_id)

@@ -17,13 +17,17 @@ router = APIRouter(
 def crear_ticket(
     ticket_in: schemas.soporte.TicketSoporteCreate,
     db: Session = Depends(get_db),
-    usuario_actual: models.usuario.Usuario = Depends(obtener_usuario_actual)
+    usuario_actual = Depends(obtener_usuario_actual)
 ):
+    usuario_db = db.query(models.usuario.Usuario).filter(models.usuario.Usuario.username == usuario_actual.username).first()
+    if not usuario_db:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
     ticket = crud.soporte.crear_ticket_soporte(
         db=db,
         ticket_data=ticket_in,
-        empresa_id=usuario_actual.empresa_id,
-        usuario_id=usuario_actual.id
+        empresa_id=usuario_db.empresa_id,
+        usuario_id=usuario_db.id
     )
     
     res = schemas.soporte.TicketSoporteResponse.from_orm(ticket)
@@ -34,12 +38,16 @@ def crear_ticket(
 @router.get("/tickets", response_model=List[schemas.soporte.TicketSoporteResponse])
 def listar_tickets(
     db: Session = Depends(get_db),
-    usuario_actual: models.usuario.Usuario = Depends(obtener_usuario_actual)
+    usuario_actual = Depends(obtener_usuario_actual)
 ):
-    email = getattr(usuario_actual, 'email', '') or ''
-    username = getattr(usuario_actual, 'username', '') or ''
+    usuario_db = db.query(models.usuario.Usuario).filter(models.usuario.Usuario.username == usuario_actual.username).first()
+    if not usuario_db:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    email = getattr(usuario_db, 'email', '') or ''
+    username = getattr(usuario_db, 'username', '') or ''
     es_propietario = email.lower() == "cealfarias@gmail.com" or username.lower() in ["cealfarias", "cesararias", "propietario"]
-    tickets = crud.soporte.obtener_tickets_usuario(db, empresa_id=usuario_actual.empresa_id, es_propietario=es_propietario)
+    tickets = crud.soporte.obtener_tickets_usuario(db, empresa_id=usuario_db.empresa_id, es_propietario=es_propietario)
     
     resultado = []
     for t in tickets:
@@ -63,28 +71,32 @@ def enviar_mensaje(
     ticket_id: int,
     mensaje_in: schemas.soporte.MensajeTicketCreate,
     db: Session = Depends(get_db),
-    usuario_actual: models.usuario.Usuario = Depends(obtener_usuario_actual)
+    usuario_actual = Depends(obtener_usuario_actual)
 ):
+    usuario_db = db.query(models.usuario.Usuario).filter(models.usuario.Usuario.username == usuario_actual.username).first()
+    if not usuario_db:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
     ticket = crud.soporte.obtener_ticket_por_id(db, ticket_id)
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket no encontrado.")
 
-    email = getattr(usuario_actual, 'email', '') or ''
-    username = getattr(usuario_actual, 'username', '') or ''
-    es_propietario = email.lower() == "cealfarias@gmail.com" or username.lower() in ["cealfarias", "admin", "propietario", "superadmin", "cesar", "cesararias", "soporte"] or usuario_actual.rol_id == 1
-    if not es_propietario and ticket.empresa_id != usuario_actual.empresa_id:
+    email = getattr(usuario_db, 'email', '') or ''
+    username = getattr(usuario_db, 'username', '') or ''
+    es_propietario = email.lower() == "cealfarias@gmail.com" or username.lower() in ["cealfarias", "admin", "propietario", "superadmin", "cesar", "cesararias", "soporte"] or usuario_db.rol == "admin"
+    if not es_propietario and ticket.empresa_id != usuario_db.empresa_id:
         raise HTTPException(status_code=403, detail="No tiene permisos para responder a este ticket.")
 
     mensaje = crud.soporte.agregar_mensaje_ticket(
         db=db,
         ticket_id=ticket_id,
-        usuario_id=usuario_actual.id,
+        usuario_id=usuario_db.id,
         contenido=mensaje_in.contenido,
         es_propietario=es_propietario
     )
     
     res = schemas.soporte.MensajeTicketResponse.from_orm(mensaje)
-    res.nombre_remitente = usuario_actual.username
+    res.nombre_remitente = usuario_db.username
     return res
 
 @router.put("/tickets/{ticket_id}/estado", response_model=schemas.soporte.TicketSoporteResponse)
@@ -92,8 +104,12 @@ def cambiar_estado(
     ticket_id: int,
     nuevo_estado: str,
     db: Session = Depends(get_db),
-    usuario_actual: models.usuario.Usuario = Depends(obtener_usuario_actual)
+    usuario_actual = Depends(obtener_usuario_actual)
 ):
+    usuario_db = db.query(models.usuario.Usuario).filter(models.usuario.Usuario.username == usuario_actual.username).first()
+    if not usuario_db:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
     ticket = crud.soporte.cambiar_estado_ticket(db, ticket_id, nuevo_estado)
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket no encontrado.")

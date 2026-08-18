@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Building, Calendar, Clock, ArrowRight, AlertCircle, Settings } from 'lucide-react';
+import GlobalErrorAlert from '../components/GlobalErrorAlert';
 import './Login.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -131,11 +132,7 @@ export default function SeleccionarEntorno() {
 
         <div className="p-8">
           <form onSubmit={handleSubmit}>
-            {error && (
-              <div className="login-error">
-                {error}
-              </div>
-            )}
+            <GlobalErrorAlert error={error} context="Selección de Entorno" />
 
             <div className="space-y-5">
               <div>

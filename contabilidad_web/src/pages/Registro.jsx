@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import bgImage from '../assets/bg-registro.png';
+import GlobalErrorAlert from '../components/GlobalErrorAlert';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -156,11 +157,7 @@ function Registro() {
           </div>
 
           <form onSubmit={handleRegister} className="space-y-5">
-            {error && (
-              <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm font-medium border border-red-100 text-center">
-                {error}
-              </div>
-            )}
+            <GlobalErrorAlert error={error} context="Registro de Empresa" />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>

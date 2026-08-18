@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { GoogleLogin } from '@react-oauth/google';
+import GlobalErrorAlert from '../components/GlobalErrorAlert';
 import './Login.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -95,7 +96,7 @@ export default function Login() {
               </div>
 
               <form onSubmit={handle2FASubmit}>
-                {error && <div className="login-error">{error}</div>}
+                <GlobalErrorAlert error={error} context="Login 2FA" />
                 
                 <div className="form-group" style={{ textAlign: 'center' }}>
                   <input 
@@ -168,7 +169,7 @@ export default function Login() {
             </div>
 
             <form onSubmit={handleLoginSubmit}>
-              {error && <div className="login-error">{error}</div>}
+              <GlobalErrorAlert error={error} context="Login General" />
 
               <div className="form-group">
                 <label className="form-label">Correo Electrónico / Usuario</label>

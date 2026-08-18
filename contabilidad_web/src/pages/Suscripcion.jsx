@@ -79,8 +79,8 @@ export default function Suscripcion() {
 
             <div className="grid md:grid-cols-2 gap-6 mb-8">
               <div className="space-y-3">
-                <div className="flex items-center space-x-2 text-slate-300"><CheckCircle2 className="w-5 h-5 text-emerald-400" /> <span>Empresas ilimitadas</span></div>
-                <div className="flex items-center space-x-2 text-slate-300"><CheckCircle2 className="w-5 h-5 text-emerald-400" /> <span>Usuarios ilimitados</span></div>
+                <div className="flex items-center space-x-2 text-slate-300"><CheckCircle2 className="w-5 h-5 text-emerald-400" /> <span>Licencia Multi-Empresa (Varias entidades)</span></div>
+                <div className="flex items-center space-x-2 text-slate-300"><CheckCircle2 className="w-5 h-5 text-emerald-400" /> <span>Paquetes de Usuarios Extra (+5 empleados)</span></div>
               </div>
               <div className="space-y-3">
                 <div className="flex items-center space-x-2 text-slate-300"><CheckCircle2 className="w-5 h-5 text-emerald-400" /> <span>Soporte 24/7 Prioritario</span></div>

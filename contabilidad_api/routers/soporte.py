@@ -137,3 +137,26 @@ def cambiar_estado(
     res.nombre_empresa = ticket.empresa.nombre if ticket.empresa else "Empresa"
     res.nombre_usuario = ticket.usuario.username if ticket.usuario else "Usuario"
     return res
+@router.get("/unread", response_model=int)
+def contar_tickets_no_leidos(
+    db: Session = Depends(get_db),
+    usuario_actual = Depends(obtener_usuario_actual)
+):
+    usuario_db = db.query(models.usuario.Usuario).filter(models.usuario.Usuario.username == usuario_actual.username).first()
+    if not usuario_db:
+        return 0
+
+    email = getattr(usuario_db, "email", "") or ""
+    username = getattr(usuario_db, "username", "") or ""
+    es_propietario = email.lower() == "cealfarias@gmail.com" or username.lower() in ["cealfarias", "admin", "propietario", "superadmin", "cesar", "cesararias", "soporte"] or usuario_db.rol == "admin"
+
+    query = db.query(models.soporte.TicketSoporte)
+    
+    if es_propietario:
+        query = query.filter(models.soporte.TicketSoporte.estado.in_(["ABIERTO", "ESPERANDO RESPUESTA", "REABIERTO"]))
+    else:
+        query = query.filter(models.soporte.TicketSoporte.empresa_id == usuario_db.empresa_id)
+        query = query.filter(models.soporte.TicketSoporte.estado == "RESPONDIDO")
+        
+    return query.count()
+

@@ -49,10 +49,10 @@ def inicializar_ejercicio_fiscal(datos: InicializarPeriodoIn, db: Session = Depe
     if not ej_existente:
         try:
             print("   -> Mapeando registro en cabecera 'EjercicioFiscal'...")
-            from sqlalchemy import func
+            from sqlalchemy import func, insert
             max_ej_id = db.query(func.max(EjercicioFiscal.id)).scalar() or 0
             
-            nuevo_ejercicio = EjercicioFiscal(
+            db.execute(insert(EjercicioFiscal).values(
                 id=max_ej_id + 1,
                 empresa_id=datos.empresa_id,
                 anio=datos.anio,
@@ -60,8 +60,7 @@ def inicializar_ejercicio_fiscal(datos: InicializarPeriodoIn, db: Session = Depe
                 fecha_fin=datetime.date(datos.anio, 12, 31),
                 estado_cerrado=False,
                 usuario_creacion=datos.usuario
-            )
-            db.add(nuevo_ejercicio)
+            ))
             print("   -> [OK] Cabecera encolada exitosamente.")
         except Exception as e:
             print(f"   [X] [ERROR CABECERA] No se pudo mapear la cabecera: {str(e)}")
@@ -71,27 +70,25 @@ def inicializar_ejercicio_fiscal(datos: InicializarPeriodoIn, db: Session = Depe
     # 3. Registrar los 12 meses correspondientes en la tabla de control
     print("> [API-PERIODOS - BANDERA 5] Mapeando los 12 meses en memoria para 'control_periodos'...")
     
-    # FIX: Evitar error de secuencia desincronizada en PostgreSQL asignando ID manualmente
-    from sqlalchemy import func
+    from sqlalchemy import func, insert
     max_id = db.query(func.max(ControlPeriodo.id)).scalar() or 0
     
     meses_a_insertar = []
     for i, mes in enumerate(range(1, 13)):
-        nuevo_mes = ControlPeriodo(
-            id=max_id + i + 1,
-            empresa_id=datos.empresa_id,
-            anio=datos.anio,
-            mes=mes,
-            mes_abierto=True,
-            anio_abierto=True,
-            total_partidas=0
-        )
-        meses_a_insertar.append(nuevo_mes)
+        meses_a_insertar.append({
+            "id": max_id + i + 1,
+            "empresa_id": datos.empresa_id,
+            "anio": datos.anio,
+            "mes": mes,
+            "mes_abierto": True,
+            "anio_abierto": True,
+            "total_partidas": 0
+        })
     print(f"   -> [OK] {len(meses_a_insertar)} meses listos para inserción masiva.")
 
     try:
         print("> [API-PERIODOS - BANDERA 6] Ejecutando db.add_all() y db.commit()...")
-        db.add_all(meses_a_insertar)
+        db.execute(insert(ControlPeriodo).values(meses_a_insertar))
         db.commit()
         print("   -> [*] [ÉXITO TOTAL] ¡Base de datos actualizada y guardada en disco!")
     except Exception as e:

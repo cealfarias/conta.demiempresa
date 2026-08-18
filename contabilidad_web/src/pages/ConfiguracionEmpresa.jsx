@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Settings, Calendar, Users, DollarSign } from 'lucide-react';
+import { Settings, Calendar, Users, DollarSign, Network } from 'lucide-react';
 import TabFlujoEfectivo from '../components/configuracion/TabFlujoEfectivo';
 import TabPeriodos from '../components/configuracion/TabPeriodos';
 import TabUsuarios from '../components/configuracion/TabUsuarios';
+import TabIntegraciones from '../components/configuracion/TabIntegraciones';
 import ErrorBoundary from '../components/ErrorBoundary';
 
 function ConfiguracionEmpresa() {
@@ -13,6 +14,7 @@ function ConfiguracionEmpresa() {
     { id: 'periodos', label: 'Períodos Contables', icon: Calendar },
     { id: 'usuarios', label: 'Usuarios y Roles', icon: Users },
     { id: 'flujo', label: 'Mapeo Flujo Efectivo', icon: DollarSign },
+    { id: 'integraciones', label: 'API & Integraciones', icon: Network },
   ];
 
   return (
@@ -49,6 +51,7 @@ function ConfiguracionEmpresa() {
         {activeTab === 'periodos' && <TabPeriodos empresaId={empresaId} />}
         {activeTab === 'usuarios' && <TabUsuarios empresaId={empresaId} />}
         {activeTab === 'flujo' && <TabFlujoEfectivo empresaId={empresaId} />}
+        {activeTab === 'integraciones' && <TabIntegraciones empresaId={empresaId} />}
       </div>
     </div>
     </ErrorBoundary>

@@ -61,6 +61,10 @@ app.include_router(api_router)
 # 2. El router de autenticación queda EXCLUIDO de la dependencia para permitir el login
 app.include_router(auth_module.app.router)
 
+# 3. Router de integraciones (mixto: JWT y API Key para webhook)
+from routers.integracion import router as integracion_router
+app.include_router(integracion_router)
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

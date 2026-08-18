@@ -7,3 +7,4 @@ from .partida import PartidaCabecera, PartidaDetalle
 from .firma import FirmaReporte
 from .configuracion import ConfiguracionContable
 from .flujo_efectivo import MapeoFlujoEfectivo
+from .integracion import IntegracionAPI

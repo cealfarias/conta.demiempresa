@@ -150,6 +150,10 @@ function Dashboard() {
                <span className="ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{unreadCount}</span>
             )}
           </button>
+          <Link to="/dashboard/suscripcion" className={`flex items-center space-x-3 px-3 py-3 rounded-xl transition-colors ${location.pathname === '/dashboard/suscripcion' ? 'bg-gradient-to-r from-amber-500/20 to-amber-600/20 text-amber-400 border border-amber-500/30' : 'text-slate-300 hover:bg-slate-800 hover:text-amber-400'} ${!isSidebarOpen && 'justify-center'}`} title="Suscripción Premium">
+            <Shield className="w-5 h-5 shrink-0" />
+            {isSidebarOpen && <span className="font-medium whitespace-nowrap">Suscripción Premium</span>}
+          </Link>
           <Link to="/dashboard/configuracion" className={`flex items-center space-x-3 px-3 py-3 rounded-xl transition-colors ${location.pathname === '/dashboard/configuracion' ? 'bg-emerald-600/20 text-emerald-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'} ${!isSidebarOpen && 'justify-center'}`} title="Configuración de la Empresa">
             <Settings className="w-5 h-5" />
             {isSidebarOpen && <span className="font-medium whitespace-nowrap">Configuración</span>}

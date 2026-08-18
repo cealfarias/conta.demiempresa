@@ -23,6 +23,7 @@ import { FileText } from 'lucide-react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import DashboardInicio from './pages/DashboardInicio';
 import ConfiguracionEmpresa from './pages/ConfiguracionEmpresa';
+import Suscripcion from './pages/Suscripcion';
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -109,6 +110,7 @@ function App() {
             <Route path="reportes/balance-general" element={<BalanceGeneral />} />
             <Route path="reportes/estado-resultados" element={<EstadoResultados />} />
             <Route path="reportes/flujo-efectivo" element={<FlujoEfectivo />} />
+            <Route path="suscripcion" element={<Suscripcion />} />
           </Route>
           
           <Route path="/" element={<Navigate to="/login" replace />} />

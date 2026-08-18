@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FileText, TrendingUp, TrendingDown, DollarSign, Wallet, Building2, Activity } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, Wallet, Building2, Activity, PieChart as PieChartIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -26,21 +27,17 @@ const DashboardInicio = () => {
       const token = localStorage.getItem('token');
       const headers = { Authorization: `Bearer ${token}` };
       
-      // Get current date year for query
       const currentYear = localStorage.getItem('anio_activo') || new Date().getFullYear();
-      const currentMonth = localStorage.getItem('mes_activo') || (new Date().getMonth() + 1); // 1-12
+      const currentMonth = localStorage.getItem('mes_activo') || (new Date().getMonth() + 1);
       
-      // Fetch balance general to get totals
       const bgResponse = await axios.get(`${API_URL}/api/v1/reportes/balance-general/${empresaId}/${currentYear}/${currentMonth}`, { headers });
-      
-      // Fetch estado resultados to get UAIR
       const erResponse = await axios.get(`${API_URL}/api/v1/reportes/estado-resultados/${empresaId}/${currentYear}/${currentMonth}`, { headers });
       
       setData({
-        activo: bgResponse.data.totales.ACTIVO || 0,
-        pasivo: bgResponse.data.totales.PASIVO || 0,
-        patrimonio: bgResponse.data.totales.PATRIMONIO || 0,
-        uair: erResponse.data.totales.UTILIDAD_ANTES_IMPUESTOS_RESERVAS || 0
+        activo: bgResponse.data.totales.activo || 0,
+        pasivo: bgResponse.data.totales.pasivo || 0,
+        patrimonio: bgResponse.data.totales.patrimonio || 0,
+        uair: erResponse.data.totales.utilidad || 0
       });
       
     } catch (err) {
@@ -58,6 +55,15 @@ const DashboardInicio = () => {
     }).format(value || 0);
   };
 
+  const chartData = [
+    { name: 'Activos', valor: data.activo, fill: '#6366f1' },
+    { name: 'Pasivos', valor: data.pasivo, fill: '#f43f5e' },
+    { name: 'Patrimonio', valor: data.patrimonio, fill: '#3b82f6' }
+  ];
+
+  const ratioSolvencia = data.pasivo > 0 ? (data.activo / data.pasivo).toFixed(2) : 'N/A';
+  const activoNeto = data.activo - data.pasivo;
+
   return (
     <div className="p-8 pb-32 max-w-7xl mx-auto">
       <div className="mb-8">
@@ -66,7 +72,6 @@ const DashboardInicio = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {/* Activos */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 relative overflow-hidden group hover:border-indigo-300 transition-colors">
           <div className="absolute -right-6 -top-6 w-24 h-24 bg-indigo-50 rounded-full group-hover:scale-110 transition-transform"></div>
           <div className="relative">
@@ -87,7 +92,6 @@ const DashboardInicio = () => {
           </div>
         </div>
 
-        {/* Pasivos */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 relative overflow-hidden group hover:border-rose-300 transition-colors">
           <div className="absolute -right-6 -top-6 w-24 h-24 bg-rose-50 rounded-full group-hover:scale-110 transition-transform"></div>
           <div className="relative">
@@ -108,7 +112,6 @@ const DashboardInicio = () => {
           </div>
         </div>
 
-        {/* Patrimonio */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 relative overflow-hidden group hover:border-blue-300 transition-colors">
           <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-50 rounded-full group-hover:scale-110 transition-transform"></div>
           <div className="relative">
@@ -129,7 +132,6 @@ const DashboardInicio = () => {
           </div>
         </div>
 
-        {/* Utilidad */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 relative overflow-hidden group hover:border-emerald-300 transition-colors">
           <div className="absolute -right-6 -top-6 w-24 h-24 bg-emerald-50 rounded-full group-hover:scale-110 transition-transform"></div>
           <div className="relative">
@@ -152,7 +154,8 @@ const DashboardInicio = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+        {/* Accesos Rápidos */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 flex flex-col">
           <div className="flex items-center space-x-4 mb-6">
             <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center">
               <Activity className="w-6 h-6 text-indigo-600" />
@@ -163,7 +166,7 @@ const DashboardInicio = () => {
             </div>
           </div>
           
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 flex-grow">
             <button onClick={() => navigate('/dashboard/partidas')} className="p-4 text-left border border-slate-100 bg-slate-50 rounded-xl hover:bg-indigo-50 hover:border-indigo-200 transition-colors">
               <span className="block font-medium text-slate-800 mb-1">Partidas Diarias</span>
               <span className="block text-xs text-slate-500">Registra nuevos movimientos</span>
@@ -172,7 +175,7 @@ const DashboardInicio = () => {
               <span className="block font-medium text-slate-800 mb-1">Catálogo de Cuentas</span>
               <span className="block text-xs text-slate-500">Administra tu estructura contable</span>
             </button>
-            <button onClick={() => navigate('/dashboard/reportes/balance_general')} className="p-4 text-left border border-slate-100 bg-slate-50 rounded-xl hover:bg-indigo-50 hover:border-indigo-200 transition-colors">
+            <button onClick={() => navigate('/dashboard/reportes/balance-general')} className="p-4 text-left border border-slate-100 bg-slate-50 rounded-xl hover:bg-indigo-50 hover:border-indigo-200 transition-colors">
               <span className="block font-medium text-slate-800 mb-1">Balance General</span>
               <span className="block text-xs text-slate-500">Revisa la situación financiera</span>
             </button>
@@ -183,16 +186,49 @@ const DashboardInicio = () => {
           </div>
         </div>
         
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 flex flex-col items-center justify-center text-center">
-          <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <FileText className="w-10 h-10 text-emerald-500" />
+        {/* Análisis Financiero Básico */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 flex flex-col">
+          <div className="flex items-center space-x-4 mb-6">
+            <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center">
+              <PieChartIcon className="w-6 h-6 text-emerald-600" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-slate-800">Análisis Financiero Básico</h3>
+              <p className="text-sm text-slate-500">Composición y Ratios</p>
+            </div>
           </div>
-          <h3 className="text-xl font-bold text-slate-700 mb-2">Sistema En Línea</h3>
-          <p className="text-slate-500 max-w-sm mx-auto mb-6">
-            Todas tus partidas, catálogos y estados financieros se procesan en tiempo real bajo normativas NIIF.
-          </p>
-          <div className="px-4 py-2 bg-slate-100 text-slate-600 rounded-full text-sm font-medium border border-slate-200 shadow-inner">
-            Última conexión exitosa a la base de datos
+          
+          <div className="flex-grow flex flex-col">
+            <div className="h-48 w-full mb-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} />
+                  <YAxis tickFormatter={(val) => `$${(val / 1000).toFixed(0)}k`} axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} width={60} />
+                  <Tooltip formatter={(value) => formatCurrency(value)} cursor={{fill: '#f8fafc'}} contentStyle={{borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
+                  <Bar dataKey="valor" radius={[4, 4, 0, 0]}>
+                    {chartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4 mt-auto">
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <p className="text-xs text-slate-500 mb-1">Ratio de Solvencia</p>
+                <p className="text-lg font-bold text-slate-700">{ratioSolvencia}</p>
+                <p className="text-[10px] text-slate-400">Activo / Pasivo</p>
+              </div>
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <p className="text-xs text-slate-500 mb-1">Activo Neto</p>
+                <p className={`text-lg font-bold ${activoNeto < 0 ? 'text-rose-600' : 'text-slate-700'}`}>
+                  {formatCurrency(activoNeto)}
+                </p>
+                <p className="text-[10px] text-slate-400">Activo - Pasivo</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

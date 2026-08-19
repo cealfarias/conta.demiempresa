@@ -22,7 +22,7 @@ const DashboardInicio = () => {
     fetchResumen();
   }, [empresaId]);
 
-  const { startOnboarding } = useAssistant();
+  const { evaluateDashboardStatus } = useAssistant();
 
   const fetchResumen = async () => {
     if (!empresaId) return;
@@ -43,17 +43,22 @@ const DashboardInicio = () => {
         uair: erResponse.data.totales.utilidad || 0
       });
 
-      // Chequear si el catálogo está vacío para iniciar el onboarding
+      // Chequear estado del sistema para el Avatar
       try {
         console.log(`Checking catalog for empresa: ${empresaId}, year: ${currentYear}`);
         const catRes = await axios.get(`${API_URL}/api/v1/catalogo/?empresa_id=${empresaId}&anio=${currentYear}`, { headers });
-        console.log("Catalog response for onboarding check:", catRes.data);
-        if (Array.isArray(catRes.data) && catRes.data.length === 0) {
-          console.log("Triggering onboarding...");
-          startOnboarding();
+        const isCatVacio = Array.isArray(catRes.data) && catRes.data.length === 0;
+        
+        let isManualVacio = true;
+        if (!isCatVacio) {
+          const manualRes = await axios.get(`${API_URL}/api/v1/manual/${empresaId}/${currentYear}/estado-vacio`, { headers });
+          isManualVacio = manualRes.data.vacio;
         }
+
+        evaluateDashboardStatus(isCatVacio, isManualVacio);
+
       } catch (e) {
-        console.error('Error fetching catalog summary for onboarding:', e);
+        console.error('Error fetching catalog/manual summary for onboarding:', e);
       }
       
     } catch (err) {

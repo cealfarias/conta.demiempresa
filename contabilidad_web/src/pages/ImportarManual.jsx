@@ -3,6 +3,8 @@ import axios from 'axios';
 import { ArrowLeft, Upload, Link, CheckCircle, AlertTriangle, FileUp, Book } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+import { useAssistant } from '../contexts/AssistantContext';
+
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const CAMPOS_SISTEMA = [
@@ -15,6 +17,7 @@ const CAMPOS_SISTEMA = [
 
 export default function ImportarManual() {
   const navigate = useNavigate();
+  const { reportProgress } = useAssistant();
   const [file, setFile] = useState(null);
   const [fileContent, setFileContent] = useState(''); // Store the entire CSV content
   const [csvColumns, setCsvColumns] = useState([]);
@@ -54,6 +57,8 @@ export default function ImportarManual() {
       setStep(2);
       setMapping({});
       setActiveSource(null);
+      
+      reportProgress('FILE_SELECTED');
     };
     reader.readAsText(selectedFile, "UTF-8");
   };
@@ -173,12 +178,14 @@ export default function ImportarManual() {
       
       setResults(res.data);
       setStep(3);
+      reportProgress('IMPORT_SUCCESS');
     } catch (err) {
       let errText = err.response?.data?.detail || 'Error al procesar el archivo.';
       if (typeof errText === 'object') {
         errText = JSON.stringify(errText);
       }
       setError(errText);
+      reportProgress('IMPORT_ERROR');
     } finally {
       setLoading(false);
     }
@@ -223,6 +230,7 @@ export default function ImportarManual() {
           
           <div className="relative">
             <input 
+              id="input-file-import-manual"
               type="file" 
               accept=".csv"
               onChange={handleFileChange}
@@ -351,6 +359,7 @@ export default function ImportarManual() {
 
           <div className="bg-slate-50 border-t border-slate-200 p-6 flex justify-end">
             <button
+              id="btn-importar-action"
               onClick={handleSubmit}
               disabled={!isMappingComplete || loading}
               className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-8 rounded-xl shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center"

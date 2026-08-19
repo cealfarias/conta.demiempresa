@@ -211,6 +211,7 @@ function Catalogo() {
           {(userRole === 'Administrador' || userRole === 'Contador') && (
             <>
               <button 
+                id="btn-importar-manual"
                 onClick={() => navigate('/dashboard/catalogo/importar-manual')}
                 className="bg-sky-600 hover:bg-sky-700 text-white px-3 py-1.5 md:px-4 md:py-2 text-[11px] md:text-sm rounded-lg font-medium transition-colors flex items-center space-x-1.5 md:space-x-2 shadow-sm shadow-sky-500/20"
               >

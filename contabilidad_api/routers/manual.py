@@ -37,6 +37,18 @@ class ImportarManualPayload(BaseModel):
     empresa_id: str  # Contexto inyectado de la empresa seleccionada
     anio: int        # Contexto inyectado del año seleccionado
 
+@router.get("/{empresa_id}/{anio}/estado-vacio")
+def verificar_manual_vacio(empresa_id: str, anio: int, db: Session = Depends(get_db)):
+    """
+    Verifica si el manual contable está vacío para la empresa y año dados.
+    """
+    registro = db.query(ManualContable).filter(
+        ManualContable.empresa_id == empresa_id,
+        ManualContable.anio == anio
+    ).first()
+    
+    return {"vacio": registro is None}
+
 @router.get("/{empresa_id}/{anio}/{cuenta_codigo}", response_model=ManualResponse)
 def obtener_manual_por_cuenta(empresa_id: str, anio: int, cuenta_codigo: str, db: Session = Depends(get_db)):
     """

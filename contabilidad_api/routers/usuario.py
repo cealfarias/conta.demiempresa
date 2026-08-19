@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session
 from typing import List
 from config.database import get_db
@@ -11,7 +11,7 @@ router = APIRouter(
 )
 
 @router.post("/", response_model=Usuario, status_code=status.HTTP_201_CREATED)
-def create_user(usuario: UsuarioCreate, db: Session = Depends(get_db)):
+def create_user(usuario: UsuarioCreate, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     db_user = crud_usuario.get_usuario_by_username(db, username=usuario.username)
     if db_user:
         raise HTTPException(status_code=400, detail="El nombre de usuario ya está registrado")
@@ -25,7 +25,36 @@ def create_user(usuario: UsuarioCreate, db: Session = Depends(get_db)):
         if len(current_users) >= 4:
             raise HTTPException(status_code=402, detail="Límite de licencia alcanzado. Máximo 4 usuarios permitidos.")
             
-    return crud_usuario.create_usuario(db=db, usuario=usuario)
+    nuevo_usuario = crud_usuario.create_usuario(db=db, usuario=usuario)
+    
+    # Crear ticket interno automtico para que el Admin d la bienvenida
+    if nuevo_usuario.empresa_id:
+        import crud.soporte
+        import schemas.soporte
+        
+        ticket_data = schemas.soporte.TicketSoporteCreate(
+            asunto="✨ Nuevo Registro en la Plataforma",
+            categoria="Sistema",
+            prioridad="Alta",
+            mensaje_inicial=f"Hola equipo, el usuario {nuevo_usuario.username} ({nuevo_usuario.email}) se ha registrado en la plataforma con el rol de {nuevo_usuario.rol}. Usa este hilo para darle una cálida bienvenida."
+        )
+        ticket = crud.soporte.crear_ticket_soporte(
+            db=db,
+            ticket_data=ticket_data,
+            empresa_id=nuevo_usuario.empresa_id,
+            usuario_id=nuevo_usuario.id
+        )
+        
+        from utils.email import notificar_nuevo_ticket
+        # Notificar al administrador (propietario)
+        background_tasks.add_task(
+            notificar_nuevo_ticket,
+            ticket_data.asunto,
+            ticket_data.mensaje_inicial,
+            "cealfarias@gmail.com"
+        )
+        
+    return nuevo_usuario
 
 @router.get("/check-email/{email}")
 def check_email(email: str, db: Session = Depends(get_db)):

@@ -32,7 +32,17 @@ import models.partida
 import models.periodo
 import models.empresa
 import models.manual
+import models.usuario
 import models.soporte
+
+# Auto-migraciones simples para columnas agregadas recientemente
+from sqlalchemy import text
+with engine.begin() as conn:
+    try:
+        # SQLite usa una sintaxis, Postgres usa otra, pero podemos intentar con postgres/mysql
+        conn.execute(text("ALTER TABLE usuarios ADD COLUMN telefono VARCHAR(50);"))
+    except Exception:
+        pass # La columna ya existe o SQLite falló
 
 # Crear todas las tablas en la BD si no existen (ideal para Postgres en Render)
 Base.metadata.create_all(bind=engine)

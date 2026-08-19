@@ -46,7 +46,7 @@ const DashboardInicio = () => {
       // Chequear si el catálogo está vacío para iniciar el onboarding
       try {
         console.log(`Checking catalog for empresa: ${empresaId}, year: ${currentYear}`);
-        const catRes = await axios.get(`${API_URL}/api/v1/catalogo?empresa_id=${empresaId}&anio=${currentYear}`, { headers });
+        const catRes = await axios.get(`${API_URL}/api/v1/catalogo/?empresa_id=${empresaId}&anio=${currentYear}`, { headers });
         console.log("Catalog response for onboarding check:", catRes.data);
         if (Array.isArray(catRes.data) && catRes.data.length === 0) {
           console.log("Triggering onboarding...");

@@ -145,6 +145,22 @@ export const AssistantProvider = ({ children }) => {
   useEffect(() => {
     if (!isActive) return;
 
+    // Detectar si el usuario salió del flujo de onboarding
+    const isDashboardRoot = location.pathname === '/dashboard' || location.pathname === '/dashboard/';
+    const isCatalogoArea = location.pathname.startsWith('/dashboard/catalogo');
+    
+    if (step > 0 && !isDashboardRoot && !isCatalogoArea) {
+      // El usuario se fue a otra página (ej. /dashboard/partidas) mientras estaba en onboarding
+      say('Veo que estás explorando otra pantalla. ¿Deseas pausar el tutorial por ahora?', null, [
+        { label: 'Sí, pausar', action: () => dismiss() },
+        { label: 'Continuar tutorial', action: () => { 
+            setOptions(null); 
+            navigate(onboardingType === 'MANUAL' && step >= 11 ? '/dashboard/catalogo/importar-manual' : '/dashboard/catalogo'); 
+        }}
+      ]);
+      return;
+    }
+
     if (onboardingType === 'CATALOG') {
       if (step === 1 && location.pathname === '/dashboard/catalogo') {
         setStep(2);

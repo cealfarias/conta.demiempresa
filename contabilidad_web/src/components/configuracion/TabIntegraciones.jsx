@@ -120,7 +120,7 @@ export default function TabIntegraciones({ empresaId }) {
         
         {loading ? (
           <div className="flex justify-center p-8"><Loader2 className="w-6 h-6 text-indigo-600 animate-spin" /></div>
-        ) : llaves.length === 0 ? (
+        ) : !Array.isArray(llaves) || llaves.length === 0 ? (
           <div className="text-center p-8 border-2 border-dashed border-slate-200 rounded-xl">
             <Key className="w-8 h-8 text-slate-300 mx-auto mb-2" />
             <p className="text-slate-500 font-medium">No hay aplicaciones conectadas</p>

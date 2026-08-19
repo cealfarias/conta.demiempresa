@@ -45,8 +45,8 @@ const DashboardInicio = () => {
 
       // Chequear si el catálogo está vacío para iniciar el onboarding
       try {
-        const catRes = await axios.get(`${API_URL}/api/v1/catalogo/resumen/${empresaId}`, { headers });
-        if (catRes.data && catRes.data.total_cuentas === 0) {
+        const catRes = await axios.get(`${API_URL}/api/v1/catalogo?empresa_id=${empresaId}&anio=${currentYear}`, { headers });
+        if (Array.isArray(catRes.data) && catRes.data.length === 0) {
           startOnboarding();
         }
       } catch (e) {

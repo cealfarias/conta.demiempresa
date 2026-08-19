@@ -51,7 +51,21 @@ Base.metadata.create_all(bind=engine)
 def crear_admin_por_defecto():
     # Usamos next() para extraer la sesión del generador get_db()
     db = next(get_db())
-    admin = db.query(Usuario).filter(Usuario.username == 'admin').first()
+    
+    # Auto-migración defensiva por si en Postgres ya existía la tabla pero no la columna "telefono"
+    from sqlalchemy import text
+    try:
+        db.execute(text("ALTER TABLE usuarios ADD COLUMN telefono VARCHAR(50);"))
+        db.commit()
+    except Exception:
+        db.rollback()
+        pass
+
+    admin = None
+    try:
+        admin = db.query(Usuario).filter(Usuario.username == 'admin').first()
+    except Exception as e:
+        print(f"Error querying admin: {e}")
     
     if not admin:
         # Se incluyen los campos de auditoría exigidos por el modelo

@@ -56,8 +56,15 @@ export const AssistantProvider = ({ children }) => {
   };
 
   const startOnboarding = useCallback(() => {
-    if (localStorage.getItem('onboarding_catalog_done') === 'true') return;
+    console.log("startOnboarding called! Current state:", {
+      done: localStorage.getItem('onboarding_catalog_done')
+    });
+    if (localStorage.getItem('onboarding_catalog_done') === 'true') {
+      console.log("Onboarding was already marked as done. Ignoring.");
+      return;
+    }
     
+    console.log("Setting assistant to ACTIVE and step to 1");
     setIsActive(true);
     setStep(1);
     say('¡Bienvenido! He detectado que no tienes un catálogo de cuentas activo. Tu primera tarea es crearlo, ¡Vamos allá!');

@@ -210,6 +210,9 @@ def validar_token_dependency(request: Request, token: str = Depends(oauth2_schem
     if path in public_paths and request.method == "POST":
         return None
         
+    if path.startswith("/api/v1/usuarios/check-email/") and request.method == "GET":
+        return None
+        
     if not token:
         raise HTTPException(status_code=401, detail="No autenticado")
         

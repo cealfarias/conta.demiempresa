@@ -219,13 +219,21 @@ function Catalogo() {
               </button>
     
               <button 
+                id="btn-importar-catalogo"
                 onClick={() => navigate('/dashboard/catalogo/importar')}
                 className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 md:px-4 md:py-2 text-[11px] md:text-sm rounded-lg font-medium transition-colors flex items-center space-x-1.5 md:space-x-2 shadow-sm shadow-indigo-500/20"
               >
                 <FileUp className="w-3.5 h-3.5 md:w-4 md:h-4" />
                 <span>Importar CSV</span>
               </button>
-              <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 md:px-4 md:py-2 text-[11px] md:text-sm rounded-lg font-medium transition-colors flex items-center space-x-1.5 md:space-x-2 shadow-sm shadow-emerald-500/20">
+              <button 
+                id="btn-nueva-cuenta"
+                onClick={() => {
+                  setEditingCuenta(null);
+                  setShowModal(true);
+                }}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 md:px-4 md:py-2 text-[11px] md:text-sm rounded-lg font-medium transition-colors flex items-center space-x-1.5 md:space-x-2 shadow-sm shadow-emerald-500/20"
+              >
                 <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
                 <span>Nueva Cuenta</span>
               </button>

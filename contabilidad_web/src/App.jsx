@@ -24,6 +24,8 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import DashboardInicio from './pages/DashboardInicio';
 import ConfiguracionEmpresa from './pages/ConfiguracionEmpresa';
 import Suscripcion from './pages/Suscripcion';
+import { AssistantProvider } from './contexts/AssistantContext';
+import Avatar from './components/assistant/Avatar';
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -77,44 +79,47 @@ function App() {
   return (
     <GoogleOAuthProvider clientId={clientId}>
       <Router>
-        <SessionWatcher />
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/registro" element={<Registro />} />
-          <Route path="/terminos" element={<Terminos />} />
-          
-          <Route path="/seleccionar-entorno" element={<ProtectedRoute><SeleccionarEntorno /></ProtectedRoute>} />
-          
-          <Route 
-            path="/dashboard" 
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } 
-          >
-            <Route index element={<DashboardInicio />} />
-            <Route path="seguridad" element={<Seguridad />} />
-            <Route path="configuracion" element={<ConfiguracionEmpresa />} />
-            <Route path="catalogo" element={<Catalogo />} />
-            <Route path="catalogo/importar" element={<ImportarCatalogo />} />
-            <Route path="catalogo/importar-manual" element={<ImportarManual />} />
-            <Route path="catalogo/saldos/:codigo" element={<SaldosMensuales />} />
-            <Route path="catalogo/movimientos/:codigo/:mes" element={<MovimientosMes />} />
-            <Route path="partidas" element={<Partidas />} />
-            <Route path="partidas/importar" element={<ImportarPartidas />} />
-            <Route path="partidas/nueva" element={<PartidaEditor />} />
-            <Route path="partidas/editar/:id" element={<PartidaEditor />} />
-            <Route path="partidas/imprimir/:id" element={<PartidaImpresion />} />
-            <Route path="reportes" element={<ReportesDashboard />} />
-            <Route path="reportes/balance-general" element={<BalanceGeneral />} />
-            <Route path="reportes/estado-resultados" element={<EstadoResultados />} />
-            <Route path="reportes/flujo-efectivo" element={<FlujoEfectivo />} />
-            <Route path="suscripcion" element={<Suscripcion />} />
-          </Route>
-          
-          <Route path="/" element={<Navigate to="/login" replace />} />
-        </Routes>
+        <AssistantProvider>
+          <SessionWatcher />
+          <Avatar />
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/registro" element={<Registro />} />
+            <Route path="/terminos" element={<Terminos />} />
+            
+            <Route path="/seleccionar-entorno" element={<ProtectedRoute><SeleccionarEntorno /></ProtectedRoute>} />
+            
+            <Route 
+              path="/dashboard" 
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } 
+            >
+              <Route index element={<DashboardInicio />} />
+              <Route path="seguridad" element={<Seguridad />} />
+              <Route path="configuracion" element={<ConfiguracionEmpresa />} />
+              <Route path="catalogo" element={<Catalogo />} />
+              <Route path="catalogo/importar" element={<ImportarCatalogo />} />
+              <Route path="catalogo/importar-manual" element={<ImportarManual />} />
+              <Route path="catalogo/saldos/:codigo" element={<SaldosMensuales />} />
+              <Route path="catalogo/movimientos/:codigo/:mes" element={<MovimientosMes />} />
+              <Route path="partidas" element={<Partidas />} />
+              <Route path="partidas/importar" element={<ImportarPartidas />} />
+              <Route path="partidas/nueva" element={<PartidaEditor />} />
+              <Route path="partidas/editar/:id" element={<PartidaEditor />} />
+              <Route path="partidas/imprimir/:id" element={<PartidaImpresion />} />
+              <Route path="reportes" element={<ReportesDashboard />} />
+              <Route path="reportes/balance-general" element={<BalanceGeneral />} />
+              <Route path="reportes/estado-resultados" element={<EstadoResultados />} />
+              <Route path="reportes/flujo-efectivo" element={<FlujoEfectivo />} />
+              <Route path="suscripcion" element={<Suscripcion />} />
+            </Route>
+            
+            <Route path="/" element={<Navigate to="/login" replace />} />
+          </Routes>
+        </AssistantProvider>
       </Router>
     </GoogleOAuthProvider>
   );

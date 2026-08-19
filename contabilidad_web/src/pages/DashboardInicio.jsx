@@ -3,6 +3,7 @@ import axios from 'axios';
 import { TrendingUp, TrendingDown, DollarSign, Wallet, Building2, Activity, PieChart as PieChartIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { useAssistant } from '../contexts/AssistantContext';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -20,6 +21,8 @@ const DashboardInicio = () => {
   useEffect(() => {
     fetchResumen();
   }, [empresaId]);
+
+  const { startOnboarding } = useAssistant();
 
   const fetchResumen = async () => {
     if (!empresaId) return;
@@ -39,6 +42,16 @@ const DashboardInicio = () => {
         patrimonio: bgResponse.data.totales.patrimonio || 0,
         uair: erResponse.data.totales.utilidad || 0
       });
+
+      // Chequear si el catálogo está vacío para iniciar el onboarding
+      try {
+        const catRes = await axios.get(`${API_URL}/api/v1/catalogo/resumen/${empresaId}`, { headers });
+        if (catRes.data && catRes.data.total_cuentas === 0) {
+          startOnboarding();
+        }
+      } catch (e) {
+        console.error('Error fetching catalog summary for onboarding:', e);
+      }
       
     } catch (err) {
       console.error('Error fetching dashboard summary:', err);

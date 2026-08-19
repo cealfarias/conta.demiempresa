@@ -2,11 +2,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { ArrowLeft, Upload, Link, CheckCircle, AlertTriangle, FileUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAssistant } from '../contexts/AssistantContext';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export default function ImportarCatalogo() {
   const navigate = useNavigate();
+  const { reportProgress } = useAssistant();
   const [file, setFile] = useState(null);
   const [csvColumns, setCsvColumns] = useState([]);
   const [step, setStep] = useState(1); // 1: Carga, 2: Mapeo, 3: Resultados
@@ -45,6 +47,7 @@ export default function ImportarCatalogo() {
       setStep(2);
       setMapping({});
       setActiveSource(null);
+      reportProgress('FILE_SELECTED');
     };
     reader.readAsText(selectedFile);
   };
@@ -87,10 +90,17 @@ export default function ImportarCatalogo() {
   const handleCsvBoxClick = (colName) => {
     if (activeSource) {
       // Create mapping
-      setMapping(prev => ({
-        ...prev,
-        [activeSource]: colName
-      }));
+      setMapping(prev => {
+        const nextMap = {
+          ...prev,
+          [activeSource]: colName
+        };
+        // Report mapping progress
+        if (Object.keys(nextMap).length === 1 && nextMap['codigo']) {
+           setTimeout(() => reportProgress('FIRST_MAPPED'), 0);
+        }
+        return nextMap;
+      });
       setActiveSource(null);
     }
   };
@@ -125,6 +135,11 @@ export default function ImportarCatalogo() {
       
       setResults(res.data);
       setStep(3);
+      if (res.data.errores && res.data.errores.length > 0) {
+        reportProgress('IMPORT_ERROR');
+      } else {
+        reportProgress('IMPORT_SUCCESS');
+      }
     } catch (err) {
       let errText = err.response?.data?.detail || 'Error al procesar el archivo.';
       if (typeof errText === 'object') {
@@ -172,6 +187,7 @@ export default function ImportarCatalogo() {
           
           <div className="relative">
             <input 
+              id="input-file-import"
               type="file" 
               accept=".csv"
               onChange={handleFileChange}
@@ -268,6 +284,7 @@ export default function ImportarCatalogo() {
                 return (
                   <div 
                     key={sysId}
+                    id={sysId === 'codigo' ? 'select-codigo-cuenta' : `select-${sysId}-cuenta`}
                     ref={el => boxElementsRef.current[`sys-${sysId}`] = el}
                     onClick={(e) => { e.stopPropagation(); handleSystemBoxClick(sysId); }}
                     className={`field-box px-6 py-4 rounded-xl font-bold cursor-pointer transition-all select-none ${boxStyles}`}
@@ -306,6 +323,7 @@ export default function ImportarCatalogo() {
 
           <div className="bg-slate-50 border-t border-slate-200 p-6 flex justify-end">
             <button
+              id="btn-importar-action"
               onClick={handleSubmit}
               disabled={!isMappingComplete || loading}
               className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-8 rounded-xl shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center"

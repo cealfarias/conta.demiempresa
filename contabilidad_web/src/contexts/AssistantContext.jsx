@@ -25,11 +25,20 @@ export const AssistantProvider = ({ children }) => {
       utterance.pitch = 1.1;
       
       const voices = window.speechSynthesis.getVoices();
-      const esVoice = voices.find(v => v.lang.startsWith('es-') && v.name.includes('Google'));
-      if (esVoice) utterance.voice = esVoice;
-      else {
-        const anyEs = voices.find(v => v.lang.startsWith('es-'));
-        if (anyEs) utterance.voice = anyEs;
+      
+      // Intentar español de El Salvador primero
+      const svVoice = voices.find(v => v.lang === 'es-SV' || v.lang === 'es_SV' || v.name.includes('Salvador'));
+      
+      if (svVoice) {
+        utterance.voice = svVoice;
+      } else {
+        // Fallback a otras voces en español (priorizando las de Google)
+        const esVoice = voices.find(v => v.lang.startsWith('es-') && v.name.includes('Google'));
+        if (esVoice) utterance.voice = esVoice;
+        else {
+          const anyEs = voices.find(v => v.lang.startsWith('es-'));
+          if (anyEs) utterance.voice = anyEs;
+        }
       }
       
       try {

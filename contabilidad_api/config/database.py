@@ -17,8 +17,17 @@ is_sqlite = DATABASE_URL.startswith("sqlite")
 # connect_args={"check_same_thread": False} es mandatorio para el manejo asíncrono de FastAPI en SQLite
 connect_args = {"check_same_thread": False} if is_sqlite else {}
 
+engine_kwargs = {
+    "pool_pre_ping": True,
+    "pool_recycle": 1800
+}
+
+if not is_sqlite:
+    engine_kwargs["pool_size"] = 20
+    engine_kwargs["max_overflow"] = 30
+
 engine = create_engine(
-    DATABASE_URL, connect_args=connect_args
+    DATABASE_URL, connect_args=connect_args, **engine_kwargs
 )
 
 if is_sqlite:

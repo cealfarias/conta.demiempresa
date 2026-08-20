@@ -57,6 +57,13 @@ export const AssistantProvider = ({ children }) => {
     speak(text);
   }, [speak]);
 
+  
+  const resetAllOnboardings = useCallback(() => {
+    localStorage.removeItem('avatar_first_greeting_done');
+    localStorage.removeItem('avatar_partidas_done');
+    window.location.reload();
+  }, []);
+
   const dismiss = () => {
     setIsActive(false);
     setStep(0);
@@ -321,6 +328,7 @@ export const AssistantProvider = ({ children }) => {
       evaluateDashboardStatus,
       reportProgress,
     startPartidasOnboarding,
+    resetAllOnboardings,
     dismiss
     }}>
       {children}

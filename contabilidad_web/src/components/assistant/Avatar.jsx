@@ -42,12 +42,14 @@ export default function Avatar() {
     };
 
     const handleMouseUp = (e) => {
+      if (!isDragging) return;
       setIsDragging(false);
       // Determine if it was a pure click (no significant drag)
       const dx = Math.abs(e.clientX - dragRef.current.initialClientX);
       const dy = Math.abs(e.clientY - dragRef.current.initialClientY);
       
-      if (dx < 5 && dy < 5) {
+      // Umbral más alto para permitir un click aunque se mueva un poco el ratón
+      if (dx < 15 && dy < 15) {
         setShowMenu(prev => !prev);
       }
     };
@@ -63,6 +65,8 @@ export default function Avatar() {
   }, [isDragging]);
 
   const handleMouseDown = (e) => {
+    // Previene que se seleccione texto del fondo al arrastrar
+    e.preventDefault(); 
     setIsDragging(true);
     dragRef.current = {
       startX: e.clientX - position.x,
@@ -74,12 +78,12 @@ export default function Avatar() {
 
   return (
     <div 
-      className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end animate-in slide-in-from-bottom-8 fade-in duration-500"
+      className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end animate-in slide-in-from-bottom-8 fade-in duration-500 select-none"
       style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
     >
       {/* Burbuja de menú manual */}
       {showMenu && !isActive && (
-        <div className="bg-white text-slate-800 p-3 rounded-2xl rounded-br-sm shadow-xl border border-slate-100 mb-4 w-56 relative animate-in fade-in zoom-in-95">
+        <div className="bg-white text-slate-800 p-3 rounded-2xl rounded-br-sm shadow-xl border border-slate-100 mb-4 w-56 relative animate-in fade-in zoom-in-95 cursor-default">
           <button 
             onClick={() => setShowMenu(false)}
             className="absolute -top-2 -right-2 bg-white border border-slate-200 text-slate-400 hover:text-slate-600 rounded-full p-1 transition-opacity shadow-sm z-10"
@@ -105,7 +109,7 @@ export default function Avatar() {
 
       {/* Burbuja de diálogo del asistente (cuando está activo) */}
       {isActive && message && (
-        <div className="bg-white text-slate-800 p-4 rounded-2xl rounded-br-sm shadow-xl border border-slate-100 mb-4 max-w-sm relative group">
+        <div className="bg-white text-slate-800 p-4 rounded-2xl rounded-br-sm shadow-xl border border-slate-100 mb-4 max-w-sm relative group cursor-default">
           <button 
             onClick={dismiss}
             className="absolute -top-2 -right-2 bg-white border border-slate-200 text-slate-400 hover:text-slate-600 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10"
@@ -149,7 +153,8 @@ export default function Avatar() {
         title="Arrastra para mover o haz click para opciones"
       >
         <div className="absolute inset-0 bg-indigo-400 rounded-full animate-ping opacity-25 pointer-events-none"></div>
-        <div className={`relative bg-gradient-to-tr from-indigo-600 to-purple-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg border-2 border-white pointer-events-none transition-all ${isActive ? 'animate-bounce shadow-indigo-500/30' : 'shadow-slate-400 hover:scale-105'}`} style={isActive ? { animationDuration: '3s' } : {}}>
+        {/* Se quitó animate-bounce para mejorar la interacción del click y drag */}
+        <div className={`relative bg-gradient-to-tr from-indigo-600 to-purple-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg border-2 border-white pointer-events-none transition-all ${isActive ? 'shadow-indigo-500/50 scale-105' : 'shadow-slate-400 hover:scale-105'}`}>
           <Bot className="w-8 h-8" />
         </div>
       </div>

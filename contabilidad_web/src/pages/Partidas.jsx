@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Search, Plus, Calendar, FileText, ChevronLeft, ChevronRight, Eye, Edit2, Trash2, Filter, Upload, ArrowUp, ArrowDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAssistant } from '../contexts/AssistantContext';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -33,6 +34,12 @@ function Partidas() {
   const [sortConfig, setSortConfig] = useState({ key: 'numero_partida', direction: 'asc' });
   
   const navigate = useNavigate();
+  const { startPartidasOnboarding } = useAssistant();
+  const username = localStorage.getItem('username') || 'Usuario';
+  
+  useEffect(() => {
+    startPartidasOnboarding(username);
+  }, [startPartidasOnboarding, username]);
 
   const meses = [
     { id: 1, nombre: 'Enero' }, { id: 2, nombre: 'Febrero' }, { id: 3, nombre: 'Marzo' },
@@ -123,7 +130,7 @@ function Partidas() {
           {/* Selector de Mes */}
           <div className="relative flex-1 md:flex-none">
             <Calendar className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
-            <select
+            <select id="mes-selector"
               value={mesActual}
               onChange={(e) => {
                 setMesActual(Number(e.target.value));
@@ -140,7 +147,7 @@ function Partidas() {
             {userRole !== 'Auditor' && (
               <div className="flex space-x-2">
                 <button 
-                  onClick={() => navigate('/dashboard/partidas/importar')}
+                  id="btn-importar-partidas" onClick={() => navigate('/dashboard/partidas/importar')}
                   className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center space-x-2 shadow-lg shadow-emerald-500/20 whitespace-nowrap"
                 >
                   <Upload className="w-4 h-4" />
@@ -167,7 +174,7 @@ function Partidas() {
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
             <input 
               type="text"
-              placeholder="Buscar por concepto o número..."
+              id="search-bar" placeholder="Buscar por concepto o número..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-shadow bg-white"

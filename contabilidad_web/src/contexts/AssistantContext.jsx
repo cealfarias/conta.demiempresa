@@ -81,7 +81,6 @@ export const AssistantProvider = ({ children }) => {
     return 'Buenas noches';
   };
 
-  
   // Saludo de bienvenida en la página de Login
   const startLoginGreeting = useCallback(() => {
     const alreadyGreeted = sessionStorage.getItem('avatar_login_greeted');
@@ -92,14 +91,20 @@ export const AssistantProvider = ({ children }) => {
     setOnboardingType('LOGIN_GREETING');
 
     const greeting = getGreetingByTime();
-    say(`¡${greeting}! Soy tu asistente virtual especializado en las Normas Internacionales de Información Financiera, NIIF. Estoy aquí para guiarte en toda la aplicación contable de Mi Empresa Online. ¡Inicia sesión y comencemos!`);
+    say(`¡${greeting}! Soy tu asistente virtual especializado en las Normas Internacionales de Información Financiera, NIIF. Estoy aquí para guiarte en toda la aplicación contable de Mi Empresa Online.`);
 
-    // Se oculta después de 18 segundos
+    // Fase 2: Pausa de 10 segundos y luego invitación a registrarse
+    setTimeout(() => {
+      if (window.location.pathname !== '/login' && window.location.pathname !== '/registro') return;
+      say('Si aún no tienes una cuenta, te invito a registrarte. El proceso es rápido y sencillo, en menos de 5 minutos tendrás tu entorno contable listo. Te recomendamos registrarte con tu cuenta de Google para mayor seguridad y comodidad.');
+    }, 18000);
+
+    // Se oculta después de 38 segundos en total
     setTimeout(() => {
       if (window.location.pathname === '/login' || window.location.pathname === '/registro') {
         dismiss();
       }
-    }, 18000);
+    }, 38000);
   }, [say]);
 
   const startPartidasOnboarding = useCallback((username) => {

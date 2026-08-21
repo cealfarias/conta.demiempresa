@@ -61,6 +61,7 @@ export const AssistantProvider = ({ children }) => {
   const resetAllOnboardings = useCallback(() => {
     localStorage.removeItem('avatar_first_greeting_done');
     localStorage.removeItem('avatar_partidas_done');
+    sessionStorage.removeItem('avatar_login_greeted');
     window.location.reload();
   }, []);
 
@@ -81,6 +82,26 @@ export const AssistantProvider = ({ children }) => {
   };
 
   
+  // Saludo de bienvenida en la página de Login
+  const startLoginGreeting = useCallback(() => {
+    const alreadyGreeted = sessionStorage.getItem('avatar_login_greeted');
+    if (alreadyGreeted) return;
+
+    sessionStorage.setItem('avatar_login_greeted', 'true');
+    setIsActive(true);
+    setOnboardingType('LOGIN_GREETING');
+
+    const greeting = getGreetingByTime();
+    say(`¡${greeting}! Soy tu asistente virtual especializado en las Normas Internacionales de Información Financiera, NIIF. Estoy aquí para guiarte en toda la aplicación contable de Mi Empresa Online. ¡Inicia sesión y comencemos!`);
+
+    // Se oculta después de 18 segundos
+    setTimeout(() => {
+      if (window.location.pathname === '/login' || window.location.pathname === '/registro') {
+        dismiss();
+      }
+    }, 18000);
+  }, [say]);
+
   const startPartidasOnboarding = useCallback((username) => {
     const isFirstTime = localStorage.getItem('avatar_partidas_done') !== 'true';
     if (!isFirstTime) return;
@@ -213,7 +234,7 @@ export const AssistantProvider = ({ children }) => {
     const isCatalogoArea = location.pathname.startsWith('/dashboard/catalogo');
     const isPartidasArea = location.pathname.startsWith('/dashboard/partidas');
     
-    if (step > 0 && !isDashboardRoot && !isCatalogoArea && onboardingType !== 'PARTIDAS') {
+    if (step > 0 && !isDashboardRoot && !isCatalogoArea && onboardingType !== 'PARTIDAS' && onboardingType !== 'LOGIN_GREETING') {
       // El usuario se fue a otra página (ej. /dashboard/partidas) mientras estaba en onboarding
       say('Veo que estás explorando otra pantalla. ¿Deseas pausar el tutorial por ahora?', null, [
         { label: 'Sí, pausar', action: () => dismiss() },
@@ -328,6 +349,7 @@ export const AssistantProvider = ({ children }) => {
       evaluateDashboardStatus,
       reportProgress,
     startPartidasOnboarding,
+    startLoginGreeting,
     resetAllOnboardings,
     dismiss
     }}>

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { GoogleLogin } from '@react-oauth/google';
 import GlobalErrorAlert from '../components/GlobalErrorAlert';
+import { useAssistant } from '../contexts/AssistantContext';
 import './Login.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -14,6 +15,12 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const { startLoginGreeting } = useAssistant();
+
+  // Activar saludo del avatar al entrar a la página
+  useEffect(() => {
+    startLoginGreeting();
+  }, [startLoginGreeting]);
   
   const queryParams = new URLSearchParams(location.search);
   const isExpiredQuery = queryParams.get('expired') === 'true';

@@ -249,7 +249,7 @@ def google_login(req: GoogleLoginRequest, db: Session = Depends(get_db)):
         
         user = db.query(Usuario).filter(Usuario.email == email).first()
         if not user:
-            raise HTTPException(status_code=401, detail="Usuario no registrado en el sistema. Por favor crea un entorno primero.")
+            raise HTTPException(status_code=401, detail=f"No existe una cuenta asociada al correo {email}. Regístrate primero en la página de registro para crear tu entorno contable.")
             
         if not user.is_active:
             raise HTTPException(status_code=400, detail="El usuario está inactivo.")

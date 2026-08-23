@@ -146,16 +146,45 @@ export default function Avatar() {
         </div>
       )}
 
-      {/* Avatar (Robot) que palpita */}
+      {/* Avatar (Video or Robot) */}
       <div 
         className="relative cursor-move drag-handle"
         onMouseDown={handleMouseDown}
         title="Arrastra para mover o haz click para opciones"
       >
-        <div className="absolute inset-0 bg-indigo-400 rounded-full animate-ping opacity-25 pointer-events-none"></div>
-        {/* Se quitó animate-bounce para mejorar la interacción del click y drag */}
-        <div className={`relative bg-gradient-to-tr from-indigo-600 to-purple-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg border-2 border-white pointer-events-none transition-all ${isActive ? 'shadow-indigo-500/50 scale-105' : 'shadow-slate-400 hover:scale-105'}`}>
-          <Bot className="w-8 h-8" />
+        {/* Glow effect when active */}
+        {isActive && (
+          <div className="absolute inset-0 bg-indigo-400 rounded-full animate-ping opacity-25 pointer-events-none scale-110"></div>
+        )}
+        
+        <div className={`relative bg-gradient-to-tr from-slate-800 to-slate-900 text-white w-20 h-20 rounded-full flex items-center justify-center shadow-lg border-2 border-white pointer-events-none transition-all overflow-hidden ${isActive ? 'shadow-indigo-500/50 scale-105 ring-2 ring-indigo-400 ring-offset-2' : 'shadow-slate-400 hover:scale-105'}`}>
+          {/* 
+            Aquí está preparado para que subas los videos de SadTalker.
+            Ponlos en la carpeta public/ de tu proyecto Vercel.
+            - /avatar-idle.mp4
+            - /avatar-talking.mp4
+          */}
+          <video
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${!isActive ? 'opacity-100' : 'opacity-0'}`}
+            src="/avatar-idle.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            onError={(e) => e.target.style.display = 'none'} // Fallback if video is missing
+          />
+          <video
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-0'}`}
+            src="/avatar-talking.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            onError={(e) => e.target.style.display = 'none'} // Fallback if video is missing
+          />
+          
+          {/* Fallback Icon if videos fail to load or haven't been uploaded yet */}
+          <Bot className="w-8 h-8 z-[-1] absolute" />
         </div>
       </div>
     </div>

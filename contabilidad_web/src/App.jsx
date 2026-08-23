@@ -24,6 +24,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import DashboardInicio from './pages/DashboardInicio';
 import ConfiguracionEmpresa from './pages/ConfiguracionEmpresa';
 import Suscripcion from './pages/Suscripcion';
+import CierreEjercicio from './pages/CierreEjercicio';
 import { AssistantProvider } from './contexts/AssistantContext';
 import Avatar from './components/assistant/Avatar';
 

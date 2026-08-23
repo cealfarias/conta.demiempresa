@@ -13,6 +13,15 @@ export const AssistantProvider = ({ children }) => {
   const [highlightId, setHighlightId] = useState(null);
   const [onboardingType, setOnboardingType] = useState(null);
   
+  const dismiss = useCallback(() => {
+    setIsActive(false);
+    setStep(0);
+    setHighlightId(null);
+    setOptions(null);
+    setOnboardingType(null);
+    window.speechSynthesis?.cancel();
+  }, []);
+  
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -146,14 +155,7 @@ export const AssistantProvider = ({ children }) => {
     window.location.reload();
   }, []);
 
-  const dismiss = () => {
-    setIsActive(false);
-    setStep(0);
-    setHighlightId(null);
-    setOptions(null);
-    setOnboardingType(null);
-    window.speechSynthesis?.cancel();
-  };
+
 
   const getGreetingByTime = () => {
     const hour = new Date().getHours();

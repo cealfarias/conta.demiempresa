@@ -92,6 +92,24 @@ function Registro() {
         headers: { 'Content-Type': 'application/json' }
       });
 
+      // 4. Registrar aceptación de Términos de Referencia (evidencia legal)
+      try {
+        await axios.post(`${API_URL}/api/v1/terminos/aceptar`, {
+          email: email,
+          username: username,
+          empresa_id: empresaId.toUpperCase(),
+          nombre_empresa: nombreEmpresa,
+          version_terminos: "v2026.08.22",
+          metodo_registro: "formulario",
+          acepto_mailing: acceptedMailing ? "si" : "no"
+        }, {
+          headers: { 'Content-Type': 'application/json' }
+        });
+      } catch (termErr) {
+        // No bloquear el registro si falla el guardado de términos
+        console.warn("No se pudo registrar la aceptación de términos:", termErr);
+      }
+
       setSuccess(true);
       setTimeout(() => navigate('/login'), 3000);
 

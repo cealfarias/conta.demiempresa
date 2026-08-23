@@ -34,6 +34,7 @@ import models.empresa
 import models.manual
 import models.usuario
 import models.soporte
+import models.aceptacion_terminos
 
 # Auto-migraciones simples para columnas agregadas recientemente
 from sqlalchemy import text
@@ -74,6 +75,10 @@ app.include_router(auth_module.app.router)
 # 3. Router de integraciones (mixto: JWT y API Key para webhook)
 from routers.integracion import router as integracion_router
 app.include_router(integracion_router)
+
+# 4. Router de aceptación de términos (PÚBLICO - se usa durante el registro sin JWT)
+from routers.aceptacion_terminos import router as terminos_router
+app.include_router(terminos_router)
 
 if __name__ == "__main__":
     import uvicorn

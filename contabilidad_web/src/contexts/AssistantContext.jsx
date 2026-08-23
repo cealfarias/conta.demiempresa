@@ -90,6 +90,55 @@ export const AssistantProvider = ({ children }) => {
   }, [say]);
 
 
+  const startPreCierreFixes = useCallback((borradores, meses) => {
+    setIsActive(true);
+    const queue = [];
+    if (borradores && borradores.length > 0) {
+      borradores.forEach(b => queue.push({ type: 'borrador', id: b.id, numero: b.numero_partida }));
+    }
+    if (meses && meses.length > 0) {
+      queue.push({ type: 'meses', meses });
+    }
+
+    const executeNextFix = (q, index) => {
+      if (index >= q.length) {
+        navigate('/dashboard/cierre');
+        say("¡Excelente! Hemos completado todas las correcciones necesarias. Ahora puedes proceder a generar las provisiones.", null, [
+          { label: 'Entendido', action: dismiss }
+        ]);
+        return;
+      }
+
+      const step = q[index];
+      if (step.type === 'borrador') {
+        navigate(`/dashboard/partidas/editar/${step.id}`);
+        say(`La Partida #${step.numero} está en Borrador. Por favor, revísala y guárdala (Mayorizar o Imprimir). Cuando termines, presiona Continuar.`, null, [
+          { label: 'Ya la guardé, Continuar', action: () => executeNextFix(q, index + 1) }
+        ]);
+      } else if (step.type === 'meses') {
+        navigate('/dashboard/configuracion');
+        say(`Falta cerrar los meses: ${step.meses.join(', ')}. Ve a la pestaña "Períodos Contables" y ciérralos. Avísame cuando termines.`, null, [
+          { label: 'Ya los cerré, Continuar', action: () => executeNextFix(q, index + 1) }
+        ]);
+      }
+    };
+
+    say(
+      `He detectado que faltan requisitos. Hay ${borradores?.length || 0} partida(s) en borrador y ${meses?.length || 0} mes(es) sin cerrar. ¿Quieres que te guíe paso a paso para corregirlos?`,
+      null,
+      [
+        {
+          label: 'Sí, guíame',
+          action: () => executeNextFix(queue, 0)
+        },
+        {
+          label: 'No, lo haré yo',
+          action: dismiss
+        }
+      ]
+    );
+  }, [say, dismiss, navigate]);
+
   const resetAllOnboardings = useCallback(() => {
     localStorage.removeItem('avatar_first_greeting_done');
     localStorage.removeItem('avatar_partidas_done');
@@ -405,6 +454,7 @@ export const AssistantProvider = ({ children }) => {
     handleGoogleNotRegistered,
     resetAllOnboardings,
     startCierreOnboarding,
+    startPreCierreFixes,
     dismiss
     }}>
       {children}

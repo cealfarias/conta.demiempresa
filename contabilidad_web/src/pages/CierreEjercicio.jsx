@@ -20,7 +20,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'https://conta-demiempresa.onren
 
 export default function CierreEjercicio() {
   const navigate = useNavigate();
-  const { startCierreOnboarding } = useAssistant();
+  const { startCierreOnboarding, startPreCierreFixes } = useAssistant();
 
   const empresaId = localStorage.getItem('empresa_activa');
   const anioActivo = localStorage.getItem('anio_activo');
@@ -55,9 +55,10 @@ export default function CierreEjercicio() {
         });
         setPreCierreData(res.data);
         setPuedeCerrar(res.data.puede_cerrar === true);
-      } catch (error) {
-        toast.error('Error al obtener datos de pre-cierre');
-        console.error(error);
+      } catch (err) {
+        console.error(err);
+        const serverMsg = err.response?.data?.detail || "Error al obtener datos de pre-cierre.";
+        toast.error(serverMsg);
       } finally {
         setLoading(false);
       }
@@ -224,7 +225,18 @@ export default function CierreEjercicio() {
               <p className="text-gray-400">No se pudo cargar la información de pre-cierre.</p>
             )}
 
-            <div className="flex justify-end pt-4 border-t border-gray-700">
+            <div className="flex justify-between pt-4 border-t border-gray-700 items-center">
+              <div>
+                {!puedeCerrar && (
+                  <button
+                    onClick={() => startPreCierreFixes(preCierreData.borradores_lista, preCierreData.meses_abiertos)}
+                    className="flex items-center gap-2 px-4 py-2 bg-indigo-600/20 text-indigo-400 hover:bg-indigo-600/30 rounded-lg transition-colors font-medium border border-indigo-500/30"
+                  >
+                    <BookOpen size={18} />
+                    Asistente: Guiarme para corregir
+                  </button>
+                )}
+              </div>
               <button
                 onClick={() => setStep(2)}
                 disabled={!puedeCerrar}

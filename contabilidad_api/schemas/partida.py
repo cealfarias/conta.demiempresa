@@ -44,9 +44,14 @@ class CierreContableRequest(BaseModel):
 class EstadoPartidaUpdate(BaseModel):
     estado: str
 
+class BorradorResumen(BaseModel):
+    id: int
+    numero_partida: int
+
 class PreCierreResponse(BaseModel):
     puede_cerrar: bool
     borradores_pendientes: int
+    borradores_lista: List[BorradorResumen] = []
     meses_abiertos: list[int]
     cuadre_global: bool
     total_ingresos: float

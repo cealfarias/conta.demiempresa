@@ -399,6 +399,8 @@ def api_pre_cierre(
     try:
         resultado = c_cierre.pre_cierre_validacion(db=db, empresa_id=empresa_id, anio=anio)
         return resultado
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error en pre-cierre: {str(e)}")
 

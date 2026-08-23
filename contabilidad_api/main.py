@@ -38,25 +38,28 @@ import models.aceptacion_terminos
 
 # Auto-migraciones simples para columnas agregadas recientemente
 from sqlalchemy import text
-with engine.begin() as conn:
-    try:
+
+try:
+    with engine.begin() as conn:
         conn.execute(text("ALTER TABLE usuarios ADD COLUMN telefono VARCHAR(50);"))
+except Exception:
+    pass
+
+# Migraciones para campos de cierre fiscal en configuracion_contable
+for col, default in [
+    ("cuenta_utilidades_retenidas", "'310501'"),
+    ("cuenta_perdidas_acumuladas", "'310602'"),
+    ("porcentaje_reserva_legal", "'7'"),
+    ("cuenta_reserva_legal", "'310401'"),
+    ("tasa_isr", "'25'"),
+    ("cuenta_isr_por_pagar", "'210301'"),
+    ("cuenta_gasto_isr", "'420101'"),
+]:
+    try:
+        with engine.begin() as conn:
+            conn.execute(text(f"ALTER TABLE configuracion_contable ADD COLUMN {col} VARCHAR(20) DEFAULT {default};"))
     except Exception:
         pass
-    # Migraciones para campos de cierre fiscal en configuracion_contable
-    for col, default in [
-        ("cuenta_utilidades_retenidas", "'310501'"),
-        ("cuenta_perdidas_acumuladas", "'310602'"),
-        ("porcentaje_reserva_legal", "'7'"),
-        ("cuenta_reserva_legal", "'310401'"),
-        ("tasa_isr", "'25'"),
-        ("cuenta_isr_por_pagar", "'210301'"),
-        ("cuenta_gasto_isr", "'420101'"),
-    ]:
-        try:
-            conn.execute(text(f"ALTER TABLE configuracion_contable ADD COLUMN {col} VARCHAR(20) DEFAULT {default};"))
-        except Exception:
-            pass
 
 # Crear todas las tablas en la BD si no existen (ideal para Postgres en Render)
 Base.metadata.create_all(bind=engine)

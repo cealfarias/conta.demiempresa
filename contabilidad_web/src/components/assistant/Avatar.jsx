@@ -165,26 +165,26 @@ export default function Avatar() {
             - /avatar-talking.mp4
           */}
           <video
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${!isActive ? 'opacity-100' : 'opacity-0'}`}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 z-10 ${!isActive ? 'opacity-100' : 'opacity-0'}`}
             src="/avatar-idle.mp4"
             autoPlay
             loop
             muted
             playsInline
-            onError={(e) => e.target.style.display = 'none'} // Fallback if video is missing
+            onError={(e) => e.target.style.display = 'none'}
           />
           <video
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-0'}`}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 z-10 ${isActive ? 'opacity-100' : 'opacity-0'}`}
             src="/avatar-talking.mp4"
             autoPlay
             loop
             muted
             playsInline
-            onError={(e) => e.target.style.display = 'none'} // Fallback if video is missing
+            onError={(e) => e.target.style.display = 'none'}
           />
           
-          {/* Fallback Icon if videos fail to load or haven't been uploaded yet */}
-          <Bot className="w-8 h-8 z-[-1] absolute" />
+          {/* Fallback Icon si los videos aún no existen */}
+          <Bot className="w-8 h-8 text-white relative z-0" />
         </div>
       </div>
     </div>

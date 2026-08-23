@@ -457,6 +457,7 @@ export const AssistantProvider = ({ children }) => {
     resetAllOnboardings,
     startCierreOnboarding,
     startPreCierreFixes,
+    say,
     dismiss
     }}>
       {children}

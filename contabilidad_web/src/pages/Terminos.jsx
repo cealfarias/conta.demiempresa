@@ -103,6 +103,36 @@ export default function Terminos() {
                 <li>El uso de herramientas automatizadas (Web Scraping) para extraer datos o cualquier intento de vulneración de seguridad (hacking) está terminantemente prohibido.</li>
               </ul>
             </section>
+
+            <section>
+              <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2 mb-4">
+                <Database className="w-6 h-6 text-indigo-500" />
+                7. Copias de Seguridad y Respaldo de Datos (Backups)
+              </h3>
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 mb-4">
+                <p className="text-amber-800 font-semibold text-sm mb-2">⚠️ CLÁUSULA IMPORTANTE — Léase detenidamente</p>
+                <p className="text-amber-700 text-sm">
+                  El contenido de esta sección establece las responsabilidades del usuario final respecto al respaldo y recuperación de su información contable y financiera.
+                </p>
+              </div>
+              <ul className="list-disc pl-6 space-y-2">
+                <li><strong>Responsabilidad Exclusiva del Usuario:</strong> El usuario final (titular de la cuenta, administrador de la empresa o representante legal) es el único y exclusivo responsable de realizar, gestionar, verificar y custodiar las copias de seguridad (backups) de toda la información contable, financiera y operativa almacenada en la Plataforma, incluyendo, pero no limitándose a: catálogos de cuentas, partidas contables, estados financieros, registros de planilla, documentos tributarios electrónicos (DTE) y cualquier otro dato ingresado o generado dentro del sistema.</li>
+                <li><strong>Exoneración de Responsabilidad:</strong> demiempresa, sus desarrolladores, administradores, socios comerciales y cualquier persona o entidad vinculada a la operación de la Plataforma, <strong>no se hacen responsables bajo ninguna circunstancia</strong> por la pérdida, corrupción, eliminación accidental o inaccesibilidad de datos derivada de la falta de respaldos por parte del usuario, incluyendo, entre otros: errores humanos, eliminación involuntaria de registros, accesos no autorizados a la cuenta del usuario, desastres naturales, fallas de hardware o software de terceros, o cualquier otra causa que resulte en la pérdida parcial o total de la información.</li>
+                <li><strong>Herramientas de Exportación:</strong> La Plataforma podrá poner a disposición del usuario herramientas de exportación de datos (Excel, PDF, CSV u otros formatos) como cortesía operativa. Sin embargo, la utilización periódica de dichas herramientas para generar respaldos externos es responsabilidad exclusiva del usuario.</li>
+                <li><strong>Recomendación de Respaldo Periódico:</strong> Se recomienda encarecidamente al usuario realizar copias de seguridad de su información de forma periódica (semanal o mensual como mínimo), almacenándolas en medios externos seguros e independientes de la Plataforma (discos externos, servicios de almacenamiento en la nube de terceros, etc.).</li>
+                <li><strong>Disponibilidad del Servicio:</strong> Aunque la Plataforma opera bajo estándares de alta disponibilidad, no garantiza un tiempo de actividad (uptime) del 100%. En caso de mantenimiento programado, incidentes técnicos o migración de infraestructura, la Plataforma podrá experimentar períodos de inactividad temporal. El usuario acepta que dichas interrupciones no generan derecho a indemnización ni responsabilidad alguna por datos no respaldados durante dichos períodos.</li>
+              </ul>
+            </section>
+
+            <section>
+              <h3 className="text-xl font-bold text-slate-900 mb-4">8. Aceptación de los Términos</h3>
+              <p>
+                Al marcar la casilla <em>"He leído y acepto los Términos de Referencia"</em> durante el proceso de registro, 
+                el usuario declara haber leído, comprendido y aceptado la totalidad de las cláusulas aquí expuestas, 
+                incluyendo de manera especial la sección relativa a <strong>Copias de Seguridad y Respaldo de Datos</strong>. 
+                El desconocimiento de estos términos no exime al usuario de su cumplimiento.
+              </p>
+            </section>
           </div>
         </div>
       </div>

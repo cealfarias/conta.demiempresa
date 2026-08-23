@@ -305,7 +305,7 @@ function Registro() {
                   className="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded cursor-pointer"
                 />
                 <label className="ml-2 text-xs text-slate-600 cursor-pointer" onClick={() => setAcceptedTerms(!acceptedTerms)}>
-                  He leído y acepto los <span className="text-indigo-600 hover:underline">Términos de Referencia</span> y el <span className="text-indigo-600 hover:underline">Contrato de Servicio</span> de Facturación e Inventario SaaS.
+                  He leído y acepto los <a href="/terminos" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline font-medium" onClick={(e) => e.stopPropagation()}>Términos de Referencia</a> y el <a href="/terminos" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline font-medium" onClick={(e) => e.stopPropagation()}>Contrato de Servicio</a> de Facturación e Inventario SaaS.
                 </label>
               </div>
               <div className="flex items-start">

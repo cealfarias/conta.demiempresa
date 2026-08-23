@@ -43,3 +43,20 @@ class CierreContableRequest(BaseModel):
 
 class EstadoPartidaUpdate(BaseModel):
     estado: str
+
+class PreCierreResponse(BaseModel):
+    puede_cerrar: bool
+    borradores_pendientes: int
+    meses_abiertos: list[int]
+    cuadre_global: bool
+    total_ingresos: float
+    total_gastos: float
+    utilidad_bruta: float
+    cierre_previo_existe: bool
+
+class CierreCompletoRequest(BaseModel):
+    empresa_id: str
+    anio: int
+    anio_nuevo: int
+    calcular_reserva_legal: bool = False
+    calcular_isr: bool = False

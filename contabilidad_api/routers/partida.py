@@ -13,7 +13,7 @@ from decimal import Decimal, InvalidOperation
 from models.partida import PartidaCabecera, PartidaDetalle
 from models.periodo import ControlPeriodo
 from models.cuenta import CuentaContable
-from schemas.partida import PartidaCompletaCrear, PaginaPartidasRespuesta, CierreContableRequest, EstadoPartidaUpdate
+from schemas.partida import PartidaCompletaCrear, PaginaPartidasRespuesta, CierreContableRequest, EstadoPartidaUpdate, PreCierreResponse, CierreCompletoRequest
 from config.database import get_db
 from crud import cierre as c_cierre
 from auth_module import obtener_usuario_actual, TokenData
@@ -384,6 +384,59 @@ def api_ejecutar_cierre(
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Error crítico en cierre: {str(e)}")
+
+@router.get("/pre-cierre/{empresa_id}/{anio}")
+def api_pre_cierre(
+    empresa_id: str,
+    anio: int,
+    db: Session = Depends(get_db),
+    current_user: TokenData = Depends(obtener_usuario_actual)
+):
+    """
+    Ejecuta las validaciones previas al cierre del ejercicio fiscal.
+    Retorna un diagnóstico completo del estado del año contable.
+    """
+    try:
+        resultado = c_cierre.pre_cierre_validacion(db=db, empresa_id=empresa_id, anio=anio)
+        return resultado
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error en pre-cierre: {str(e)}")
+
+@router.post("/ejecutar-cierre-completo")
+def api_ejecutar_cierre_completo(
+    request: CierreCompletoRequest,
+    db: Session = Depends(get_db),
+    current_user: TokenData = Depends(obtener_usuario_actual)
+):
+    """
+    Ejecuta el proceso completo de cierre del ejercicio fiscal en 5 pasos:
+    1. Validación pre-cierre
+    2. Provisiones (Reserva Legal + ISR)
+    3. Partida de Liquidación
+    4. Sellado del ejercicio
+    5. Apertura del siguiente año (catálogo, manual, saldos, partida de apertura)
+    
+    Basado en NIIF para PYMES, PCGA y normativa de la JVCP de El Salvador.
+    """
+    try:
+        usuario_id = current_user.username if current_user.username else "Sistema"
+        
+        resultado = c_cierre.ejecutar_cierre_completo(
+            db=db,
+            empresa_id=request.empresa_id,
+            anio=request.anio,
+            anio_nuevo=request.anio_nuevo,
+            usuario_id=usuario_id,
+            calcular_reserva_legal=request.calcular_reserva_legal,
+            calcular_isr=request.calcular_isr
+        )
+        return resultado
+        
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error crítico en cierre completo: {str(e)}")
 
 @router.put("/{partida_id}/anular", status_code=status.HTTP_200_OK)
 def anular_partida(partida_id: int, db: Session = Depends(get_db)):

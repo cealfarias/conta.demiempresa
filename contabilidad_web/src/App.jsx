@@ -114,6 +114,7 @@ function App() {
               <Route path="reportes/balance-general" element={<BalanceGeneral />} />
               <Route path="reportes/estado-resultados" element={<EstadoResultados />} />
               <Route path="reportes/flujo-efectivo" element={<FlujoEfectivo />} />
+              <Route path="cierre" element={<CierreEjercicio />} />
               <Route path="suscripcion" element={<Suscripcion />} />
             </Route>
             

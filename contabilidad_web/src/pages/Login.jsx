@@ -15,7 +15,7 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const { startLoginGreeting } = useAssistant();
+  const { startLoginGreeting, handleGoogleNotRegistered } = useAssistant();
 
   // Activar saludo del avatar al entrar a la página
   useEffect(() => {
@@ -244,7 +244,16 @@ export default function Login() {
                         setTimeout(() => navigate('/seleccionar-entorno'), 600);
                       }
                     } catch (err) {
-                      setError(err.response?.data?.detail || 'Error al iniciar sesión con Google.');
+                      const detail = err.response?.data?.detail || '';
+                      // Si la cuenta no está registrada, el avatar guía al registro
+                      if (err.response?.status === 401 && detail.includes('No existe una cuenta')) {
+                        // Extraer el email del mensaje del backend
+                        const emailMatch = detail.match(/correo\s+(\S+@\S+)/);
+                        const googleEmail = emailMatch ? emailMatch[1].replace(/\.$/, '') : 'tu cuenta de Google';
+                        handleGoogleNotRegistered(googleEmail);
+                      } else {
+                        setError(detail || 'Error al iniciar sesión con Google.');
+                      }
                     } finally {
                       setLoading(false);
                     }

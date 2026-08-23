@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Outlet, Link, useLocation } from 'react-router-dom';
-import { Home, Book, FileText, Settings as ConfigIcon, LogOut, Shield, HelpCircle, FileSpreadsheet, Settings, Menu } from 'lucide-react';
+import { Home, Book, FileText, Settings as ConfigIcon, LogOut, Shield, HelpCircle, FileSpreadsheet, Settings, Menu, Lock } from 'lucide-react';
 import SoporteModal from '../components/SoporteModal';
 import axios from 'axios';
 import { Toaster, toast } from 'react-hot-toast';
@@ -159,6 +159,10 @@ function Dashboard() {
           <Link to="/dashboard/seguridad" className={`flex items-center space-x-3 px-3 py-3 rounded-xl transition-colors ${location.pathname === '/dashboard/seguridad' ? 'bg-emerald-600/20 text-emerald-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'} ${!isSidebarOpen && 'justify-center'}`} title="Seguridad (2FA)">
             <Shield className="w-5 h-5 shrink-0" />
             {isSidebarOpen && <span className="font-medium whitespace-nowrap">Seguridad (2FA)</span>}
+          </Link>
+          <Link to="/dashboard/cierre" className={`flex items-center space-x-3 px-3 py-3 rounded-xl transition-colors ${location.pathname === '/dashboard/cierre' ? 'bg-amber-600/20 text-amber-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'} ${!isSidebarOpen && 'justify-center'}`} title="Cierre Fiscal">
+            <Lock className="w-5 h-5 shrink-0 text-amber-500" />
+            {isSidebarOpen && <span className="font-medium whitespace-nowrap text-amber-500">Cierre Fiscal</span>}
           </Link>
           <button onClick={() => setIsSoporteOpen(true)} className={`w-full flex items-center space-x-3 px-3 py-3 rounded-xl transition-colors text-slate-300 hover:bg-slate-800 hover:text-white ${!isSidebarOpen && 'justify-center'} relative`} title="Soporte (Inbox)">
             <div className="relative">

@@ -57,7 +57,39 @@ export const AssistantProvider = ({ children }) => {
     speak(text);
   }, [speak]);
 
-  
+  const startCierreOnboarding = useCallback(() => {
+    if (localStorage.getItem('avatar_cierre_done') === 'true') return;
+    
+    setIsActive(true);
+    setOnboardingType('CIERRE');
+    
+    setTimeout(() => {
+      say(
+        "Bienvenido al módulo de Cierre del Ejercicio Fiscal. Este es un proceso sumamente delicado y de carácter irreversible.",
+        null,
+        null
+      );
+      
+      setTimeout(() => {
+        say(
+          "Antes de continuar, te recuerdo que bajo nuestros Términos de Servicio, eres el único responsable de la integridad de tus datos. Te recomiendo encarecidamente que realices una copia de seguridad local (Backup) antes de proceder.",
+          "cierre-page",
+          [
+            { 
+              label: "Entendido, estoy listo", 
+              action: () => {
+                say("Excelente. El sistema te guiará paso a paso en la liquidación de cuentas de resultados y la preparación de los saldos iniciales para el siguiente año.");
+                localStorage.setItem('avatar_cierre_done', 'true');
+                setTimeout(() => dismiss(), 6000);
+              }
+            }
+          ]
+        );
+      }, 7000);
+    }, 1000);
+  }, [say]);
+
+
   const resetAllOnboardings = useCallback(() => {
     localStorage.removeItem('avatar_first_greeting_done');
     localStorage.removeItem('avatar_partidas_done');
@@ -106,6 +138,21 @@ export const AssistantProvider = ({ children }) => {
       }
     }, 38000);
   }, [say]);
+
+  // Cuando el usuario intenta login con Google pero no está registrado
+  const handleGoogleNotRegistered = useCallback((email) => {
+    setIsActive(true);
+    setOnboardingType('LOGIN_GREETING');
+    say(`La cuenta ${email} aún no está registrada en el sistema. No te preocupes, te redirigiremos a la página de registro donde podrás crear tu entorno contable en menos de 5 minutos.`);
+
+    setTimeout(() => {
+      navigate('/registro');
+    }, 5000);
+
+    setTimeout(() => {
+      dismiss();
+    }, 8000);
+  }, [say, navigate]);
 
   const startPartidasOnboarding = useCallback((username) => {
     const isFirstTime = localStorage.getItem('avatar_partidas_done') !== 'true';
@@ -355,7 +402,9 @@ export const AssistantProvider = ({ children }) => {
       reportProgress,
     startPartidasOnboarding,
     startLoginGreeting,
+    handleGoogleNotRegistered,
     resetAllOnboardings,
+    startCierreOnboarding,
     dismiss
     }}>
       {children}

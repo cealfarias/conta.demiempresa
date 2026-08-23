@@ -65,7 +65,25 @@ def pre_cierre_validacion(db: Session, empresa_id: str, anio: int) -> dict:
     # 5. Calcular ingresos y gastos
     config = db.query(ConfiguracionContable).filter(ConfiguracionContable.empresa_id == empresa_id).first()
     if not config:
-        raise ValueError("Configuración contable no encontrada para la empresa.")
+        # Auto-crear configuración por defecto para no bloquear al usuario
+        config = ConfiguracionContable(
+            empresa_id=empresa_id,
+            prefijo_ingresos="5",
+            prefijo_gastos="4",
+            prefijo_liquidadora="6",
+            cuenta_utilidad="310601",
+            cuenta_utilidades_retenidas="310501",
+            cuenta_perdidas_acumuladas="310602",
+            porcentaje_reserva_legal="7",
+            cuenta_reserva_legal="310401",
+            tasa_isr="25",
+            cuenta_isr_por_pagar="210301",
+            cuenta_gasto_isr="420101",
+            exencion_isr=False
+        )
+        db.add(config)
+        db.commit()
+        db.refresh(config)
 
     total_ingresos = Decimal('0.00')
     total_gastos = Decimal('0.00')
@@ -125,7 +143,25 @@ def generar_provisiones(db: Session, empresa_id: str, anio: int, usuario_id: str
     """
     config = db.query(ConfiguracionContable).filter(ConfiguracionContable.empresa_id == empresa_id).first()
     if not config:
-        raise ValueError("Configuración contable no encontrada para la empresa.")
+        # Auto-crear configuración por defecto para no bloquear al usuario
+        config = ConfiguracionContable(
+            empresa_id=empresa_id,
+            prefijo_ingresos="5",
+            prefijo_gastos="4",
+            prefijo_liquidadora="6",
+            cuenta_utilidad="310601",
+            cuenta_utilidades_retenidas="310501",
+            cuenta_perdidas_acumuladas="310602",
+            porcentaje_reserva_legal="7",
+            cuenta_reserva_legal="310401",
+            tasa_isr="25",
+            cuenta_isr_por_pagar="210301",
+            cuenta_gasto_isr="420101",
+            exencion_isr=False
+        )
+        db.add(config)
+        db.commit()
+        db.refresh(config)
 
     validacion = pre_cierre_validacion(db, empresa_id, anio)
     utilidad_bruta = Decimal(str(validacion["utilidad_bruta"]))
@@ -230,7 +266,25 @@ def ejecutar_partida_liquidacion(db: Session, empresa_id: str, anio: int, usuari
     """
     config = db.query(ConfiguracionContable).filter(ConfiguracionContable.empresa_id == empresa_id).first()
     if not config:
-        raise ValueError("Configuración contable no encontrada para la empresa.")
+        # Auto-crear configuración por defecto para no bloquear al usuario
+        config = ConfiguracionContable(
+            empresa_id=empresa_id,
+            prefijo_ingresos="5",
+            prefijo_gastos="4",
+            prefijo_liquidadora="6",
+            cuenta_utilidad="310601",
+            cuenta_utilidades_retenidas="310501",
+            cuenta_perdidas_acumuladas="310602",
+            porcentaje_reserva_legal="7",
+            cuenta_reserva_legal="310401",
+            tasa_isr="25",
+            cuenta_isr_por_pagar="210301",
+            cuenta_gasto_isr="420101",
+            exencion_isr=False
+        )
+        db.add(config)
+        db.commit()
+        db.refresh(config)
 
     cuentas_resultados = db.query(CuentaContable).filter(
         CuentaContable.empresa_id == empresa_id,
@@ -351,7 +405,25 @@ def generar_apertura_siguiente_anio(db: Session, empresa_id: str, anio: int, ani
     """
     config = db.query(ConfiguracionContable).filter(ConfiguracionContable.empresa_id == empresa_id).first()
     if not config:
-        raise ValueError("Configuración contable no encontrada para la empresa.")
+        # Auto-crear configuración por defecto para no bloquear al usuario
+        config = ConfiguracionContable(
+            empresa_id=empresa_id,
+            prefijo_ingresos="5",
+            prefijo_gastos="4",
+            prefijo_liquidadora="6",
+            cuenta_utilidad="310601",
+            cuenta_utilidades_retenidas="310501",
+            cuenta_perdidas_acumuladas="310602",
+            porcentaje_reserva_legal="7",
+            cuenta_reserva_legal="310401",
+            tasa_isr="25",
+            cuenta_isr_por_pagar="210301",
+            cuenta_gasto_isr="420101",
+            exencion_isr=False
+        )
+        db.add(config)
+        db.commit()
+        db.refresh(config)
 
     nuevo_ejercicio = EjercicioFiscal(
         empresa_id=empresa_id,

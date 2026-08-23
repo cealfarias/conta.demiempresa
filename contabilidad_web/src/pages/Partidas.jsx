@@ -13,18 +13,29 @@ function Partidas() {
   
   const userRole = localStorage.getItem('rol') || 'Auditor';
 
-  const anularPartida = async (id, nomenclatura) => {
-    if (!window.confirm(`¿Está seguro que desea ANULAR la partida No. ${nomenclatura}? Los montos se reducirán a cero y esta acción no se puede deshacer.`)) return;
-    
+  const confirmarAnular = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`http://localhost:8000/api/v1/partidas/${id}/anular`, {}, {
+      await axios.put(`${API_URL}/api/v1/partidas/${id}/anular`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      dismiss();
       fetchPartidas(); // Recargar la tabla
     } catch (err) {
+      dismiss();
       alert(err.response?.data?.detail || "Error al anular la partida");
     }
+  };
+
+  const anularPartida = (id, nomenclatura) => {
+    say(
+      `¿Estás seguro que deseas ANULAR la partida No. ${nomenclatura}? Los montos se reducirán a cero y esta acción no se puede deshacer.`,
+      null,
+      [
+        { label: 'Sí, Anular', action: () => confirmarAnular(id) },
+        { label: 'Cancelar', action: dismiss }
+      ]
+    );
   };
   const [searchTerm, setSearchTerm] = useState('');
   const [mesActual, setMesActual] = useState(1);
@@ -34,7 +45,7 @@ function Partidas() {
   const [sortConfig, setSortConfig] = useState({ key: 'numero_partida', direction: 'asc' });
   
   const navigate = useNavigate();
-  const { startPartidasOnboarding } = useAssistant();
+  const { startPartidasOnboarding, say, dismiss } = useAssistant();
   const username = localStorage.getItem('username') || 'Usuario';
   
   useEffect(() => {

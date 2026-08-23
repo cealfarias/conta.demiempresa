@@ -24,12 +24,13 @@ def pre_cierre_validacion(db: Session, empresa_id: str, anio: int) -> dict:
     Paso 1: Valida que la empresa esté lista para el cierre del ejercicio.
     """
     # 1. Verificar borradores pendientes
-    borradores = db.query(func.count(PartidaCabecera.id)).filter(
+    borradores_objs = db.query(PartidaCabecera.id, PartidaCabecera.numero_partida).filter(
         PartidaCabecera.empresa_id == empresa_id,
         PartidaCabecera.anio == anio,
         PartidaCabecera.estado == 'Borrador'
-    ).scalar() or 0
-    borradores_pendientes = borradores > 0
+    ).all()
+    borradores_lista = [{"id": b[0], "numero_partida": b[1]} for b in borradores_objs]
+    borradores_pendientes = len(borradores_lista) > 0
 
     # 2. Verificar si todos los meses están cerrados
     meses_abiertos_objs = db.query(ControlPeriodo.mes).filter(
@@ -128,7 +129,8 @@ def pre_cierre_validacion(db: Session, empresa_id: str, anio: int) -> dict:
 
     return {
         "puede_cerrar": puede_cerrar,
-        "borradores_pendientes": borradores,
+        "borradores_pendientes": len(borradores_lista),
+        "borradores_lista": borradores_lista,
         "meses_abiertos": meses_abiertos,
         "cuadre_global": cuadre_global,
         "total_ingresos": float(total_ingresos),

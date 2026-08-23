@@ -227,7 +227,7 @@ export default function CierreEjercicio() {
 
             <div className="flex justify-between pt-4 border-t border-gray-700 items-center">
               <div>
-                {!puedeCerrar && (
+                {!puedeCerrar && preCierreData && (
                   <button
                     onClick={() => startPreCierreFixes(preCierreData.borradores_lista, preCierreData.meses_abiertos)}
                     className="flex items-center gap-2 px-4 py-2 bg-indigo-600/20 text-indigo-400 hover:bg-indigo-600/30 rounded-lg transition-colors font-medium border border-indigo-500/30"

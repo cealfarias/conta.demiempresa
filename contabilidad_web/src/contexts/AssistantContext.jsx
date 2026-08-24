@@ -161,7 +161,9 @@ export const AssistantProvider = ({ children }) => {
                     { label: 'Continuar', action: () => executeNextFix(q, index + 1) }
                   ]);
                 } catch (err) {
-                  say("Hubo un error al crear las cuentas. Por favor, créalas manualmente o revisa tu conexión.", null, [
+                  const errorMsg = err.response?.data?.detail || err.message;
+                  console.error("Falla detallada de creación de cuentas:", errorMsg);
+                  say("Hubo un error al crear las cuentas. Revisa la consola del navegador para más detalles.", null, [
                     { label: 'Continuar de todos modos', action: () => executeNextFix(q, index + 1) },
                     { label: 'Cancelar asistente', action: dismiss }
                   ]);

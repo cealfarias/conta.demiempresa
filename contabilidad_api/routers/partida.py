@@ -421,7 +421,10 @@ def api_crear_cuentas_faltantes_cierre(
         db.commit()
         return {"mensaje": "Cuentas faltantes creadas exitosamente"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al crear cuentas: {str(e)}")
+        import traceback
+        trace = traceback.format_exc()
+        print("ERROR CRÍTICO AL CREAR CUENTAS FALTANTES:", trace)
+        raise HTTPException(status_code=500, detail=f"Error al crear cuentas: {str(e)}. Revisa los logs del backend para más detalles. {trace}")
 
 @router.post("/ejecutar-cierre-completo")
 def api_ejecutar_cierre_completo(

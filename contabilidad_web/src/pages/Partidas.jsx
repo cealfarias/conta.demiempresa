@@ -12,6 +12,13 @@ function Partidas() {
   const [error, setError] = useState(null);
   
   const userRole = localStorage.getItem('rol') || 'Auditor';
+  
+  const meses = [
+    { id: 1, nombre: 'Enero' }, { id: 2, nombre: 'Febrero' }, { id: 3, nombre: 'Marzo' },
+    { id: 4, nombre: 'Abril' }, { id: 5, nombre: 'Mayo' }, { id: 6, nombre: 'Junio' },
+    { id: 7, nombre: 'Julio' }, { id: 8, nombre: 'Agosto' }, { id: 9, nombre: 'Septiembre' },
+    { id: 10, nombre: 'Octubre' }, { id: 11, nombre: 'Noviembre' }, { id: 12, nombre: 'Diciembre' }
+  ];
 
   const confirmarAnular = async (id) => {
     try {
@@ -22,8 +29,11 @@ function Partidas() {
       dismiss();
       fetchPartidas(); // Recargar la tabla
     } catch (err) {
-      dismiss();
-      alert(err.response?.data?.detail || "Error al anular la partida");
+      say(
+        err.response?.data?.detail || "Error al anular la partida",
+        null,
+        [{ label: 'Entendido', action: dismiss }]
+      );
     }
   };
 
@@ -73,12 +83,7 @@ function Partidas() {
     startPartidasOnboarding(username);
   }, [startPartidasOnboarding, username]);
 
-  const meses = [
-    { id: 1, nombre: 'Enero' }, { id: 2, nombre: 'Febrero' }, { id: 3, nombre: 'Marzo' },
-    { id: 4, nombre: 'Abril' }, { id: 5, nombre: 'Mayo' }, { id: 6, nombre: 'Junio' },
-    { id: 7, nombre: 'Julio' }, { id: 8, nombre: 'Agosto' }, { id: 9, nombre: 'Septiembre' },
-    { id: 10, nombre: 'Octubre' }, { id: 11, nombre: 'Noviembre' }, { id: 12, nombre: 'Diciembre' }
-  ];
+
 
   useEffect(() => {
     fetchPartidas();

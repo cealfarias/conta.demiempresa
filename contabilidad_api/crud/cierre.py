@@ -178,9 +178,16 @@ def _asegurar_cuenta_existe(db: Session, empresa_id: str, anio: int, cuenta_codi
         CuentaContable.anio == anio,
         CuentaContable.cuentas == cuenta_codigo
     ).first()
+    
     if not cuenta:
-        ctadep = cuenta_codigo[:-2] if len(cuenta_codigo) >= 3 else cuenta_codigo[0]
+        # Calcular padre
+        ctadep = cuenta_codigo[:-2] if len(cuenta_codigo) >= 3 else (cuenta_codigo[:-1] if len(cuenta_codigo) > 1 else None)
         nivel = len(cuenta_codigo)
+        
+        # Crear padre primero (recursivo) para cumplir con la llave foránea
+        if ctadep:
+            _asegurar_cuenta_existe(db, empresa_id, anio, ctadep, f"Clasificación {ctadep}")
+            
         nueva_cuenta = CuentaContable(
             empresa_id=empresa_id,
             anio=anio,
@@ -188,10 +195,11 @@ def _asegurar_cuenta_existe(db: Session, empresa_id: str, anio: int, cuenta_codi
             nombre=nombre,
             ctadep=ctadep,
             nivel=nivel,
-            resumen=False,
+            resumen=(nivel < 6),  # Normalmente cuentas de 6+ son de detalle
             saldo_inicial=Decimal('0.00'),
             saldo_final=Decimal('0.00'),
-            usuario_creacion="Sistema"
+            usuario_creacion="Sistema",
+            terminal_ip="127.0.0.1"
         )
         db.add(nueva_cuenta)
         db.flush()

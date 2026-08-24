@@ -47,7 +47,8 @@ export default function CierreEjercicio() {
           startPreCierreFixes(
             preCierreData.borradores_lista, 
             preCierreData.meses_abiertos,
-            preCierreData.cuentas_faltantes
+            preCierreData.cuentas_faltantes,
+            preCierreData.hay_movimientos
           );
         });
       } else {
@@ -232,6 +233,13 @@ export default function CierreEjercicio() {
                       <div>
                         <p className="text-sm font-medium text-gray-200">Sin cierre previo</p>
                         {preCierreData.cierre_previo_existe && <p className="text-xs text-red-400">Este ejercicio ya fue cerrado anteriormente.</p>}
+                      </div>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      {preCierreData.hay_movimientos ? <CheckCircle className="text-emerald-500 mt-0.5 shrink-0" size={20} /> : <XCircle className="text-red-500 mt-0.5 shrink-0" size={20} />}
+                      <div>
+                        <p className="text-sm font-medium text-gray-200">Existen movimientos contables</p>
+                        {!preCierreData.hay_movimientos && <p className="text-xs text-red-400">No hay ninguna partida registrada en todo el año.</p>}
                       </div>
                     </li>
                     <li className="flex items-start gap-3">

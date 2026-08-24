@@ -156,7 +156,13 @@ def pre_cierre_validacion(db: Session, empresa_id: str, anio: int) -> dict:
             if not existe:
                 cuentas_faltantes.append({"codigo": cta_cod, "nombre": nombre_cta})
 
-    puede_cerrar = not borradores_pendientes and len(meses_abiertos) == 0 and cuadre_global and not cierre_previo_existe and len(cuentas_faltantes) == 0
+    total_partidas = db.query(func.count(PartidaCabecera.id)).filter(
+        PartidaCabecera.empresa_id == empresa_id,
+        PartidaCabecera.anio == anio
+    ).scalar() or 0
+    hay_movimientos = total_partidas > 0
+
+    puede_cerrar = not borradores_pendientes and len(meses_abiertos) == 0 and cuadre_global and not cierre_previo_existe and len(cuentas_faltantes) == 0 and hay_movimientos
 
     return {
         "puede_cerrar": puede_cerrar,
@@ -164,6 +170,8 @@ def pre_cierre_validacion(db: Session, empresa_id: str, anio: int) -> dict:
         "borradores_lista": borradores_lista,
         "meses_abiertos": meses_abiertos,
         "cuentas_faltantes": cuentas_faltantes,
+        "hay_movimientos": hay_movimientos,
+        "total_partidas": total_partidas,
         "cuadre_global": cuadre_global,
         "total_ingresos": float(total_ingresos),
         "total_gastos": float(total_gastos),

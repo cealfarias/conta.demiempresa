@@ -106,7 +106,7 @@ export const AssistantProvider = ({ children }) => {
   }, [say, dismiss]);
 
 
-  const startPreCierreFixes = useCallback((borradores, meses, cuentasFaltantes) => {
+  const startPreCierreFixes = useCallback((borradores, meses, cuentasFaltantes, hayMovimientos) => {
     try {
       setIsActive(true);
       const queue = [];
@@ -114,6 +114,9 @@ export const AssistantProvider = ({ children }) => {
       const safeMeses = Array.isArray(meses) ? meses : [];
       const safeCuentas = Array.isArray(cuentasFaltantes) ? cuentasFaltantes : [];
       
+      if (hayMovimientos === false) {
+        queue.push({ type: 'no_movimientos' });
+      }
       if (safeCuentas.length > 0) {
         queue.push({ type: 'cuentas', cuentas: safeCuentas });
       }
@@ -137,7 +140,15 @@ export const AssistantProvider = ({ children }) => {
         }
 
         const step = q[index];
-        if (step.type === 'cuentas') {
+        if (step.type === 'no_movimientos') {
+          say("He detectado que este ejercicio fiscal no tiene ninguna partida registrada. No es posible generar un cierre de resultados si el año está vacío.", null, [
+            { label: 'Entendido, cancelaré', action: dismiss },
+            { label: 'Registrar partidas', action: () => {
+              dismiss();
+              navigate('/dashboard/partidas');
+            }}
+          ]);
+        } else if (step.type === 'cuentas') {
           const list = step.cuentas.map(c => `• ${c.codigo} (${c.nombre})`).join('\n');
           say(`Faltan cuentas clave en tu catálogo para generar las provisiones y liquidaciones, de acuerdo con la NIIF para las PYMES (Sec. 3 y 29). \n\nCuentas faltantes:\n${list}\n\n¿Deseas que las cree en el catálogo por ti?`, null, [
             { 
@@ -188,23 +199,25 @@ export const AssistantProvider = ({ children }) => {
         }
       };
 
+      const parts = [];
+      if (hayMovimientos === false) parts.push('el año no tiene partidas registradas');
+      if (safeCuentas.length > 0) parts.push(`faltan ${safeCuentas.length} cuenta(s) clave en tu catálogo`);
+      if (safeBorradores.length > 0) parts.push(`hay ${safeBorradores.length} partida(s) en borrador`);
+      if (safeMeses.length > 0) parts.push(`tienes ${safeMeses.length} mes(es) sin cerrar`);
+      
+      const issueText = parts.length > 1 ? parts.slice(0, -1).join(', ') + ' y ' + parts[parts.length - 1] : parts[0];
+
       say(
-        `He detectado que faltan requisitos para el cierre. Faltan ${safeCuentas.length} cuenta(s) clave en tu catálogo, ${safeBorradores.length} partida(s) en borrador y ${safeMeses.length} mes(es) sin cerrar. ¿Quieres que te guíe paso a paso para corregirlos?`,
+        `He detectado que faltan requisitos para el cierre: ${issueText}. ¿Quieres que te guíe paso a paso para corregirlos?`,
         null,
         [
-          {
-            label: 'Sí, guíame',
-            action: () => executeNextFix(queue, 0)
-          },
-          {
-            label: 'No, lo haré yo',
-            action: dismiss
-          }
+          { label: 'Sí, guíame', action: () => executeNextFix(queue, 0) },
+          { label: 'No, lo haré yo', action: dismiss }
         ]
       );
-    } catch (error) {
-      alert("Error en asistente: " + error.message);
-      console.error(error);
+    } catch (err) {
+      console.error(err);
+      setIsActive(false);
     }
   }, [say, dismiss, navigate]);
 

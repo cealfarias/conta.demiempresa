@@ -162,22 +162,26 @@ export const AssistantProvider = ({ children }) => {
                   ]);
                 } catch (err) {
                   say("Hubo un error al crear las cuentas. Por favor, créalas manualmente o revisa tu conexión.", null, [
-                    { label: 'Continuar de todos modos', action: () => executeNextFix(q, index + 1) }
+                    { label: 'Continuar de todos modos', action: () => executeNextFix(q, index + 1) },
+                    { label: 'Cancelar asistente', action: dismiss }
                   ]);
                 }
               }
             },
-            { label: 'Las crearé manualmente (Omitir)', action: () => executeNextFix(q, index + 1) }
+            { label: 'Las crearé manualmente (Omitir)', action: () => executeNextFix(q, index + 1) },
+            { label: 'Cancelar asistente', action: dismiss }
           ]);
         } else if (step.type === 'borrador') {
           navigate(`/dashboard/partidas/editar/${step.id}`);
           say(`La Partida #${step.numero} está en Borrador. Por favor, revísala y guárdala (Mayorizar o Imprimir). Cuando termines, presiona Continuar.`, null, [
-            { label: 'Ya la guardé, Continuar', action: () => executeNextFix(q, index + 1) }
+            { label: 'Ya la guardé, Continuar', action: () => executeNextFix(q, index + 1) },
+            { label: 'Cancelar asistente', action: dismiss }
           ]);
         } else if (step.type === 'meses') {
           navigate('/dashboard/configuracion');
           say(`Falta cerrar los meses: ${step.meses.join(', ')}. Ve a la pestaña "Períodos Contables" y ciérralos. Avísame cuando termines.`, null, [
-            { label: 'Ya los cerré, Continuar', action: () => executeNextFix(q, index + 1) }
+            { label: 'Ya los cerré, Continuar', action: () => executeNextFix(q, index + 1) },
+            { label: 'Cancelar asistente', action: dismiss }
           ]);
         }
       };

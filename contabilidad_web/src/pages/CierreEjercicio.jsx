@@ -234,6 +234,22 @@ export default function CierreEjercicio() {
                         {preCierreData.cierre_previo_existe && <p className="text-xs text-red-400">Este ejercicio ya fue cerrado anteriormente.</p>}
                       </div>
                     </li>
+                    <li className="flex items-start gap-3">
+                      {(!preCierreData.cuentas_faltantes || preCierreData.cuentas_faltantes.length === 0) ? <CheckCircle className="text-emerald-500 mt-0.5 shrink-0" size={20} /> : <XCircle className="text-red-500 mt-0.5 shrink-0" size={20} />}
+                      <div>
+                        <p className="text-sm font-medium text-gray-200">Cuentas de cierre configuradas</p>
+                        {preCierreData.cuentas_faltantes && preCierreData.cuentas_faltantes.length > 0 && (
+                          <div className="text-xs text-red-400 mt-1">
+                            Faltan en el catálogo:
+                            <ul className="list-disc pl-4 mt-1">
+                              {preCierreData.cuentas_faltantes.map((cta, idx) => (
+                                <li key={idx}>{cta.codigo} - {cta.nombre}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    </li>
                   </ul>
                 </div>
 

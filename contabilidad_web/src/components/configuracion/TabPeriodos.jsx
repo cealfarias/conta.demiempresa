@@ -137,6 +137,25 @@ function TabPeriodos({ empresaId }) {
     }
   };
 
+  const handleAbrirMes = async (mes) => {
+    if (!window.confirm(`¿Estás seguro de que deseas REABRIR el mes ${mes} de ${selectedAnio}? Esto permitirá modificar y agregar partidas.`)) {
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      setError(null);
+      await axios.put(`${API_URL}/api/v1/periodos/abrir-mes/${empresaId}/${selectedAnio}/${mes}`);
+      setSuccess(`Mes ${mes} abierto exitosamente.`);
+      await fetchControlMeses(selectedAnio);
+    } catch (err) {
+      setError(err.response?.data?.detail || `Error al abrir el mes ${mes}.`);
+    } finally {
+      setLoading(false);
+      setTimeout(() => setSuccess(''), 4000);
+    }
+  };
+
   const handleCerrarAnio = async () => {
     if (!window.confirm(`¿ADVERTENCIA: Estás a punto de cerrar el ejercicio fiscal ${selectedAnio} completo. Esta acción es irreversible. ¿Deseas continuar?`)) {
       return;
@@ -278,7 +297,16 @@ function TabPeriodos({ empresaId }) {
                             Cerrar Mes
                           </button>
                         ) : (
-                          <span className="text-slate-400 text-xs font-medium">Bloqueado</span>
+                          ['administrador', 'contador', 'admin'].includes((localStorage.getItem('rol') || '').trim().toLowerCase()) ? (
+                            <button
+                              onClick={() => handleAbrirMes(p.mes)}
+                              className="text-rose-600 hover:text-rose-800 font-medium text-xs border border-rose-200 bg-rose-50 hover:bg-rose-100 py-1.5 px-3 rounded-lg transition-colors"
+                            >
+                              Reabrir Mes
+                            </button>
+                          ) : (
+                            <span className="text-slate-400 text-xs font-medium">Bloqueado</span>
+                          )
                         )}
                       </td>
                     </tr>

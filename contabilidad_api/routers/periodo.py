@@ -178,7 +178,29 @@ def cerrar_mes(empresa_id: str, anio: int, mes: int, db: Session = Depends(get_d
     periodo.mes_abierto = False
     db.commit()
     
-    return {"mensaje": f"El mes {mes} del año {anio} ha sido cerrado exitosamente."}
+    return {"status": "success", "mensaje": f"El mes {mes} del año {anio} ha sido cerrado exitosamente."}
+
+@router.put("/abrir-mes/{empresa_id}/{anio}/{mes}")
+def abrir_mes(empresa_id: str, anio: int, mes: int, db: Session = Depends(get_db)):
+    """
+    Abre un mes específico que ya estaba cerrado.
+    """
+    periodo = db.query(ControlPeriodo).filter_by(
+        empresa_id=empresa_id, 
+        anio=anio, 
+        mes=mes
+    ).first()
+
+    if not periodo:
+        raise HTTPException(status_code=404, detail="El mes especificado no existe o no ha sido inicializado.")
+    
+    if periodo.mes_abierto:
+        raise HTTPException(status_code=400, detail=f"El mes {mes} ya se encontraba abierto.")
+
+    periodo.mes_abierto = True
+    db.commit()
+    
+    return {"status": "success", "mensaje": f"El mes {mes} del año {anio} ha sido abierto exitosamente."}
 
 @router.put("/cierre-anio/{empresa_id}/{anio}")
 def cerrar_ejercicio_fiscal(empresa_id: str, anio: int, db: Session = Depends(get_db)):

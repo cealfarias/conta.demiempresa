@@ -27,7 +27,28 @@ function Partidas() {
     }
   };
 
-  const anularPartida = (id, nomenclatura) => {
+  const anularPartida = async (id, nomenclatura, fecha_str) => {
+    try {
+      const empresa_id = localStorage.getItem('empresa_activa');
+      const fecha = new Date(fecha_str);
+      const anio = fecha.getFullYear();
+      const mes = fecha.getMonth() + 1;
+      
+      const response = await axios.get(`${API_URL}/api/v1/periodos/control/${empresa_id}/${anio}`);
+      const periodo = response.data.find(p => p.mes === mes);
+      
+      if (periodo && !periodo.mes_abierto) {
+        say(
+          `No es posible anular la partida No. ${nomenclatura} porque el mes de ${meses[mes - 1]?.nombre || mes} del ${anio} se encuentra CERRADO.`,
+          null,
+          [{ label: 'Entendido', action: dismiss }]
+        );
+        return;
+      }
+    } catch (e) {
+      // Si falla la consulta de periodo, ignoramos y mostramos la confirmación por defecto
+    }
+
     say(
       `¿Estás seguro que deseas ANULAR la partida No. ${nomenclatura}? Los montos se reducirán a cero y esta acción no se puede deshacer.`,
       null,
@@ -301,7 +322,7 @@ function Partidas() {
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button 
-                          onClick={() => anularPartida(partida.id, partida.nomenclatura)}
+                          onClick={() => anularPartida(partida.id, partida.nomenclatura, partida.fecha)}
                           disabled={userRole === 'Auditor' || partida.estado !== 'Borrador'}
                           className={`p-1.5 rounded-lg transition-colors ${
                             userRole !== 'Auditor' && partida.estado === 'Borrador' 

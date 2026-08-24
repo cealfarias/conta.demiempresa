@@ -190,7 +190,8 @@ def _asegurar_cuenta_existe(db: Session, empresa_id: str, anio: int, cuenta_codi
             nivel=nivel,
             resumen=False,
             saldo_inicial=Decimal('0.00'),
-            saldo_final=Decimal('0.00')
+            saldo_final=Decimal('0.00'),
+            usuario_creacion="Sistema"
         )
         db.add(nueva_cuenta)
         db.flush()

@@ -115,8 +115,21 @@ export const AssistantProvider = ({ children }) => {
       const safeCuentas = Array.isArray(cuentasFaltantes) ? cuentasFaltantes : [];
       
       if (hayMovimientos === false) {
-        queue.push({ type: 'no_movimientos' });
+        // Hard stop: si no hay partidas, no tiene sentido corregir nada más.
+        say(
+          "He detectado que este ejercicio fiscal no tiene ninguna partida registrada. No es posible ejecutar un cierre en un año vacío.",
+          null,
+          [
+            { label: 'Entendido', action: dismiss },
+            { label: 'Ir a registrar partidas', action: () => {
+              dismiss();
+              navigate('/dashboard/partidas');
+            }}
+          ]
+        );
+        return; // Corta la ejecución del asistente por completo
       }
+
       if (safeCuentas.length > 0) {
         queue.push({ type: 'cuentas', cuentas: safeCuentas });
       }
@@ -140,15 +153,7 @@ export const AssistantProvider = ({ children }) => {
         }
 
         const step = q[index];
-        if (step.type === 'no_movimientos') {
-          say("He detectado que este ejercicio fiscal no tiene ninguna partida registrada. No es posible generar un cierre de resultados si el año está vacío.", null, [
-            { label: 'Entendido, cancelaré', action: dismiss },
-            { label: 'Registrar partidas', action: () => {
-              dismiss();
-              navigate('/dashboard/partidas');
-            }}
-          ]);
-        } else if (step.type === 'cuentas') {
+        if (step.type === 'cuentas') {
           const list = step.cuentas.map(c => `• ${c.codigo} (${c.nombre})`).join('\n');
           say(`Faltan cuentas clave en tu catálogo para generar las provisiones y liquidaciones, de acuerdo con la NIIF para las PYMES (Sec. 3 y 29). \n\nCuentas faltantes:\n${list}\n\n¿Deseas que las cree en el catálogo por ti?`, null, [
             { 

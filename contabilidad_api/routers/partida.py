@@ -404,6 +404,25 @@ def api_pre_cierre(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error en pre-cierre: {str(e)}")
 
+@router.post("/crear-cuentas-faltantes-cierre/{empresa_id}/{anio}")
+def api_crear_cuentas_faltantes_cierre(
+    empresa_id: str,
+    anio: int,
+    db: Session = Depends(get_db),
+    current_user: TokenData = Depends(obtener_usuario_actual)
+):
+    """
+    Crea las cuentas requeridas por la configuración de cierre si no existen.
+    """
+    try:
+        val = c_cierre.pre_cierre_validacion(db=db, empresa_id=empresa_id, anio=anio)
+        for cta in val.get("cuentas_faltantes", []):
+            c_cierre._asegurar_cuenta_existe(db, empresa_id, anio, cta["codigo"], cta["nombre"])
+        db.commit()
+        return {"mensaje": "Cuentas faltantes creadas exitosamente"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al crear cuentas: {str(e)}")
+
 @router.post("/ejecutar-cierre-completo")
 def api_ejecutar_cierre_completo(
     request: CierreCompletoRequest,

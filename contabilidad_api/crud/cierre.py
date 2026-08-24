@@ -125,13 +125,45 @@ def pre_cierre_validacion(db: Session, empresa_id: str, anio: int) -> dict:
 
     utilidad_bruta = total_ingresos - total_gastos
 
-    puede_cerrar = not borradores_pendientes and len(meses_abiertos) == 0 and cuadre_global and not cierre_previo_existe
+    # Verificar si faltan cuentas clave de configuración
+    config = db.query(ConfiguracionContable).filter(ConfiguracionContable.empresa_id == empresa_id).first()
+    cuentas_faltantes = []
+    if not config:
+        config = ConfiguracionContable(
+            empresa_id=empresa_id, prefijo_ingresos="5", prefijo_gastos="4", prefijo_liquidadora="6",
+            cuenta_utilidad="310601", cuenta_utilidades_retenidas="310501", cuenta_perdidas_acumuladas="310602",
+            porcentaje_reserva_legal="7", cuenta_reserva_legal="310401", tasa_isr="25", cuenta_isr_por_pagar="210301",
+            cuenta_gasto_isr="420101", exencion_isr=False
+        )
+        db.add(config)
+        db.commit()
+        db.refresh(config)
+        
+    cuentas_necesarias = [
+        (config.cuenta_utilidad, "Resultado del Ejercicio"),
+        (config.cuenta_reserva_legal, "Reserva Legal"),
+        (config.cuenta_gasto_isr, "Gasto por Impuesto sobre la Renta"),
+        (config.cuenta_isr_por_pagar, "Impuesto sobre la Renta por Pagar"),
+        (config.cuenta_utilidades_retenidas, "Utilidades Retenidas"),
+        (config.cuenta_perdidas_acumuladas, "Pérdidas Acumuladas")
+    ]
+    
+    for cta_cod, nombre_cta in cuentas_necesarias:
+        if cta_cod:
+            existe = db.query(CuentaContable).filter(
+                CuentaContable.empresa_id == empresa_id, CuentaContable.anio == anio, CuentaContable.cuentas == cta_cod
+            ).first()
+            if not existe:
+                cuentas_faltantes.append({"codigo": cta_cod, "nombre": nombre_cta})
+
+    puede_cerrar = not borradores_pendientes and len(meses_abiertos) == 0 and cuadre_global and not cierre_previo_existe and len(cuentas_faltantes) == 0
 
     return {
         "puede_cerrar": puede_cerrar,
         "borradores_pendientes": len(borradores_lista),
         "borradores_lista": borradores_lista,
         "meses_abiertos": meses_abiertos,
+        "cuentas_faltantes": cuentas_faltantes,
         "cuadre_global": cuadre_global,
         "total_ingresos": float(total_ingresos),
         "total_gastos": float(total_gastos),

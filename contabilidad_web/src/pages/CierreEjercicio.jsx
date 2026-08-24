@@ -20,7 +20,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'https://conta-demiempresa.onren
 
 export default function CierreEjercicio() {
   const navigate = useNavigate();
-  const { startCierreOnboarding, startPreCierreFixes } = useAssistant();
+  const { startCierreOnboarding, startPreCierreFixes, say, dismiss } = useAssistant();
 
   const empresaId = localStorage.getItem('empresa_activa');
   const anioActivo = localStorage.getItem('anio_activo');
@@ -44,7 +44,11 @@ export default function CierreEjercicio() {
     if (preCierreData) {
       if (!puedeCerrar) {
         startCierreOnboarding(() => {
-          startPreCierreFixes(preCierreData.borradores_lista, preCierreData.meses_abiertos);
+          startPreCierreFixes(
+            preCierreData.borradores_lista, 
+            preCierreData.meses_abiertos,
+            preCierreData.cuentas_faltantes
+          );
         });
       } else {
         startCierreOnboarding();
@@ -89,8 +93,33 @@ export default function CierreEjercicio() {
       });
       
       setCierreResult(res.data);
-      toast.success('Cierre ejecutado exitosamente');
-      setStep(4);
+      toast.success('Cierre ejecutado exitosamente en base de datos');
+      
+      // Narración del Avatar de los procesos realizados
+      say("Generando partidas automáticas... Base Legal: Código de Comercio y NIIF para PYMES.", "cierre-page");
+      
+      await new Promise(r => setTimeout(r, 4500));
+      
+      if (calcReservaLegal) {
+        say("Generando Provisión de Reserva Legal del 7%. (Base legal: Art. 295 del Código de Comercio de El Salvador).", "cierre-page");
+        await new Promise(r => setTimeout(r, 4500));
+      }
+      
+      if (calcISR) {
+        say("Calculando Impuesto Sobre la Renta (ISR) según tasas vigentes. (Base legal: Art. 41 Ley de Impuesto sobre la Renta).", "cierre-page");
+        await new Promise(r => setTimeout(r, 4500));
+      }
+      
+      say("Liquidando cuentas de Ingresos y Egresos. Enviando el resultado final a la cuenta de Patrimonio (Utilidades/Pérdidas). (Base legal: Sec. 3 NIIF PYMES y PCGA).", "cierre-page");
+      await new Promise(r => setTimeout(r, 5500));
+      
+      say("Sellando el ejercicio y generando catálogos y partida de apertura para el nuevo año fiscal. ¡Todo listo!", null, [
+        { label: 'Continuar a Resultados', action: () => {
+          dismiss();
+          setStep(4);
+        }}
+      ]);
+
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Error al ejecutar el cierre completo');
       console.error(error);

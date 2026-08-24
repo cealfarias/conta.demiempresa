@@ -106,13 +106,17 @@ export const AssistantProvider = ({ children }) => {
   }, [say, dismiss]);
 
 
-  const startPreCierreFixes = useCallback((borradores, meses) => {
+  const startPreCierreFixes = useCallback((borradores, meses, cuentasFaltantes) => {
     try {
       setIsActive(true);
       const queue = [];
       const safeBorradores = Array.isArray(borradores) ? borradores : [];
       const safeMeses = Array.isArray(meses) ? meses : [];
+      const safeCuentas = Array.isArray(cuentasFaltantes) ? cuentasFaltantes : [];
       
+      if (safeCuentas.length > 0) {
+        queue.push({ type: 'cuentas', cuentas: safeCuentas });
+      }
       if (safeBorradores.length > 0) {
         safeBorradores.forEach(b => queue.push({ type: 'borrador', id: b?.id, numero: b?.numero_partida }));
       }
@@ -123,14 +127,49 @@ export const AssistantProvider = ({ children }) => {
       const executeNextFix = (q, index) => {
         if (index >= q.length) {
           navigate('/dashboard/cierre');
-          say("¡Excelente! Hemos completado todas las correcciones necesarias. Ahora puedes proceder a generar las provisiones.", null, [
-            { label: 'Entendido', action: dismiss }
+          say("¡Excelente! Hemos completado todas las correcciones y requisitos. El camino está despejado para el cierre.", null, [
+            { label: 'Entendido', action: () => {
+              dismiss();
+              window.location.reload();
+            }}
           ]);
           return;
         }
 
         const step = q[index];
-        if (step.type === 'borrador') {
+        if (step.type === 'cuentas') {
+          const list = step.cuentas.map(c => `• ${c.codigo} (${c.nombre})`).join('\n');
+          say(`Faltan cuentas clave en tu catálogo para generar las provisiones y liquidaciones, de acuerdo con la NIIF para las PYMES (Sec. 3 y 29). \n\nCuentas faltantes:\n${list}\n\n¿Deseas que las cree en el catálogo por ti?`, null, [
+            { 
+              label: 'Sí, créalas por mí', 
+              action: async () => {
+                say("Creando cuentas faltantes de cierre...", "cierre-page");
+                try {
+                  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+                  const empresaId = localStorage.getItem('empresa_activa');
+                  const anio = localStorage.getItem('anio_activo');
+                  const token = localStorage.getItem('token');
+                  
+                  await import('axios').then(async (axios) => {
+                    await axios.default.post(
+                      `${API_URL}/api/v1/partidas/crear-cuentas-faltantes-cierre/${empresaId}/${anio}`,
+                      {},
+                      { headers: { Authorization: `Bearer ${token}` } }
+                    );
+                  });
+                  say("Cuentas creadas exitosamente.", null, [
+                    { label: 'Continuar', action: () => executeNextFix(q, index + 1) }
+                  ]);
+                } catch (err) {
+                  say("Hubo un error al crear las cuentas. Por favor, créalas manualmente o revisa tu conexión.", null, [
+                    { label: 'Continuar de todos modos', action: () => executeNextFix(q, index + 1) }
+                  ]);
+                }
+              }
+            },
+            { label: 'Las crearé manualmente (Omitir)', action: () => executeNextFix(q, index + 1) }
+          ]);
+        } else if (step.type === 'borrador') {
           navigate(`/dashboard/partidas/editar/${step.id}`);
           say(`La Partida #${step.numero} está en Borrador. Por favor, revísala y guárdala (Mayorizar o Imprimir). Cuando termines, presiona Continuar.`, null, [
             { label: 'Ya la guardé, Continuar', action: () => executeNextFix(q, index + 1) }
@@ -144,7 +183,7 @@ export const AssistantProvider = ({ children }) => {
       };
 
       say(
-        `He detectado que faltan requisitos. Hay ${safeBorradores.length} partida(s) en borrador y ${safeMeses.length} mes(es) sin cerrar. ¿Quieres que te guíe paso a paso para corregirlos?`,
+        `He detectado que faltan requisitos para el cierre. Faltan ${safeCuentas.length} cuenta(s) clave en tu catálogo, ${safeBorradores.length} partida(s) en borrador y ${safeMeses.length} mes(es) sin cerrar. ¿Quieres que te guíe paso a paso para corregirlos?`,
         null,
         [
           {

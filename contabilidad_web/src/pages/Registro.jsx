@@ -3,7 +3,7 @@ import { ShieldCheck, ArrowRight } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
-import bgImage from '../assets/bg-registro.png';
+import bgImage from '../assets/bg-contabilidad.png';
 import GlobalErrorAlert from '../components/GlobalErrorAlert';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -143,34 +143,31 @@ function Registro() {
     <div className="min-h-screen flex flex-col md:flex-row bg-[#EBEBEB] overflow-x-hidden">
       {/* Left side: Background Image & Overlay */}
       <div className="md:w-[45%] relative hidden md:flex flex-col justify-center p-12">
-        <div 
-          className="absolute inset-0 z-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${bgImage})` }}
-        >
+        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${bgImage})` }}>
           {/* Glassmorphism Dark Overlay */}
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
         </div>
         
         <div className="relative z-10">
           <h1 className="text-4xl font-bold text-white mb-4 leading-tight">
-            El Motor de Tu<br />Crecimiento<br />Empresarial
+            Inteligencia<br />Financiera
           </h1>
           <p className="text-slate-200 text-base mb-10 max-w-md leading-relaxed">
-            Digitaliza, integra y toma el control absoluto de todas las áreas operativas de tu negocio.
+            Accede a tu módulo contable y cumple con los estándares NIIF con facilidad.
           </p>
           
           <ul className="space-y-6">
             <li className="flex items-center text-slate-100 font-medium">
-              <div className="w-10 h-10 bg-slate-800/60 rounded-full flex items-center justify-center mr-4">🏢</div>
-              Gestión Integral de Áreas y Sucursales
+              <div className="w-10 h-10 bg-slate-800/60 rounded-full flex items-center justify-center mr-4">🧾</div>
+              Partidas Contables Automatizadas
             </li>
             <li className="flex items-center text-slate-100 font-medium">
-              <div className="w-10 h-10 bg-slate-800/60 rounded-full flex items-center justify-center mr-4">📦</div>
-              Inventario Preciso y Trazabilidad Total
+              <div className="w-10 h-10 bg-slate-800/60 rounded-full flex items-center justify-center mr-4">📊</div>
+              Estados Financieros en Tiempo Real
             </li>
             <li className="flex items-center text-slate-100 font-medium">
-              <div className="w-10 h-10 bg-slate-800/60 rounded-full flex items-center justify-center mr-4">📈</div>
-              Facturación Electrónica al Instante (DTE)
+              <div className="w-10 h-10 bg-slate-800/60 rounded-full flex items-center justify-center mr-4">🏦</div>
+              Cierre Ejercicios y Control de Periodos
             </li>
           </ul>
         </div>
@@ -182,7 +179,9 @@ function Registro() {
           
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-slate-800">Crear nueva Empresa</h2>
-            <p className="text-sm text-slate-500 mt-1">Ingresa los datos para crear tu espacio de facturación</p>
+            <p className="text-sm text-slate-500 text-center mb-8">
+              Ingresa los datos para crear tu entorno contable
+            </p>
           </div>
 
           <form onSubmit={handleRegister} className="space-y-5">
@@ -323,18 +322,19 @@ function Registro() {
                   className="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded cursor-pointer"
                 />
                 <label className="ml-2 text-xs text-slate-600 cursor-pointer" onClick={() => setAcceptedTerms(!acceptedTerms)}>
-                  He leído y acepto los <a href="/terminos" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline font-medium" onClick={(e) => e.stopPropagation()}>Términos de Referencia</a> y el <a href="/terminos" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline font-medium" onClick={(e) => e.stopPropagation()}>Contrato de Servicio</a> de Facturación e Inventario SaaS.
+                  He leído y acepto los <a href="/terminos" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline font-medium" onClick={(e) => e.stopPropagation()}>Términos de Referencia</a> y el <a href="/terminos" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline font-medium" onClick={(e) => e.stopPropagation()}>Contrato de Servicio</a> de Contabilidad SaaS.
                 </label>
               </div>
-              <div className="flex items-start">
-                <input 
+
+              <div className="flex items-start mt-2">
+                <input
                   type="checkbox"
+                  className="mt-0.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
                   checked={acceptedMailing}
                   onChange={(e) => setAcceptedMailing(e.target.checked)}
-                  className="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded cursor-pointer"
                 />
                 <label className="ml-2 text-xs text-slate-600 cursor-pointer" onClick={() => setAcceptedMailing(!acceptedMailing)}>
-                  Acepto recibir correos con actualizaciones y novedades de facturación electrónica.
+                  Acepto recibir correos con actualizaciones y novedades contables.
                 </label>
               </div>
             </div>

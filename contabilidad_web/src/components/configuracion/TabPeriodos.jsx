@@ -172,37 +172,7 @@ function TabPeriodos({ empresaId }) {
     );
   };
 
-  const ejecutarCerrarAnio = async () => {
-    dismiss();
-    try {
-      setLoading(true);
-      setError(null);
-      await axios.put(`${API_URL}/api/v1/periodos/cierre-anio/${empresaId}/${selectedAnio}`);
-      setSuccess(`Ejercicio ${selectedAnio} sellado definitivamente.`);
-      await fetchControlMeses(selectedAnio);
-      
-      const idx = ejercicios.indexOf(selectedAnio);
-      if (idx > 0) {
-        setSelectedAnio(ejercicios[idx - 1]);
-      }
-    } catch (err) {
-      setError(err.response?.data?.detail || 'Error al sellar el ejercicio.');
-    } finally {
-      setLoading(false);
-      setTimeout(() => setSuccess(''), 4000);
-    }
-  };
 
-  const handleCerrarAnio = () => {
-    say(
-      `ADVERTENCIA: Estás a punto de cerrar el ejercicio fiscal ${selectedAnio} completo. Esta acción es irreversible. ¿Deseas continuar?`,
-      'avatar',
-      [
-        { label: 'Sí, sellar año', action: ejecutarCerrarAnio },
-        { label: 'Cancelar', action: dismiss }
-      ]
-    );
-  };
 
   const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
@@ -344,21 +314,6 @@ function TabPeriodos({ empresaId }) {
               </table>
             </div>
             
-            {/* Cierre Anual */}
-            <div className="p-6 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
-              <div>
-                <h3 className="font-bold text-slate-800">Cierre Definitivo de Ejercicio</h3>
-                <p className="text-sm text-slate-500">Sella el año completo y prepara saldos para el siguiente.</p>
-              </div>
-              <button
-                onClick={handleCerrarAnio}
-                disabled={!todosMesesCerrados || isAnioCerrado || loading}
-                className="flex items-center space-x-2 bg-rose-600 hover:bg-rose-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white px-6 py-2 rounded-lg font-medium transition-colors shadow-sm"
-              >
-                <FolderLock className="w-4 h-4" />
-                <span>{isAnioCerrado ? 'Año Cerrado' : 'Ejecutar Cierre Anual'}</span>
-              </button>
-            </div>
           </div>
         ) : (
           <div className="p-12 text-center text-slate-500">

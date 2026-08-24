@@ -60,6 +60,7 @@ export const AssistantProvider = ({ children }) => {
   }, []);
 
   const say = useCallback((text, highlight = null, interactiveOptions = null) => {
+    setIsActive(true);
     setMessage(text);
     setHighlightId(highlight);
     setOptions(interactiveOptions);

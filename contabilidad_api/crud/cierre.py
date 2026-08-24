@@ -139,6 +139,30 @@ def pre_cierre_validacion(db: Session, empresa_id: str, anio: int) -> dict:
         "cierre_previo_existe": cierre_previo_existe
     }
 
+def _asegurar_cuenta_existe(db: Session, empresa_id: str, anio: int, cuenta_codigo: str, nombre: str):
+    if not cuenta_codigo: return
+    cuenta = db.query(CuentaContable).filter(
+        CuentaContable.empresa_id == empresa_id,
+        CuentaContable.anio == anio,
+        CuentaContable.cuentas == cuenta_codigo
+    ).first()
+    if not cuenta:
+        ctadep = cuenta_codigo[:-2] if len(cuenta_codigo) >= 3 else cuenta_codigo[0]
+        nivel = len(cuenta_codigo)
+        nueva_cuenta = CuentaContable(
+            empresa_id=empresa_id,
+            anio=anio,
+            cuentas=cuenta_codigo,
+            nombre=nombre,
+            ctadep=ctadep,
+            nivel=nivel,
+            resumen=False,
+            saldo_inicial=Decimal('0.00'),
+            saldo_final=Decimal('0.00')
+        )
+        db.add(nueva_cuenta)
+        db.flush()
+
 def generar_provisiones(db: Session, empresa_id: str, anio: int, usuario_id: str, calcular_reserva_legal: bool, calcular_isr: bool) -> dict:
     """
     Paso 2: Genera partidas de provisión para reserva legal e ISR.
@@ -178,6 +202,14 @@ def generar_provisiones(db: Session, empresa_id: str, anio: int, usuario_id: str
     
     porcentaje_reserva_legal = Decimal(config.porcentaje_reserva_legal) if config.porcentaje_reserva_legal else Decimal('0')
     tasa_isr = Decimal(config.tasa_isr) if config.tasa_isr else Decimal('0')
+
+    # Asegurar que las cuentas configuradas existan en el catálogo antes de usarlas
+    _asegurar_cuenta_existe(db, empresa_id, anio, config.cuenta_utilidad, "Resultado del Ejercicio")
+    _asegurar_cuenta_existe(db, empresa_id, anio, config.cuenta_reserva_legal, "Reserva Legal")
+    _asegurar_cuenta_existe(db, empresa_id, anio, config.cuenta_gasto_isr, "Gasto por Impuesto sobre la Renta")
+    _asegurar_cuenta_existe(db, empresa_id, anio, config.cuenta_isr_por_pagar, "Impuesto sobre la Renta por Pagar")
+    _asegurar_cuenta_existe(db, empresa_id, anio, config.cuenta_utilidades_retenidas, "Utilidades Retenidas")
+    _asegurar_cuenta_existe(db, empresa_id, anio, config.cuenta_perdidas_acumuladas, "Pérdidas Acumuladas")
 
     if calcular_reserva_legal and porcentaje_reserva_legal > 0:
         reserva_legal_monto = utilidad_bruta * (porcentaje_reserva_legal / Decimal('100.0'))

@@ -67,8 +67,11 @@ export const AssistantProvider = ({ children }) => {
     speak(text);
   }, [speak]);
 
-  const startCierreOnboarding = useCallback(() => {
-    if (localStorage.getItem('avatar_cierre_done') === 'true') return;
+  const startCierreOnboarding = useCallback((onComplete) => {
+    if (localStorage.getItem('avatar_cierre_done') === 'true') {
+      if (onComplete) onComplete();
+      return;
+    }
     
     setIsActive(true);
     setOnboardingType('CIERRE');
@@ -82,7 +85,7 @@ export const AssistantProvider = ({ children }) => {
       
       setTimeout(() => {
         say(
-          "Antes de continuar, te recuerdo que bajo nuestros Términos de Servicio, eres el único responsable de la integridad de tus datos. Te recomiendo encarecidamente que realices una copia de seguridad local (Backup) antes de proceder.",
+          "Antes de continuar, te recuerdo que eres el único responsable de la integridad de tus datos. Te recomiendo descargar un backup en Excel antes de proceder.",
           "cierre-page",
           [
             { 
@@ -90,14 +93,17 @@ export const AssistantProvider = ({ children }) => {
               action: () => {
                 say("Excelente. El sistema te guiará paso a paso en la liquidación de cuentas de resultados y la preparación de los saldos iniciales para el siguiente año.");
                 localStorage.setItem('avatar_cierre_done', 'true');
-                setTimeout(() => dismiss(), 6000);
+                setTimeout(() => {
+                  dismiss();
+                  if (onComplete) onComplete();
+                }, 6000);
               }
             }
           ]
         );
       }, 7000);
     }, 1000);
-  }, [say]);
+  }, [say, dismiss]);
 
 
   const startPreCierreFixes = useCallback((borradores, meses) => {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Calendar, AlertTriangle, CheckCircle2, Lock, Unlock, Play, FolderLock } from 'lucide-react';
+import { useAssistant } from '../../contexts/AssistantContext';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -14,6 +15,7 @@ function TabPeriodos({ empresaId }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState('');
+  const { say, dismiss } = useAssistant();
 
   useEffect(() => {
     fetchEjercicios();
@@ -93,11 +95,8 @@ function TabPeriodos({ empresaId }) {
     }
   };
 
-  const handleCerrarMes = async (mes) => {
-    if (!window.confirm(`¿Estás seguro de que deseas cerrar el mes ${mes} de ${selectedAnio}? No podrás agregar más partidas a este mes.`)) {
-      return;
-    }
-    
+  const ejecutarCerrarMes = async (mes) => {
+    dismiss();
     try {
       setLoading(true);
       setError(null);
@@ -107,12 +106,10 @@ function TabPeriodos({ empresaId }) {
 
       // --- AUTOMATIZACIÓN DE WHATSAPP ---
       try {
-        // 1. Obtener datos del estado de resultados
         const resReporte = await axios.get(`${API_URL}/api/v1/reportes/estado-resultados/${empresaId}/${selectedAnio}/${mes}`);
         const data = resReporte.data;
         const uair = data.utilidad_antes_impuestos || 0;
         
-        // 2. Obtener el número del Administrador
         const resUsuarios = await axios.get(`${API_URL}/api/v1/usuarios/?empresa_id=${empresaId}`);
         const admin = resUsuarios.data.find(u => u.rol === 'Administrador');
         
@@ -137,11 +134,19 @@ function TabPeriodos({ empresaId }) {
     }
   };
 
-  const handleAbrirMes = async (mes) => {
-    if (!window.confirm(`¿Estás seguro de que deseas REABRIR el mes ${mes} de ${selectedAnio}? Esto permitirá modificar y agregar partidas.`)) {
-      return;
-    }
-    
+  const handleCerrarMes = (mes) => {
+    say(
+      `¿Estás seguro de que deseas cerrar el mes ${mes} de ${selectedAnio}? No podrás agregar más partidas a este mes.`,
+      'avatar',
+      [
+        { label: 'Sí, cerrar mes', action: () => ejecutarCerrarMes(mes) },
+        { label: 'Cancelar', action: dismiss }
+      ]
+    );
+  };
+
+  const ejecutarAbrirMes = async (mes) => {
+    dismiss();
     try {
       setLoading(true);
       setError(null);
@@ -156,23 +161,47 @@ function TabPeriodos({ empresaId }) {
     }
   };
 
-  const handleCerrarAnio = async () => {
-    if (!window.confirm(`¿ADVERTENCIA: Estás a punto de cerrar el ejercicio fiscal ${selectedAnio} completo. Esta acción es irreversible. ¿Deseas continuar?`)) {
-      return;
-    }
-    
+  const handleAbrirMes = (mes) => {
+    say(
+      `¿Estás seguro de que deseas REABRIR el mes ${mes} de ${selectedAnio}? Esto permitirá modificar y agregar partidas.`,
+      'avatar',
+      [
+        { label: 'Sí, Reabrir', action: () => ejecutarAbrirMes(mes) },
+        { label: 'Cancelar', action: dismiss }
+      ]
+    );
+  };
+
+  const ejecutarCerrarAnio = async () => {
+    dismiss();
     try {
       setLoading(true);
       setError(null);
       await axios.put(`${API_URL}/api/v1/periodos/cierre-anio/${empresaId}/${selectedAnio}`);
       setSuccess(`Ejercicio ${selectedAnio} sellado definitivamente.`);
       await fetchControlMeses(selectedAnio);
+      
+      const idx = ejercicios.indexOf(selectedAnio);
+      if (idx > 0) {
+        setSelectedAnio(ejercicios[idx - 1]);
+      }
     } catch (err) {
-      setError(err.response?.data?.detail || `Error al cerrar el año ${selectedAnio}.`);
+      setError(err.response?.data?.detail || 'Error al sellar el ejercicio.');
     } finally {
       setLoading(false);
-      setTimeout(() => setSuccess(''), 5000);
+      setTimeout(() => setSuccess(''), 4000);
     }
+  };
+
+  const handleCerrarAnio = () => {
+    say(
+      `ADVERTENCIA: Estás a punto de cerrar el ejercicio fiscal ${selectedAnio} completo. Esta acción es irreversible. ¿Deseas continuar?`,
+      'avatar',
+      [
+        { label: 'Sí, sellar año', action: ejecutarCerrarAnio },
+        { label: 'Cancelar', action: dismiss }
+      ]
+    );
   };
 
   const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];

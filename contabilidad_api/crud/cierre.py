@@ -539,6 +539,13 @@ def generar_apertura_siguiente_anio(db: Session, empresa_id: str, anio: int, ani
             }
         )
 
+    # Fix Postgres sequence for manual_contable in case of desync
+    try:
+        db.execute(text("SELECT setval(pg_get_serial_sequence('manual_contable', 'id'), COALESCE(MAX(id), 1)) FROM manual_contable;"))
+        db.flush()
+    except Exception as e:
+        print("Sequence fix skipped or failed", e)
+
     manuales_viejos = db.query(ManualContable).filter(
         ManualContable.empresa_id == empresa_id,
         ManualContable.anio == anio

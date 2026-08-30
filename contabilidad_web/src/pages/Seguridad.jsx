@@ -390,6 +390,12 @@ function Seguridad() {
             <p className="text-xs text-slate-500 mb-4">
               Descarga un archivo JSON con toda la información de este año fiscal para guardarlo en un lugar seguro. Contiene toda la metadata necesaria para restaurarse íntegramente.
             </p>
+                        {backupMsg.text && (
+              <div className={`mb-3 p-3 text-xs rounded-lg flex items-center gap-2 ${backupMsg.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+                {backupMsg.type === 'error' ? <AlertTriangle className="w-4 h-4 shrink-0" /> : <CheckCircle className="w-4 h-4 shrink-0" />}
+                {backupMsg.text}
+              </div>
+            )}
             <button
               onClick={handleDownloadBackup}
               disabled={backupLoading}
@@ -408,6 +414,12 @@ function Seguridad() {
             <p className="text-[11px] text-rose-600 mb-4 leading-tight">
               <strong>ATENCIÓN:</strong> Restaurar un backup sobrescribirá <strong>TODO</strong> el catálogo, manual y partidas actuales de este año. La información actual se borrará permanentemente.
             </p>
+                        {restoreMsg.text && (
+              <div className={`mb-3 p-3 text-xs rounded-lg flex items-center gap-2 ${restoreMsg.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+                {restoreMsg.type === 'error' ? <AlertTriangle className="w-4 h-4 shrink-0" /> : <CheckCircle className="w-4 h-4 shrink-0" />}
+                {restoreMsg.text}
+              </div>
+            )}
             <form onSubmit={handleRestoreBackup} className="space-y-3">
               <input
                 type="file"

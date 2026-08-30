@@ -237,7 +237,21 @@ export default function CierreEjercicio() {
                       {!preCierreData.cierre_previo_existe ? <CheckCircle className="text-emerald-500 mt-0.5 shrink-0" size={20} /> : <XCircle className="text-red-500 mt-0.5 shrink-0" size={20} />}
                       <div>
                         <p className="text-sm font-medium text-gray-200">Sin cierre previo</p>
-                        {preCierreData.cierre_previo_existe && <p className="text-xs text-red-400">Este ejercicio ya fue cerrado anteriormente.</p>}
+                        {preCierreData.cierre_previo_existe && (
+                          <div className="mt-1 space-y-1">
+                            <p className="text-xs text-red-400 font-semibold">Este ejercicio ya fue cerrado anteriormente.</p>
+                            {preCierreData.cierre_fecha && (
+                              <p className="text-xs text-red-300/80">
+                                <strong>Fecha de cierre:</strong> {new Date(preCierreData.cierre_fecha).toLocaleString('es-ES')}
+                              </p>
+                            )}
+                            {preCierreData.cierre_usuario && (
+                              <p className="text-xs text-red-300/80">
+                                <strong>Cerrado por:</strong> {preCierreData.cierre_usuario}
+                              </p>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </li>
                     <li className="flex items-start gap-3">

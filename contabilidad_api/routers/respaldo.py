@@ -90,7 +90,7 @@ def generar_backup(empresa_id: str, anio: int, db: Session = Depends(get_db)):
             },
             "detalles": [{
                 "cuenta_codigo": d.cuenta_codigo,
-                "concepto": d.concepto,
+                "concepto_detalle": d.concepto_detalle,
                 "debe": str(d.debe) if d.debe is not None else "0.00",
                 "haber": str(d.haber) if d.haber is not None else "0.00",
                 "referencia": d.referencia
@@ -240,7 +240,7 @@ async def restaurar_backup(empresa_id: str, anio: int, file: UploadFile = File(.
                     empresa_id=empresa_id,
                     anio=anio,
                     cuenta_codigo=d["cuenta_codigo"],
-                    concepto=d["concepto"],
+                    concepto_detalle=d.get("concepto_detalle", ""),
                     debe=Decimal(d["debe"]),
                     haber=Decimal(d["haber"]),
                     referencia=d.get("referencia", "")

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Download, Upload, DatabaseBackup } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { ShieldCheck, ShieldAlert, Smartphone, CheckCircle, AlertTriangle, KeyRound } from 'lucide-react';
 
@@ -15,11 +16,83 @@ function Seguridad() {
   const [secret, setSecret] = useState('');
   const [totpCode, setTotpCode] = useState('');
   const [setupError, setSetupError] = useState('');
+  const [backupLoading, setBackupLoading] = useState(false);
+  const [restoreLoading, setRestoreLoading] = useState(false);
+  const [restoreFile, setRestoreFile] = useState(null);
+
   const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
     fetch2FAStatus();
   }, []);
+
+  
+  const handleDownloadBackup = async () => {
+    try {
+      setBackupLoading(true);
+      const token = localStorage.getItem('token');
+      const empresaId = localStorage.getItem('empresa_activa');
+      const anioActivo = localStorage.getItem('anio_activo');
+      
+      const response = await axios.get(`${API_URL}/api/v1/respaldo/generar/${empresaId}/${anioActivo}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(response.data, null, 2));
+      const downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.setAttribute("href",     dataStr);
+      downloadAnchorNode.setAttribute("download", `backup_${empresaId}_${anioActivo}_${new Date().getTime()}.json`);
+      document.body.appendChild(downloadAnchorNode); // required for firefox
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+      
+      toast.success('Copia de seguridad descargada exitosamente.');
+    } catch (err) {
+      toast.error('Error al generar la copia de seguridad.');
+    } finally {
+      setBackupLoading(false);
+    }
+  };
+
+  const handleRestoreBackup = async (e) => {
+    e.preventDefault();
+    if (!restoreFile) {
+      toast.error('Por favor, selecciona un archivo JSON de respaldo.');
+      return;
+    }
+    
+    if (!window.confirm("¡ADVERTENCIA CRÍTICA! Restaurar una copia de seguridad borrará ABSOLUTAMENTE TODO tu catálogo, manual y partidas del año actual, y los reemplazará con los del archivo. Esta acción NO se puede deshacer. ¿Estás completamente seguro de que deseas continuar?")) {
+      return;
+    }
+    
+    try {
+      setRestoreLoading(true);
+      const token = localStorage.getItem('token');
+      const empresaId = localStorage.getItem('empresa_activa');
+      const anioActivo = localStorage.getItem('anio_activo');
+      
+      const formData = new FormData();
+      formData.append('file', restoreFile);
+      
+      await axios.post(`${API_URL}/api/v1/respaldo/restaurar/${empresaId}/${anioActivo}`, formData, {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      toast.success('Restauración completada con éxito. Recargando la aplicación...');
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+      
+    } catch (err) {
+      toast.error(err.response?.data?.detail || 'Error al restaurar la copia de seguridad. Revisa que el archivo sea del año y empresa correctos.');
+    } finally {
+      setRestoreLoading(false);
+      setRestoreFile(null);
+    }
+  };
 
   const fetch2FAStatus = async () => {
     try {
@@ -261,6 +334,76 @@ function Seguridad() {
               </div>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* ==================== BACKUP & RESTORE ==================== */}
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mt-6">
+        <div className="p-5 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50">
+          <div className="flex items-start space-x-3">
+            <div className="p-2 rounded-full bg-blue-100 text-blue-600">
+              <DatabaseBackup className="w-6 h-6" />
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-slate-800">Copias de Seguridad (Backup & Restore)</h2>
+              <p className="text-xs text-slate-500 max-w-md mt-1">
+                Respalda y restaura toda la información contable (catálogo, manual, partidas y configuraciones) del año fiscal activo en formato JSON.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-5 md:p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Download Backup */}
+          <div className="border border-slate-200 rounded-lg p-5">
+            <div className="flex items-center gap-3 mb-3">
+              <Download className="w-5 h-5 text-blue-600" />
+              <h3 className="text-sm font-bold text-slate-800">Exportar Copia de Seguridad</h3>
+            </div>
+            <p className="text-xs text-slate-500 mb-4">
+              Descarga un archivo JSON con toda la información de este año fiscal para guardarlo en un lugar seguro. Contiene toda la metadata necesaria para restaurarse íntegramente.
+            </p>
+            <button
+              onClick={handleDownloadBackup}
+              disabled={backupLoading}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-slate-800 text-white text-sm font-medium rounded-lg hover:bg-slate-700 transition-colors disabled:opacity-50"
+            >
+              {backupLoading ? 'Generando Backup...' : 'Descargar Backup (JSON)'}
+            </button>
+          </div>
+
+          {/* Restore Backup */}
+          <div className="border border-rose-200 bg-rose-50 rounded-lg p-5">
+            <div className="flex items-center gap-3 mb-3">
+              <Upload className="w-5 h-5 text-rose-600" />
+              <h3 className="text-sm font-bold text-rose-800">Restaurar Copia de Seguridad</h3>
+            </div>
+            <p className="text-[11px] text-rose-600 mb-4 leading-tight">
+              <strong>ATENCIÓN:</strong> Restaurar un backup sobrescribirá <strong>TODO</strong> el catálogo, manual y partidas actuales de este año. La información actual se borrará permanentemente.
+            </p>
+            <form onSubmit={handleRestoreBackup} className="space-y-3">
+              <input
+                type="file"
+                accept=".json"
+                onChange={(e) => setRestoreFile(e.target.files[0])}
+                className="block w-full text-xs text-slate-500
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-full file:border-0
+                  file:text-xs file:font-semibold
+                  file:bg-rose-100 file:text-rose-700
+                  hover:file:bg-rose-200
+                "
+                required
+              />
+              <button
+                type="submit"
+                disabled={restoreLoading || !restoreFile}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-rose-600 text-white text-sm font-medium rounded-lg hover:bg-rose-700 transition-colors disabled:opacity-50"
+              >
+                {restoreLoading ? 'Restaurando...' : 'Restaurar y Sobrescribir'}
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>

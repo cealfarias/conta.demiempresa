@@ -125,7 +125,7 @@ function PartidaImpresion() {
             
             <div className="flex justify-between items-end border-b-2 border-slate-900 pb-4 text-sm font-medium text-slate-800">
               <div className="text-left">
-                <p className="mb-1"><span className="font-bold">Fecha:</span> {new Date(partida.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+                <p className="mb-1"><span className="font-bold">Fecha:</span> {new Date(partida.fecha + 'T12:00:00').toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
                 <p className="mb-2"><span className="font-bold">Estado:</span> <span className={partida.estado === 'Anulada' ? 'text-rose-600 font-bold' : ''}>{partida.estado}</span></p>
                 <p className="text-[10px] text-slate-500 print:text-slate-700 italic">
                   Impreso el {new Date().toLocaleString('es-ES')} - Sistema Contable {localStorage.getItem('nombre_empresa_activa') || 'Empresa Activa'}

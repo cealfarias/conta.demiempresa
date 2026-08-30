@@ -277,7 +277,7 @@ function Partidas() {
                       #{partida.numero_partida.toString().padStart(4, '0')}
                     </td>
                     <td className="py-3 px-5 text-slate-600 font-medium whitespace-nowrap">
-                      {new Date(partida.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}
+                      {new Date(partida.fecha + 'T12:00:00').toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}
                     </td>
                     <td className="py-3 px-5 text-slate-700">
                       <div className="line-clamp-2" title={partida.concepto}>

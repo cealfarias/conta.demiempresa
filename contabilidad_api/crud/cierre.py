@@ -648,8 +648,8 @@ def generar_apertura_siguiente_anio(db: Session, empresa_id: str, anio: int, ani
             ctadep=cta.ctadep,
             nivel=cta.nivel,
             resumen=cta.resumen,
-            saldo_inicial=saldo_inicial_nuevo,
-            saldo_final=saldo_inicial_nuevo,
+            saldo_inicial=Decimal('0.00'),
+            saldo_final=Decimal('0.00'),
             usuario_creacion=usuario_id,
             terminal_ip="127.0.0.1"
         )

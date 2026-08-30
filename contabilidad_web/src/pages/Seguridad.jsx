@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAssistant } from '../contexts/AssistantContext';
 import { Download, Upload, DatabaseBackup, Lock } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { ShieldCheck, ShieldAlert, Smartphone, CheckCircle, AlertTriangle, KeyRound } from 'lucide-react';
@@ -7,6 +8,7 @@ import { ShieldCheck, ShieldAlert, Smartphone, CheckCircle, AlertTriangle, KeyRo
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 function Seguridad() {
+  const { say } = useAssistant();
   const [activeTab, setActiveTab] = useState('2fa');
   const [is2FAEnabled, setIs2FAEnabled] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -51,8 +53,10 @@ function Seguridad() {
       downloadAnchorNode.remove();
       
       setBackupMsg({ text: 'Copia de seguridad descargada exitosamente.', type: 'success' });
+      say('Copia de seguridad descargada exitosamente. Guárdala en un lugar seguro.');
     } catch (err) {
       setBackupMsg({ text: 'Error al generar la copia de seguridad.', type: 'error' });
+      say('Error al generar la copia de seguridad.');
     } finally {
       setBackupLoading(false);
     }
@@ -62,6 +66,7 @@ function Seguridad() {
     e.preventDefault();
     if (!restoreFile) {
       setRestoreMsg({ text: 'Por favor, selecciona un archivo JSON de respaldo.', type: 'error' });
+      say('Por favor, selecciona un archivo JSON de respaldo.');
       return;
     }
     
@@ -87,12 +92,14 @@ function Seguridad() {
       });
       
       setRestoreMsg({ text: 'Restauración completada con éxito. Recargando la aplicación...', type: 'success' });
+      say('Restauración completada con éxito. Recargando el sistema...');
       setTimeout(() => {
         window.location.reload();
       }, 2000);
       
     } catch (err) {
       setRestoreMsg({ text: err.response?.data?.detail || 'Error al restaurar la copia de seguridad.', type: 'error' });
+      say(err.response?.data?.detail || 'Error al restaurar la copia de seguridad.');
     } finally {
       setRestoreLoading(false);
       setRestoreFile(null);

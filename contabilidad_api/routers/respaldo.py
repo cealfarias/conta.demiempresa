@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 from datetime import datetime
 from database.session import get_db
-from models.models import (
+from models import (
     CuentaContable, ManualContable, PartidaCabecera, PartidaDetalle,
     ConfiguracionContable, ControlPeriodo, EjercicioFiscal
 )

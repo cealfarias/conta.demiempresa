@@ -40,15 +40,13 @@ def generar_backup(empresa_id: str, anio: int, db: Session = Depends(get_db)):
 
     # 2. Ejercicio Fiscal y Periodos
     ejercicio = db.query(EjercicioFiscal).filter_by(empresa_id=empresa_id, anio=anio).first()
-    if not ejercicio:
-        raise HTTPException(status_code=404, detail="No existe información para el año seleccionado.")
 
     ejercicio_data = {
         "anio": ejercicio.anio,
         "fecha_inicio": ejercicio.fecha_inicio.isoformat() if ejercicio.fecha_inicio else None,
         "fecha_fin": ejercicio.fecha_fin.isoformat() if ejercicio.fecha_fin else None,
         "estado_cerrado": ejercicio.estado_cerrado
-    }
+    } if ejercicio else {}
 
     periodos = db.query(ControlPeriodo).filter_by(empresa_id=empresa_id, anio=anio).order_by(ControlPeriodo.mes).all()
     periodos_data = [{"mes": p.mes, "mes_abierto": p.mes_abierto, "anio_abierto": p.anio_abierto, "total_partidas": p.total_partidas} for p in periodos]

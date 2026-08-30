@@ -10,6 +10,7 @@ from routers.manual import router as manual_router
 from routers.reportes import router as reportes_router # <-- NUEVA LÍNEA
 from routers.usuario import router as usuario_router
 from routers.soporte import router as soporte_router
+from routers.respaldo import router as respaldo_router
 
 # ==================== ROUTER MAESTRO PROTEGIDO ====================
 api_router = APIRouter(dependencies=[Depends(validar_token_dependency)])
@@ -23,3 +24,4 @@ api_router.include_router(manual_router)
 api_router.include_router(reportes_router) # <-- NUEVA LÍNEA
 api_router.include_router(usuario_router)
 api_router.include_router(soporte_router)
+api_router.include_router(respaldo_router)

@@ -6,9 +6,16 @@ from models.models import (
     CuentaContable, ManualContable, PartidaCabecera, PartidaDetalle,
     ConfiguracionContable, ControlPeriodo, EjercicioFiscal
 )
-from auth.security import obtener_usuario_actual, TokenData
+from auth_module import obtener_usuario_actual, TokenData, SECRET_KEY
+import hmac
+import hashlib
 import json
 from decimal import Decimal
+
+def sign_payload(payload: dict) -> str:
+    payload_str = json.dumps(payload, separators=(',', ':'), sort_keys=True)
+    return hmac.new(SECRET_KEY.encode('utf-8'), payload_str.encode('utf-8'), hashlib.sha256).hexdigest()
+
 
 router = APIRouter(prefix="/api/v1/respaldo", tags=["Respaldo y Recuperacion"])
 
@@ -105,6 +112,7 @@ def generar_backup(empresa_id: str, anio: int, db: Session = Depends(get_db)):
         "partidas": partidas_data
     }
     
+    backup["_signature"] = sign_payload(backup)
     return backup
 
 @router.post("/restaurar/{empresa_id}/{anio}")
@@ -112,6 +120,14 @@ async def restaurar_backup(empresa_id: str, anio: int, file: UploadFile = File(.
     try:
         content = await file.read()
         backup = json.loads(content)
+        
+        signature_provided = backup.pop("_signature", None)
+        if not signature_provided:
+            raise HTTPException(status_code=400, detail="Archivo inválido: No contiene firma de seguridad.")
+        
+        expected_signature = sign_payload(backup)
+        if not hmac.compare_digest(expected_signature, signature_provided):
+            raise HTTPException(status_code=400, detail="Archivo corrompido o manipulado: La firma de seguridad no coincide. (No fue generado por este sistema).")
         
         if backup.get("empresa_id") != empresa_id or backup.get("anio") != anio:
             raise HTTPException(status_code=400, detail="El archivo de backup no coincide con la empresa o año seleccionado.")

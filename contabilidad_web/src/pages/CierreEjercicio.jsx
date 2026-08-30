@@ -48,7 +48,12 @@ export default function CierreEjercicio() {
             preCierreData.borradores_lista, 
             preCierreData.meses_abiertos,
             preCierreData.cuentas_faltantes,
-            preCierreData.hay_movimientos
+            preCierreData.hay_movimientos,
+            {
+              existe: preCierreData.cierre_previo_existe,
+              fecha: preCierreData.cierre_fecha,
+              usuario: preCierreData.cierre_usuario
+            }
           );
         });
       } else {

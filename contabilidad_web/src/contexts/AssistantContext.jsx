@@ -106,7 +106,7 @@ export const AssistantProvider = ({ children }) => {
   }, [say, dismiss]);
 
 
-  const startPreCierreFixes = useCallback((borradores, meses, cuentasFaltantes, hayMovimientos) => {
+  const startPreCierreFixes = useCallback((borradores, meses, cuentasFaltantes, hayMovimientos, cierrePrevioInfo) => {
     try {
       setIsActive(true);
       const queue = [];
@@ -114,6 +114,16 @@ export const AssistantProvider = ({ children }) => {
       const safeMeses = Array.isArray(meses) ? meses : [];
       const safeCuentas = Array.isArray(cuentasFaltantes) ? cuentasFaltantes : [];
       
+      if (cierrePrevioInfo && cierrePrevioInfo.existe) {
+        let text = "El cierre de este año ya se realizó anteriormente.";
+        if (cierrePrevioInfo.fecha && cierrePrevioInfo.usuario) {
+          const dateStr = new Date(cierrePrevioInfo.fecha).toLocaleString('es-ES');
+          text = `El cierre de este año ya se realizó. Fue ejecutado el ${dateStr} por el usuario ${cierrePrevioInfo.usuario}. No es posible cerrarlo nuevamente.`;
+        }
+        say(text, null, [{ label: 'Entendido', action: dismiss }]);
+        return; // Corta la ejecución
+      }
+
       if (hayMovimientos === false) {
         // Hard stop: si no hay partidas, no tiene sentido corregir nada más.
         say(

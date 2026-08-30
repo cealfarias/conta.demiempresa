@@ -523,18 +523,13 @@ def generar_apertura_siguiente_anio(db: Session, empresa_id: str, anio: int, ani
     )
     db.add(nuevo_ejercicio)
     
-    max_id_result = db.execute(text("SELECT MAX(id) FROM control_periodos")).scalar()
-    max_id = max_id_result if max_id_result is not None else 0
-
     for m in range(1, 13):
-        max_id += 1
         db.execute(
             text("""
-                INSERT INTO control_periodos (id, empresa_id, anio, mes, mes_abierto, anio_abierto, total_partidas)
-                VALUES (:id, :empresa_id, :anio, :mes, :mes_abierto, :anio_abierto, :total_partidas)
+                INSERT INTO control_periodos (empresa_id, anio, mes, mes_abierto, anio_abierto, total_partidas)
+                VALUES (:empresa_id, :anio, :mes, :mes_abierto, :anio_abierto, :total_partidas)
             """),
             {
-                "id": max_id,
                 "empresa_id": empresa_id,
                 "anio": anio_nuevo,
                 "mes": m,

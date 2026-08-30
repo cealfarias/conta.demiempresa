@@ -56,12 +56,15 @@ def pre_cierre_validacion(db: Session, empresa_id: str, anio: int) -> dict:
     cuadre_global = abs(suma_debe - suma_haber) < Decimal('0.01')
 
     # 4. Verificar cierre previo
-    cierre_previo = db.query(func.count(PartidaCabecera.id)).filter(
+    partida_cierre = db.query(PartidaCabecera).filter(
         PartidaCabecera.empresa_id == empresa_id,
         PartidaCabecera.anio == anio,
         PartidaCabecera.estado == 'Cierre'
-    ).scalar() or 0
-    cierre_previo_existe = cierre_previo > 0
+    ).order_by(PartidaCabecera.id.desc()).first()
+    
+    cierre_previo_existe = partida_cierre is not None
+    cierre_fecha = partida_cierre.fecha_creacion.isoformat() if partida_cierre and getattr(partida_cierre, 'fecha_creacion', None) else None
+    cierre_usuario = partida_cierre.usuario_creacion if partida_cierre else None
 
     # 5. Calcular ingresos y gastos
     config = db.query(ConfiguracionContable).filter(ConfiguracionContable.empresa_id == empresa_id).first()
@@ -176,7 +179,9 @@ def pre_cierre_validacion(db: Session, empresa_id: str, anio: int) -> dict:
         "total_ingresos": float(total_ingresos),
         "total_gastos": float(total_gastos),
         "utilidad_bruta": float(utilidad_bruta),
-        "cierre_previo_existe": cierre_previo_existe
+        "cierre_previo_existe": cierre_previo_existe,
+        "cierre_fecha": cierre_fecha,
+        "cierre_usuario": cierre_usuario
     }
 
 def _asegurar_cuenta_existe(db: Session, empresa_id: str, anio: int, cuenta_codigo: str, nombre: str):

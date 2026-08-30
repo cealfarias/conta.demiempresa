@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Download, Upload, DatabaseBackup } from 'lucide-react';
+import { Download, Upload, DatabaseBackup, Lock } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { ShieldCheck, ShieldAlert, Smartphone, CheckCircle, AlertTriangle, KeyRound } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 function Seguridad() {
+  const [activeTab, setActiveTab] = useState('2fa');
   const [is2FAEnabled, setIs2FAEnabled] = useState(false);
   const [loading, setLoading] = useState(true);
   
@@ -180,10 +181,30 @@ function Seguridad() {
   return (
     <div className="p-4 md:p-6 w-full max-w-3xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-xl font-bold text-slate-800">Centro de Seguridad</h1>
-        <p className="text-sm text-slate-500 mt-1">Protege tu cuenta contable y la informacin financiera de tu empresa.</p>
+        <h1 className="text-xl font-bold text-slate-800">Seguridad & Backup</h1>
+        <p className="text-sm text-slate-500 mt-1">Protege tu cuenta y resguarda la información financiera de tu empresa de forma segura.</p>
+      </div>
+      
+      <div className="flex border-b border-slate-200 mb-6 space-x-1">
+        <button
+          onClick={() => setActiveTab('2fa')}
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
+            activeTab === '2fa' ? 'border-emerald-600 text-emerald-700 bg-emerald-50/50' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+          }`}
+        >
+          <Lock className="w-4 h-4" /> Autenticación 2FA
+        </button>
+        <button
+          onClick={() => setActiveTab('backup')}
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
+            activeTab === 'backup' ? 'border-blue-600 text-blue-700 bg-blue-50/50' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+          }`}
+        >
+          <DatabaseBackup className="w-4 h-4" /> Backup & Recovery
+        </button>
       </div>
 
+      {activeTab === '2fa' && (
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="p-5 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50">
           <div className="flex items-start space-x-3">
@@ -336,9 +357,11 @@ function Seguridad() {
           )}
         </div>
       </div>
+      )}
 
       {/* ==================== BACKUP & RESTORE ==================== */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mt-6">
+      {activeTab === 'backup' && (
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="p-5 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50">
           <div className="flex items-start space-x-3">
             <div className="p-2 rounded-full bg-blue-100 text-blue-600">
@@ -406,6 +429,7 @@ function Seguridad() {
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 }

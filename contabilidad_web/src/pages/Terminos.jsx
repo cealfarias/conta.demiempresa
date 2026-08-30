@@ -144,6 +144,57 @@ export default function Terminos() {
                 El desconocimiento de estos términos no exime al usuario de su cumplimiento.
               </p>
             </section>
+
+            <section>
+              <h3 className="text-xl font-bold text-slate-900 mb-4">9. Limitación de Responsabilidad ante Autoridades Fiscales</h3>
+              <p className="mb-2">
+                La Plataforma opera exclusivamente como una herramienta informática de asistencia y registro para facilitar la gestión contable. Bajo ninguna circunstancia la Plataforma, sus desarrolladores o representantes serán responsables de:
+              </p>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>Cálculos erróneos de impuestos (IVA, Pago a Cuenta, Impuesto sobre la Renta, etc.) derivados de una mala configuración o uso indebido por parte del usuario.</li>
+                <li>Multas, recargos, intereses o sanciones impuestas por el Ministerio de Hacienda, el Registro de Comercio o cualquier otra autoridad gubernamental.</li>
+                <li>La revisión, cuadre y presentación formal de las obligaciones tributarias y estados financieros son responsabilidad ineludible y exclusiva del profesional contable (Contador) y del Representante Legal de la empresa.</li>
+              </ul>
+            </section>
+
+            <section>
+              <h3 className="text-xl font-bold text-slate-900 mb-4">10. Políticas de Retención de Datos y Cuentas Inactivas</h3>
+              <p className="mb-2">
+                De conformidad con la legislación mercantil y tributaria vigente, la cual establece que el registro formal de las operaciones contables no debe exceder un atraso máximo legal de dos (2) meses, hemos implementado la siguiente política para salvaguardar la optimización de nuestra infraestructura:
+              </p>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>Si una cuenta Freeware (gratuita) o una licencia Premium vencida registra inactividad total de acceso y operaciones en la plataforma, la cuenta será catalogada como inactiva.</li>
+                <li>A partir del <strong>cuarto (4º) mes continuo de inactividad</strong>, nos reservamos el derecho de remover y purgar definitivamente de nuestras bases de datos toda la información contable asociada al espacio de trabajo.</li>
+                <li>Previo a la eliminación definitiva, el sistema enviará una notificación automatizada al correo electrónico registrado por el administrador, otorgando un plazo preventivo para que el usuario reactive su cuenta o descargue su archivo de Backup JSON gratuito.</li>
+              </ul>
+            </section>
+
+            <section>
+              <h3 className="text-xl font-bold text-slate-900 mb-4">11. Pagos, Reembolsos y Caducidad de Licencias</h3>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>Los pagos por licencias Premium y los cobros de tarifas administrativas (como los $5.00 USD por el servicio de Recovery en cuentas Freeware) son finales y <strong>no reembolsables</strong>, independientemente del uso que se le dé a la Plataforma.</li>
+                <li>Al caducar una suscripción Premium, el espacio de trabajo del usuario pasará automáticamente al estado de versión Gratuita (Freeware). Sus datos seguirán intactos, pero se activarán de inmediato las restricciones funcionales (publicidad, bloqueo de herramientas masivas, etc.) correspondientes a dicho plan.</li>
+              </ul>
+            </section>
+
+            <section>
+              <h3 className="text-xl font-bold text-slate-900 mb-4">12. Disponibilidad del Servicio (Uptime) y Mantenimiento</h3>
+              <p className="mb-2">
+                Aunque la Plataforma está diseñada para operar bajo los más altos estándares de disponibilidad en la nube, no garantizamos un tiempo de actividad del 100%.
+              </p>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>Podrán ocurrir interrupciones temporales debido a mantenimientos programados, actualizaciones urgentes de seguridad o fallas de infraestructura de nuestros proveedores de la nube (ej. interrupciones de red).</li>
+                <li>El usuario acepta que estos períodos de inactividad temporal no generarán derecho a ningún tipo de indemnización, compensación o reembolso.</li>
+              </ul>
+            </section>
+
+            <section>
+              <h3 className="text-xl font-bold text-slate-900 mb-4">13. Jurisdicción y Ley Aplicable</h3>
+              <p>
+                Los presentes Términos de Referencia y Condiciones de Servicio se rigen e interpretan de acuerdo con las leyes de la República de El Salvador. Para cualquier controversia, reclamo o disputa legal derivada del uso de la Plataforma, ambas partes se someten a la jurisdicción y competencia de los tribunales competentes de la ciudad de San Salvador, renunciando expresamente a cualquier otro fuero que pudiera corresponderles.
+              </p>
+            </section>
+
           </div>
         </div>
       </div>

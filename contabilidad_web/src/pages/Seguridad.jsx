@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Download, Upload, DatabaseBackup, Lock } from 'lucide-react';
-import toast from 'react-hot-toast';
 import { QRCodeSVG } from 'qrcode.react';
 import { ShieldCheck, ShieldAlert, Smartphone, CheckCircle, AlertTriangle, KeyRound } from 'lucide-react';
 
@@ -21,6 +20,8 @@ function Seguridad() {
   const [backupLoading, setBackupLoading] = useState(false);
   const [restoreLoading, setRestoreLoading] = useState(false);
   const [restoreFile, setRestoreFile] = useState(null);
+  const [backupMsg, setBackupMsg] = useState({ text: '', type: '' });
+  const [restoreMsg, setRestoreMsg] = useState({ text: '', type: '' });
 
   const [actionLoading, setActionLoading] = useState(false);
 
@@ -32,6 +33,7 @@ function Seguridad() {
   const handleDownloadBackup = async () => {
     try {
       setBackupLoading(true);
+      setBackupMsg({ text: '', type: '' });
       const token = localStorage.getItem('token');
       const empresaId = localStorage.getItem('empresa_activa');
       const anioActivo = localStorage.getItem('anio_activo');
@@ -48,9 +50,9 @@ function Seguridad() {
       downloadAnchorNode.click();
       downloadAnchorNode.remove();
       
-      toast.success('Copia de seguridad descargada exitosamente.');
+      setBackupMsg({ text: 'Copia de seguridad descargada exitosamente.', type: 'success' });
     } catch (err) {
-      toast.error('Error al generar la copia de seguridad.');
+      setBackupMsg({ text: 'Error al generar la copia de seguridad.', type: 'error' });
     } finally {
       setBackupLoading(false);
     }
@@ -59,7 +61,7 @@ function Seguridad() {
   const handleRestoreBackup = async (e) => {
     e.preventDefault();
     if (!restoreFile) {
-      toast.error('Por favor, selecciona un archivo JSON de respaldo.');
+      setRestoreMsg({ text: 'Por favor, selecciona un archivo JSON de respaldo.', type: 'error' });
       return;
     }
     
@@ -69,6 +71,7 @@ function Seguridad() {
     
     try {
       setRestoreLoading(true);
+      setRestoreMsg({ text: '', type: '' });
       const token = localStorage.getItem('token');
       const empresaId = localStorage.getItem('empresa_activa');
       const anioActivo = localStorage.getItem('anio_activo');
@@ -83,13 +86,13 @@ function Seguridad() {
         }
       });
       
-      toast.success('Restauración completada con éxito. Recargando la aplicación...');
+      setRestoreMsg({ text: 'Restauración completada con éxito. Recargando la aplicación...', type: 'success' });
       setTimeout(() => {
         window.location.reload();
       }, 2000);
       
     } catch (err) {
-      toast.error(err.response?.data?.detail || 'Error al restaurar la copia de seguridad. Revisa que el archivo sea del año y empresa correctos.');
+      setRestoreMsg({ text: err.response?.data?.detail || 'Error al restaurar la copia de seguridad.', type: 'error' });
     } finally {
       setRestoreLoading(false);
       setRestoreFile(null);

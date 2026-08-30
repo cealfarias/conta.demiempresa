@@ -387,18 +387,21 @@ export default function CierreEjercicio() {
               <div className="flex items-start gap-3">
                 <ShieldAlert className="text-amber-500 w-6 h-6 shrink-0 mt-1" />
                 <div>
-                  <h3 className="text-amber-400 font-medium text-lg mb-2">⚠️ Atención — Proceso Irreversible</h3>
-                  <p className="text-amber-200/80 text-sm mb-3">
-                    Al confirmar, se ejecutarán los siguientes procesos de forma automática:
-                  </p>
-                  <ul className="text-sm text-amber-200/70 space-y-1 list-disc ml-4 mb-4">
-                    {calcReservaLegal && <li>Provisión de Reserva Legal por {formatCurrency(reservaLegal)}</li>}
-                    {calcISR && <li>Provisión de ISR por {formatCurrency(isr)}</li>}
-                    <li>Liquidación de todas las cuentas de Ingresos y Gastos</li>
-                    <li>Registro del Resultado del Ejercicio por {formatCurrency(utilidadNeta)}</li>
-                    <li>Sellado permanente del ejercicio fiscal {anioNum}</li>
-                    <li>Creación del entorno completo para el año {anioNum + 1} (catálogo, manual, saldos iniciales y partida de apertura)</li>
-                  </ul>
+                  <h3 className="text-amber-400 font-medium text-lg mb-2">⚠️ Atención - Proceso Irreversible</h3>
+                  
+                  <div className="bg-amber-950/50 p-4 rounded border border-amber-800/50 mb-4">
+                    <p className="text-amber-100 text-sm font-medium mb-3">
+                      En estricto cumplimiento de la <strong>NIIF para las PYMES (Sección 3: Presentación de Estados Financieros)</strong> y los Principios de Contabilidad Generalmente Aceptados (PCGA), se ejecutarán automáticamente los siguientes procesos:
+                    </p>
+                    <ul className="text-sm text-amber-200/80 space-y-2 list-disc ml-4">
+                      {calcReservaLegal && <li><strong>Provisión Legal:</strong> Registro de Reserva Legal por {formatCurrency(reservaLegal)}.</li>}
+                      {calcISR && <li><strong>Provisión de Impuestos:</strong> Registro de ISR por {formatCurrency(isr)}.</li>}
+                      <li><strong>Partida de Liquidación:</strong> Cierre de todas las cuentas temporales de resultados (Ingresos, Costos y Gastos), trasladando la diferencia a la cuenta de Resultados del Ejercicio por {formatCurrency(utilidadNeta)}.</li>
+                      <li><strong>Sellado del Ejercicio:</strong> Bloqueo permanente del periodo fiscal {anioNum}.</li>
+                      <li><strong>Nuevo Entorno Contable ({anioNum + 1}):</strong> Clonación estructural del catálogo, garantizando que todas las cuentas nazcan con saldo $0.00 para evitar duplicación de información.</li>
+                      <li><strong>Partida de Apertura ({anioNum + 1}):</strong> Generación automática de la Partida Inicial el 1 de enero, que establece formalmente los saldos iniciales de las cuentas de Balance (Activo, Pasivo y Patrimonio), asegurando la continuidad financiera.</li>
+                    </ul>
+                  </div>
                   
                   <label className="flex items-start gap-3 cursor-pointer bg-gray-900/50 p-3 rounded-lg">
                     <input 

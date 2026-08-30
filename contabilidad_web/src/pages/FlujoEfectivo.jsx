@@ -13,7 +13,7 @@ function FlujoEfectivo() {
   
   // Controles
   const [mesActual, setMesActual] = useState(new Date().getMonth() + 1);
-  const anio = 2026; // TODO: sacar del entorno global
+  const anio = localStorage.getItem('anio_activo') || new Date().getFullYear();
   
   // Nombres de firmas configurables con localStorage
   const [firmaContador, setFirmaContador] = useState(localStorage.getItem('firmaContador') || "");

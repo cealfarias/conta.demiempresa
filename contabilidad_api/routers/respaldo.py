@@ -86,14 +86,13 @@ def generar_backup(empresa_id: str, anio: int, db: Session = Depends(get_db)):
                 "fecha": p.fecha.isoformat() if p.fecha else None,
                 "concepto": p.concepto,
                 "estado": p.estado,
-                "observaciones": p.observaciones
+                
             },
             "detalles": [{
                 "cuenta_codigo": d.cuenta_codigo,
                 "concepto_detalle": d.concepto_detalle,
                 "debe": str(d.debe) if d.debe is not None else "0.00",
-                "haber": str(d.haber) if d.haber is not None else "0.00",
-                "referencia": d.referencia
+                "haber": str(d.haber) if d.haber is not None else "0.00"
             } for d in detalles]
         })
 
@@ -227,7 +226,6 @@ async def restaurar_backup(empresa_id: str, anio: int, file: UploadFile = File(.
                 fecha=cab["fecha"],
                 concepto=cab["concepto"],
                 estado=cab["estado"],
-                observaciones=cab.get("observaciones", ""),
                 usuario_creacion="Sistema",
                 terminal_ip="127.0.0.1"
             )
@@ -242,8 +240,7 @@ async def restaurar_backup(empresa_id: str, anio: int, file: UploadFile = File(.
                     cuenta_codigo=d["cuenta_codigo"],
                     concepto_detalle=d.get("concepto_detalle", ""),
                     debe=Decimal(d["debe"]),
-                    haber=Decimal(d["haber"]),
-                    referencia=d.get("referencia", "")
+                    haber=Decimal(d["haber"])
                 ))
 
         db.commit()

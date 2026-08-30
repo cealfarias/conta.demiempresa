@@ -34,7 +34,77 @@ export default function Terminos() {
               </p>
             </section>
 
-                        <section>
+            <section>
+              <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2 mb-4">
+                <Server className="w-6 h-6 text-indigo-500" />
+                1. Naturaleza del Servicio
+              </h3>
+              <p>
+                La Plataforma es un software alojado en la nube (SaaS - Software as a Service) diseñado para proveer a 
+                las empresas herramientas automatizadas de gestión contable, generación de partidas, control de catálogos, 
+                manejo de saldos mensuales, estados financieros y emisión de reportes. La Plataforma actúa exclusivamente 
+                como una herramienta informática para facilitar sus procesos contables y de auditoría.
+              </p>
+            </section>
+
+            <section>
+              <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2 mb-4">
+                <Scale className="w-6 h-6 text-indigo-500" />
+                2. Cumplimiento Legal y Normativo
+              </h3>
+              <p>La Plataforma ha sido desarrollada alineada a las mejores prácticas y estándares financieros, incluyendo:</p>
+              <ul className="list-disc pl-6 mt-3 space-y-2">
+                <li><strong>Normas Internacionales de Información Financiera (NIIF):</strong> Estructuras de catálogo y reportes diseñados para facilitar la presentación razonable y el cumplimiento de las NIIF (o NIIF para PYMES).</li>
+                <li><strong>Legislación Tributaria:</strong> Herramientas para la correcta clasificación de ingresos, costos y gastos, facilitando la auditoría fiscal ante el Ministerio de Hacienda (según aplique a la jurisdicción).</li>
+                <li><strong>Trazabilidad:</strong> Cumplimiento con los principios de auditoría para garantizar el rastro inalterable de las partidas y transacciones generadas.</li>
+              </ul>
+            </section>
+
+            <section>
+              <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2 mb-4">
+                <Star className="w-6 h-6 text-indigo-500" />
+                3. Licenciamiento y Modelos de Uso
+              </h3>
+              <p>La Plataforma se ofrece bajo diferentes modalidades de licencia, las cuales pueden variar según el plan elegido:</p>
+              <ul className="list-disc pl-6 mt-3 space-y-2">
+                <li><strong>Versión Gratuita (Freeware con Publicidad):</strong> El uso de la plataforma puede ser gratuito sujeto a la visualización de anuncios publicitarios de terceros y límites en la cantidad de transacciones.</li>
+                <li><strong>Período de Prueba (Trial):</strong> Podrá disponer de un período de prueba gratuito de 14 días con todas las funciones Premium habilitadas. Transcurrido este tiempo, deberá adquirir una suscripción o su cuenta pasará a la versión gratuita con restricciones.</li>
+                <li><strong>Versiones Pro/Premium:</strong> Libres de publicidad, con características adicionales (como exportación masiva a Excel) descritas en la página de precios.</li>
+              </ul>
+            </section>
+
+            <section>
+              <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2 mb-4">
+                <ShieldCheck className="w-6 h-6 text-indigo-500" />
+                4. Responsabilidad de la Información (Integridad de Datos)
+              </h3>
+              <ul className="list-disc pl-6 space-y-2">
+                <li><strong>Exactitud de los Datos:</strong> El usuario administrador o contador de la empresa es el único responsable de la veracidad, exactitud y actualización de los datos contables ingresados en el sistema (montos, catálogos, partidas).</li>
+                <li><strong>Criterio Profesional:</strong> Aunque la Plataforma automatiza resúmenes y balances, es responsabilidad del profesional contable de la empresa verificar y firmar los estados financieros. La Plataforma no sustituye el criterio contable de su empresa.</li>
+              </ul>
+            </section>
+
+            <section>
+              <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2 mb-4">
+                <Database className="w-6 h-6 text-indigo-500" />
+                5. Privacidad y Confidencialidad de los Datos
+              </h3>
+              <ul className="list-disc pl-6 space-y-2">
+                <li><strong>Aislamiento de Datos (Multi-Tenant):</strong> Garantizamos que la información financiera de su empresa está estrictamente aislada y es inaccesible para otras empresas que utilicen la Plataforma.</li>
+                <li><strong>Propiedad de los Datos:</strong> Usted retiene todos los derechos y la propiedad intelectual sobre la información financiera ingresada. La Plataforma únicamente actúa como custodio de sus datos.</li>
+                <li><strong>Autenticación en 2 Pasos (2FA):</strong> Recomendamos encarecidamente la activación del 2FA disponible en el ecosistema para garantizar la seguridad de su cuenta.</li>
+              </ul>
+            </section>
+
+            <section>
+              <h3 className="text-xl font-bold text-slate-900 mb-4">6. Propiedad Intelectual y Restricciones</h3>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>Nos reservamos todos los derechos de propiedad intelectual sobre el código fuente, la arquitectura, el diseño visual y las bases de datos de la Plataforma.</li>
+                <li>El uso de herramientas automatizadas (Web Scraping) para extraer datos o cualquier intento de vulneración de seguridad (hacking) está terminantemente prohibido.</li>
+              </ul>
+            </section>
+
+            <section>
               <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2 mb-4">
                 <Database className="w-6 h-6 text-indigo-500" />
                 7. Módulo de Copias de Seguridad (Backups) y Recuperación (Recovery)
@@ -64,7 +134,7 @@ export default function Terminos() {
                 </li>
               </ul>
             </section>
-
+            
             <section>
               <h3 className="text-xl font-bold text-slate-900 mb-4">8. Aceptación de los Términos</h3>
               <p>

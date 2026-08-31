@@ -396,6 +396,8 @@ def api_pre_cierre(
     Ejecuta las validaciones previas al cierre del ejercicio fiscal.
     Retorna un diagnóstico completo del estado del año contable.
     """
+    if current_user.rol not in ["Contador", "Propietario", "Administrador"]:
+        raise HTTPException(status_code=403, detail="Acceso denegado: Solo el Contador o Propietario pueden acceder al Cierre Fiscal.")
     try:
         resultado = c_cierre.pre_cierre_validacion(db=db, empresa_id=empresa_id, anio=anio)
         return resultado

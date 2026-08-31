@@ -92,7 +92,7 @@ def obtener_estado_resultados(db: Session, empresa_id: str, anio: int, mes: int,
     ).filter(
         PartidaDetalle.empresa_id == empresa_id,
         PartidaDetalle.anio == anio,
-        PartidaCabecera.estado != "Borrador",
+        PartidaCabecera.estado.notin_(["Borrador", "Cierre"]),
         (PartidaDetalle.cuenta_codigo.like(f'{prefijo_ingresos}%') | PartidaDetalle.cuenta_codigo.like(f'{prefijo_gastos}%'))
     )
 
@@ -216,7 +216,7 @@ def obtener_balance_general(db: Session, empresa_id: str, anio: int, mes: int, n
         PartidaDetalle.empresa_id == empresa_id,
         PartidaDetalle.anio == anio,
         PartidaCabecera.mes <= mes,
-        PartidaCabecera.estado != "Borrador",
+        PartidaCabecera.estado.notin_(["Borrador", "Cierre"]),
         (PartidaDetalle.cuenta_codigo.like('1%') | PartidaDetalle.cuenta_codigo.like('2%') | PartidaDetalle.cuenta_codigo.like('3%'))
     ).group_by(PartidaDetalle.cuenta_codigo).all()
 

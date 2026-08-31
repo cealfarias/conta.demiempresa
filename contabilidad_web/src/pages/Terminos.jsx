@@ -10,10 +10,10 @@ export default function Terminos() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    // Apuntamos al archivo centralizado en el dominio principal
+    // Apuntamos al archivo centralizado en Vercel directamente para evitar problemas de DNS
     const url = window.location.hostname === 'localhost' 
-      ? 'http://localhost:5173/terminos.md' 
-      : 'https://www.demiempresa.online/terminos.md';
+      ? '/terminos.md' 
+      : 'https://demiempresa.vercel.app/terminos.md';
       
     fetch(url)
       .then(res => {

@@ -50,7 +50,7 @@ export default function SeleccionarEntorno() {
         if (err.response) {
             setError('No se pudieron cargar las empresas. Verifica tu conexión.');
         } else if (err.request) {
-            setError('Error de Red: El servidor se está iniciando. Por favor, espera unos segundos e intenta nuevamente.');
+            setError('En estos momentos el servidor se está iniciando. Por favor, espera unos segundos.');
         } else {
             setError('Error interno al cargar empresas.');
         }
@@ -136,7 +136,7 @@ export default function SeleccionarEntorno() {
       } else if (err.response) {
         setError(`Error del servidor (${err.response.status}): ${err.response.data?.detail || JSON.stringify(err.response.data)}`);
       } else if (err.request) {
-        setError('Error de Red: El servidor se está iniciando. Por favor, espera unos segundos e intenta nuevamente.');
+        setError('En estos momentos el servidor se está iniciando. Por favor, espera unos segundos.');
       } else {
         setError(`Error local/red: ${err.message || 'No se pudo conectar con el servidor'}`);
       }
@@ -161,7 +161,8 @@ export default function SeleccionarEntorno() {
             <GlobalErrorAlert 
               error={error} 
               context="Selección de Entorno" 
-              extraInfo={{ EmpresaIntentada: empresaId, Anio: anio }} 
+              extraInfo={{ EmpresaIntentada: empresaId, Anio: anio }}
+              onRetry={error?.includes('iniciando') ? () => window.location.reload() : undefined}
             />
 
             <div className="space-y-5">

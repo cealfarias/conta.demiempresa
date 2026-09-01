@@ -41,7 +41,7 @@ export default function Login() {
   const [totpCode, setTotpCode] = useState('');
 
   const handleLoginSubmit = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     setError(null);
     setLoading(true);
 
@@ -68,7 +68,7 @@ export default function Login() {
       if (err.response) {
         setError(`Error (${err.response.status}): ${err.response.data?.detail || 'Credenciales inválidas.'}`);
       } else if (err.request) {
-        setError('Error de Red: El servidor se está iniciando. Por favor, espera unos segundos e intenta nuevamente.');
+        setError('En estos momentos el servidor se está iniciando. Por favor, espera unos segundos.');
       } else {
         setError(`Error interno: ${err.message}`);
       }
@@ -190,6 +190,7 @@ export default function Login() {
                 error={error} 
                 context="Login General" 
                 extraInfo={{ UsuarioIntentado: username }}
+                onRetry={error?.includes('iniciando') ? handleLoginSubmit : undefined}
               />
 
               <div className="form-group">

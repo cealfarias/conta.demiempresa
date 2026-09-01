@@ -1,7 +1,9 @@
 import React from 'react';
 import { AlertCircle, LifeBuoy } from 'lucide-react';
 
-export default function GlobalErrorAlert({ error, context = "Sistema Contable", extraInfo = {} }) {
+import { RefreshCw } from 'lucide-react';
+
+export default function GlobalErrorAlert({ error, context = "Sistema Contable", extraInfo = {}, onRetry }) {
   if (!error) return null;
 
   const url = typeof window !== 'undefined' ? window.location.href : 'Desconocida';
@@ -43,9 +45,20 @@ ${infoExtraStr}
         </div>
       </div>
       
-      <div className="flex justify-end pt-2 border-t border-red-100/50 mt-1">
+      <div className="flex justify-end pt-2 border-t border-red-100/50 mt-1 gap-2">
+        {onRetry && (
+          <button 
+            type="button"
+            onClick={onRetry}
+            className="inline-flex items-center gap-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-xs font-bold py-2 px-3 rounded-lg transition-colors cursor-pointer"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Intenta nuevamente
+          </button>
+        )}
         <a 
           href={mailToUrl}
+
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 bg-red-100 hover:bg-red-200 text-red-800 text-xs font-bold py-2 px-3 rounded-lg transition-colors cursor-pointer"

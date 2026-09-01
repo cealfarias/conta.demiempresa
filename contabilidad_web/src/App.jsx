@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocat
 import Login from './pages/Login';
 import Registro from './pages/Registro';
 import Terminos from './pages/Terminos';
+import Privacidad from './pages/Privacidad';
 import Dashboard from './pages/Dashboard';
 import Catalogo from './pages/Catalogo';
 import SaldosMensuales from './pages/SaldosMensuales';
@@ -42,7 +43,7 @@ const SessionWatcher = () => {
   const location = useLocation();
 
   useEffect(() => {
-    if (['/login', '/registro', '/terminos'].includes(location.pathname)) return;
+    if (['/login', '/registro', '/terminos', '/privacidad'].includes(location.pathname)) return;
 
     const checkToken = () => {
       const token = localStorage.getItem('token');
@@ -87,6 +88,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/registro" element={<Registro />} />
             <Route path="/terminos" element={<Terminos />} />
+            <Route path="/privacidad" element={<Privacidad />} />
             
             <Route path="/seleccionar-entorno" element={<ProtectedRoute><SeleccionarEntorno /></ProtectedRoute>} />
             

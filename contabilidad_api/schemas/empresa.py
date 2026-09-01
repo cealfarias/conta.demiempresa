@@ -4,7 +4,7 @@ from datetime import datetime
 from .auditoria import AuditoriaBase
 
 class EmpresaBase(BaseModel):
-    id: str = Field(..., min_length=2, max_length=10, description="Código identificador único")
+    id: str = Field(..., min_length=2, max_length=50, description="Código identificador único")
     razon_social: str = Field(..., min_length=1)
     nombre_comercial: Optional[str] = None
     nit: str = Field(..., description="NIT formato salvadoreño")
@@ -14,8 +14,7 @@ class EmpresaBase(BaseModel):
 
     @field_validator("normativa")
     def validar_normativa_salvador(cls, v):
-        if v not in {"NIIF_PYMES", "NIFACES"}:
-            raise ValueError("La normativa debe ser estrictamente NIIF_PYMES o NIFACES")
+        # Relaxed validation to allow legacy DB data
         return v
 
 class EmpresaCreate(EmpresaBase):

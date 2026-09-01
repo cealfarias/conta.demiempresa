@@ -1,9 +1,31 @@
-import React from 'react';
-import { AlertCircle, LifeBuoy } from 'lucide-react';
-
-import { RefreshCw } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { AlertCircle, LifeBuoy, RefreshCw } from 'lucide-react';
 
 export default function GlobalErrorAlert({ error, context = "Sistema Contable", extraInfo = {}, onRetry }) {
+  const [timeLeft, setTimeLeft] = useState(0);
+
+  // Determinar si es un error de inicio de servidor
+  const isWakingUp = error?.includes('iniciando');
+
+  useEffect(() => {
+    if (isWakingUp) {
+      // 120 segundos = 2 minutos
+      setTimeLeft(120);
+    } else {
+      setTimeLeft(0);
+    }
+  }, [error, isWakingUp]);
+
+  useEffect(() => {
+    if (timeLeft <= 0) return;
+    
+    const timer = setInterval(() => {
+      setTimeLeft(prev => prev - 1);
+    }, 1000);
+    
+    return () => clearInterval(timer);
+  }, [timeLeft]);
+
   if (!error) return null;
 
   const url = typeof window !== 'undefined' ? window.location.href : 'Desconocida';
@@ -30,7 +52,7 @@ ${error}
 - Sesión Local: ${username}
 ${infoExtraStr}
 
-🛠️ PASOS PARA REPRODUCIR (Opcional):
+👣 PASOS PARA REPRODUCIR (Opcional):
 1. 
 `;
 
@@ -50,15 +72,19 @@ ${infoExtraStr}
           <button 
             type="button"
             onClick={onRetry}
-            className="inline-flex items-center gap-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-xs font-bold py-2 px-3 rounded-lg transition-colors cursor-pointer"
+            disabled={timeLeft > 0}
+            className={`inline-flex items-center gap-2 text-xs font-bold py-2 px-3 rounded-lg transition-colors ${
+              timeLeft > 0 
+                ? 'bg-slate-200 text-slate-500 cursor-not-allowed' 
+                : 'bg-emerald-100 hover:bg-emerald-200 text-emerald-800 cursor-pointer'
+            }`}
           >
-            <RefreshCw className="w-4 h-4" />
-            Intenta nuevamente
+            <RefreshCw className={`w-4 h-4 ${timeLeft > 0 ? 'animate-spin' : ''}`} />
+            {timeLeft > 0 ? `Iniciando... (${timeLeft}s)` : 'Intenta nuevamente'}
           </button>
         )}
         <a 
           href={mailToUrl}
-
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 bg-red-100 hover:bg-red-200 text-red-800 text-xs font-bold py-2 px-3 rounded-lg transition-colors cursor-pointer"

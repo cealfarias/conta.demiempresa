@@ -96,6 +96,10 @@ app.include_router(integracion_router)
 from routers.aceptacion_terminos import router as terminos_router
 app.include_router(terminos_router)
 
+# 5. Router de Pagos y Suscripciones (Protegido con JWT)
+from routers.pagos import router as pagos_router
+app.include_router(pagos_router)
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

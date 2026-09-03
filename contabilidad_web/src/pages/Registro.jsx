@@ -222,7 +222,58 @@ function Registro() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
-                <label className="block text-xs font-medium text-slate-700 mb-1">NIT / NRC (Opcional)</label>
+                <label className="block text-xs font-medium text-slate-700 mb-1">País</label>
+                <select 
+                  value={pais}
+                  onChange={e => setPais(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                >
+                  <option value="El Salvador">El Salvador</option>
+                  <option value="México">México</option>
+                  <option value="Guatemala">Guatemala</option>
+                  <option value="Honduras">Honduras</option>
+                  <option value="Nicaragua">Nicaragua</option>
+                  <option value="Costa Rica">Costa Rica</option>
+                  <option value="Panamá">Panamá</option>
+                  <option value="Colombia">Colombia</option>
+                  <option value="Ecuador">Ecuador</option>
+                  <option value="Perú">Perú</option>
+                  <option value="Chile">Chile</option>
+                  <option value="Argentina">Argentina</option>
+                  <option value="Uruguay">Uruguay</option>
+                  <option value="Paraguay">Paraguay</option>
+                  <option value="Bolivia">Bolivia</option>
+                  <option value="República Dominicana">República Dominicana</option>
+                  <option value="Otro">Otro</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">Moneda Base</label>
+                <select 
+                  value={moneda}
+                  onChange={e => setMoneda(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                >
+                  <option value="USD">Dólar Estadounidense (USD)</option>
+                  <option value="MXN">Peso Mexicano (MXN)</option>
+                  <option value="COP">Peso Colombiano (COP)</option>
+                  <option value="CLP">Peso Chileno (CLP)</option>
+                  <option value="ARS">Peso Argentino (ARS)</option>
+                  <option value="PEN">Sol Peruano (PEN)</option>
+                  <option value="GTQ">Quetzal Guatemalteco (GTQ)</option>
+                  <option value="HNL">Lempira Hondureño (HNL)</option>
+                  <option value="NIO">Córdoba Nicaragüense (NIO)</option>
+                  <option value="CRC">Colón Costarricense (CRC)</option>
+                  <option value="PAB">Balboa Panameño (PAB)</option>
+                  <option value="DOP">Peso Dominicano (DOP)</option>
+                  <option value="EUR">Euro (EUR)</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">NIT / RUC / Identificador Tributario</label>
                 <input 
                   type="text" 
                   value={nit}

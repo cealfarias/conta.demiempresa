@@ -13,6 +13,8 @@ function Registro() {
   const [nombreEmpresa, setNombreEmpresa] = useState('');
   const [nit, setNit] = useState('');
   const [giro, setGiro] = useState('');
+  const [pais, setPais] = useState('El Salvador');
+  const [moneda, setMoneda] = useState('USD');
   const [normativa, setNormativa] = useState('NIIF_PYMES');
   const [anio, setAnio] = useState(new Date().getFullYear().toString());
   
@@ -56,6 +58,8 @@ function Registro() {
         nit: nit,
         giro: giro || 'General',
         normativa: normativa,
+        pais: pais,
+        moneda: moneda,
         terminal_ip: "127.0.0.1",
         usuario_creacion: username
       };

@@ -13,6 +13,8 @@ class Empresa(Base):
     nrc = Column(String, nullable=True)
     giro = Column(String, nullable=False)
     normativa = Column(String, nullable=False) # NIIF_PYMES o NIFACES
+    pais = Column(String, nullable=False, server_default='El Salvador')
+    moneda = Column(String, nullable=False, server_default='USD')
 
     # Campos de auditoría exigidos por el login del usuario
     usuario_creacion = Column(String, nullable=False)

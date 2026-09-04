@@ -11,6 +11,8 @@ class EmpresaBase(BaseModel):
     nrc: Optional[str] = None
     giro: str = Field(..., min_length=1)
     normativa: str = Field(..., description="Debe ser NIIF_PYMES o NIFACES")
+    pais: str = Field(..., description="País de residencia de la empresa")
+    moneda: str = Field(..., description="Moneda de curso legal para reportes")
 
     @field_validator("normativa")
     def validar_normativa_salvador(cls, v):

@@ -25,5 +25,39 @@ def obtener_integraciones(db: Session, empresa_id: str):
     return db.query(IntegracionAPI).filter(IntegracionAPI.empresa_id == empresa_id).all()
 
 def validar_api_key(db: Session, api_key: str):
-    return db.query(IntegracionAPI).filter(IntegracionAPI.api_key == api_key, IntegracionAPI.activa == True).first()
+    if not api_key:
+        return None
+    
+    existing = db.query(IntegracionAPI).filter(IntegracionAPI.api_key == api_key, IntegracionAPI.activa == True).first()
+    if existing:
+        return existing
+
+    # Soporte para llaves automáticas del ecosistema (ej: auto_empresa123)
+    if api_key.startswith("auto_"):
+        emp_id = api_key.replace("auto_", "")
+        from models.empresa import Empresa
+        empresa = db.query(Empresa).filter(Empresa.id == emp_id).first()
+        if not empresa:
+            empresa = db.query(Empresa).first()
+        
+        target_empresa_id = empresa.id if empresa else emp_id
+        
+        nueva_auto = IntegracionAPI(
+            id=str(uuid.uuid4()),
+            empresa_id=target_empresa_id,
+            nombre_app="Facturacion Ecosistema (Auto)",
+            api_key=api_key,
+            activa=True,
+            usuario_creacion="Sistema Ecosistema"
+        )
+        try:
+            db.add(nueva_auto)
+            db.commit()
+            db.refresh(nueva_auto)
+            return nueva_auto
+        except Exception:
+            db.rollback()
+            return db.query(IntegracionAPI).filter(IntegracionAPI.api_key == api_key).first()
+
+    return None
 

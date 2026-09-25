@@ -41,3 +41,36 @@ def webhook_recibir_partida(
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+@router.get("/catalogo-cuentas")
+def api_obtener_catalogo_cuentas_integracion(
+    anio: int = None,
+    x_api_key: str = Header(None),
+    db: Session = Depends(get_db)
+):
+    if not x_api_key:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Falta el header X-API-Key")
+    
+    integracion = c_integracion.validar_api_key(db, x_api_key)
+    if not integracion:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="API Key inválida o inactiva")
+
+    from models.cuenta import CuentaContable
+    import datetime
+    anio_consulta = anio or datetime.datetime.now().year
+
+    cuentas = db.query(CuentaContable).filter(
+        CuentaContable.empresa_id == integracion.empresa_id,
+        CuentaContable.anio == anio_consulta
+    ).order_by(CuentaContable.cuentas.asc()).all()
+
+    return [
+        {
+            "cuenta_codigo": c.cuentas,
+            "nombre": c.nombre,
+            "nivel": c.nivel,
+            "permite_movimiento": not c.resumen
+        }
+        for c in cuentas
+    ]
+
+

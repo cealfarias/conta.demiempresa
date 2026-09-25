@@ -38,6 +38,8 @@ def webhook_recibir_partida(
 
     try:
         return guardar_partida_completa_transaccional(payload, db)
+    except HTTPException as he:
+        raise he
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

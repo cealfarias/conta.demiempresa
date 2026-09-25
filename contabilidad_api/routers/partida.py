@@ -27,22 +27,37 @@ router = APIRouter(
 def verificar_periodo_abierto(empresa_id: str, anio: int, mes: int, db: Session):
     """
     Guardia de seguridad: Bloquea cualquier intento de alterar la contabilidad en meses/años cerrados.
+    Autocrea el periodo abierto si es la primera vez que se registra una partida en ese año/mes.
     """
     periodo = db.query(ControlPeriodo).filter_by(empresa_id=empresa_id, anio=anio, mes=mes).first()
     
     if not periodo:
-        raise HTTPException(status_code=404, detail="El período contable no existe. Verifique la configuración de la empresa.")
-        
-    if not periodo.anio_abierto:
+        periodo = ControlPeriodo(
+            empresa_id=empresa_id,
+            anio=anio,
+            mes=mes,
+            mes_abierto=True,
+            anio_abierto=True,
+            total_partidas=0
+        )
+        try:
+            db.add(periodo)
+            db.commit()
+            db.refresh(periodo)
+        except Exception:
+            db.rollback()
+            periodo = db.query(ControlPeriodo).filter_by(empresa_id=empresa_id, anio=anio, mes=mes).first()
+
+    if periodo and not periodo.anio_abierto:
         raise HTTPException(
-            status_code=403, 
-            detail=f"TRANSACCIÓN RECHAZADA: El ejercicio fiscal {anio} está completamente cerrado y auditado."
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail=f"TRANSACCIÓN RECHAZADA: El ejercicio fiscal {anio} está completamente cerrado en Contabilidad."
         )
         
-    if not periodo.mes_abierto:
+    if periodo and not periodo.mes_abierto:
         raise HTTPException(
-            status_code=403, 
-            detail=f"TRANSACCIÓN RECHAZADA: El mes {mes} se encuentra cerrado. No se permiten nuevas partidas ni modificaciones."
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail=f"TRANSACCIÓN RECHAZADA: El mes {mes:02d}/{anio} se encuentra cerrado en Contabilidad."
         )
         
     return True
@@ -159,9 +174,21 @@ def guardar_partida_completa_transaccional(partida_in: PartidaCompletaCrear, db:
         mes=partida_in.mes
     ).with_for_update().first()
 
+    if not periodo:
+        periodo = ControlPeriodo(
+            empresa_id=partida_in.empresa_id,
+            anio=partida_in.anio,
+            mes=partida_in.mes,
+            mes_abierto=True,
+            anio_abierto=True,
+            total_partidas=0
+        )
+        db.add(periodo)
+        db.flush()
+
     try:
         # 5. Incrementar el contador global del mes para obtener el número de partida real
-        periodo.total_partidas += 1
+        periodo.total_partidas = (periodo.total_partidas or 0) + 1
         numero_asignado = periodo.total_partidas
 
         # 6. Insertar la Cabecera de la Partida
